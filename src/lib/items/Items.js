@@ -54,7 +54,10 @@ export default class Items extends Component {
     dimensionItems: PropTypes.array,
     groupTops: PropTypes.array,
     useResizeHandle: PropTypes.bool,
-    scrollRef: PropTypes.object
+    scrollRef: PropTypes.object,
+
+    //Custom
+    isHoverToSelectedItem: PropTypes.bool
   }
 
   static defaultProps = {
@@ -77,7 +80,7 @@ export default class Items extends Component {
       nextProps.canChangeGroup === this.props.canChangeGroup &&
       nextProps.canMove === this.props.canMove &&
       nextProps.canResize === this.props.canResize &&
-      nextProps.canSelect === this.props.canSelect     
+      nextProps.canSelect === this.props.canSelect
     )
   }
 
@@ -102,7 +105,8 @@ export default class Items extends Component {
       canvasTimeEnd,
       dimensionItems,
       keys,
-      groups
+      groups,
+      isHoverToSelectedItem
     } = this.props
     const { itemIdKey, itemGroupKey } = keys
 
@@ -162,6 +166,8 @@ export default class Items extends Component {
               onSelect={this.props.itemSelect}
               itemRenderer={this.props.itemRenderer}
               scrollRef={this.props.scrollRef}
+              isHoverToSelectedItem={isHoverToSelectedItem}
+              group={groupOrders?.[item?.group]?.group}
             />
           ))}
       </div>

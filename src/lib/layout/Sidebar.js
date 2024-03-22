@@ -11,7 +11,7 @@ export default class Sidebar extends Component {
     groupHeights: PropTypes.array.isRequired,
     keys: PropTypes.object.isRequired,
     groupRenderer: PropTypes.func,
-    isRightSidebar: PropTypes.bool,
+    isRightSidebar: PropTypes.bool
   }
 
   shouldComponentUpdate(nextProps) {
@@ -56,20 +56,26 @@ export default class Sidebar extends Component {
       }
 
       return (
-        <div
-          key={_get(group, groupIdKey)}
-          className={
-            'rct-sidebar-row rct-sidebar-row-' + (index % 2 === 0 ? 'even' : 'odd')
-          }
-          style={elementStyle}
-        >
-          {this.renderGroupContent(
-            group,
-            isRightSidebar,
-            groupTitleKey,
-            groupRightTitleKey
+        <>
+          {(!group?.isHide && !group?.isMerge) || group?.isMerge ? (
+            <div
+              key={_get(group, groupIdKey)}
+              className={`rct-sidebar-row rct-sidebar-row-${
+                index % 2 === 0 ? 'even' : 'odd'
+              } ${group?.isMerge ? 'rct-sidebar-row-full-width' : ''}`}
+              style={elementStyle}
+            >
+              {this.renderGroupContent(
+                group,
+                isRightSidebar,
+                groupTitleKey,
+                groupRightTitleKey
+              )}
+            </div>
+          ) : (
+            <></>
           )}
-        </div>
+        </>
       )
     })
 

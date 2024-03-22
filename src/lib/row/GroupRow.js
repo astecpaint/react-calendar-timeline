@@ -26,20 +26,29 @@ class GroupRow extends Component {
       group
     } = this.props
 
-    let classNamesForGroup = [];
+    let classNamesForGroup = []
     if (horizontalLineClassNamesForGroup) {
-      classNamesForGroup = horizontalLineClassNamesForGroup(group);
+      classNamesForGroup = horizontalLineClassNamesForGroup(group)
     }
 
     return (
-      <PreventClickOnDrag clickTolerance={clickTolerance} onClick={onClick}>
-        <div
-          onContextMenu={onContextMenu}
-          onDoubleClick={onDoubleClick}
-          className={(isEvenRow ? 'rct-hl-even ' : 'rct-hl-odd ') + (classNamesForGroup ? classNamesForGroup.join(' ') : '')}
-          style={style}
-        />
-      </PreventClickOnDrag>
+      <>
+        {!group?.isHide || group?.isMerge ? (
+          <PreventClickOnDrag clickTolerance={clickTolerance} onClick={onClick}>
+            <div
+              onContextMenu={onContextMenu}
+              onDoubleClick={onDoubleClick}
+              className={
+                (isEvenRow ? 'rct-hl-even ' : 'rct-hl-odd ') +
+                (classNamesForGroup ? classNamesForGroup.join(' ') : '')
+              }
+              style={style}
+            />
+          </PreventClickOnDrag>
+        ) : (
+          <></>
+        )}
+      </>
     )
   }
 }
