@@ -550,7 +550,9 @@ export default class Item extends Component {
     //TODO: maybe shouldnt include all of these classes
     const classNames =
       'rct-item' +
-      (this.props.item.className ? ` ${this.props.item.className}` : '')
+      (this.props.item.className ? ` ${this.props.item.className}` : '') +
+      ' rct_draggable_' +
+      this.props?.item?.group
 
     return {
       key: this.itemId,

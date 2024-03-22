@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
 import { _get, arraysEqual } from '../utility/generic'
+import GroupSortable from './GroupSortable'
 
 export default class Sidebar extends Component {
   static propTypes = {
@@ -11,7 +12,10 @@ export default class Sidebar extends Component {
     groupHeights: PropTypes.array.isRequired,
     keys: PropTypes.object.isRequired,
     groupRenderer: PropTypes.func,
-    isRightSidebar: PropTypes.bool
+    isRightSidebar: PropTypes.bool,
+    isShowDragHandleButton: PropTypes.bool,
+    sortOrderTaskList: PropTypes.func,
+    openAddGroupForm: PropTypes.func
   }
 
   shouldComponentUpdate(nextProps) {
@@ -20,7 +24,9 @@ export default class Sidebar extends Component {
       nextProps.width === this.props.width &&
       nextProps.height === this.props.height &&
       arraysEqual(nextProps.groups, this.props.groups) &&
-      arraysEqual(nextProps.groupHeights, this.props.groupHeights)
+      arraysEqual(nextProps.groupHeights, this.props.groupHeights) &&
+      nextProps.isShowDragHandleButton === this.props.isShowDragHandleButton &&
+      nextProps.sortOrderTaskList === this.props.sortOrderTaskList
     )
   }
 
@@ -36,8 +42,15 @@ export default class Sidebar extends Component {
   }
 
   render() {
-    const { width, groupHeights, height, isRightSidebar } = this.props
-
+    const {
+      width,
+      groupHeights,
+      height,
+      isRightSidebar,
+      isShowDragHandleButton,
+      sortOrderTaskList,
+      canSortableGroups
+    } = this.props
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys
 
     const sidebarStyle = {
@@ -76,7 +89,7 @@ export default class Sidebar extends Component {
             <></>
           )}
         </>
-      )
+       )
     })
 
     return (
@@ -84,7 +97,24 @@ export default class Sidebar extends Component {
         className={'rct-sidebar' + (isRightSidebar ? ' rct-sidebar-right' : '')}
         style={sidebarStyle}
       >
-        <div style={groupsStyle}>{groupLines}</div>
+        {canSortableGroups ? (
+          <div style={groupsStyle}>
+            <GroupSortable
+              groups={this.props.groups}
+              groupHeights={groupHeights}
+              isRightSidebar={isRightSidebar}
+              groupTitleKey={groupTitleKey}
+              groupRightTitleKey={groupRightTitleKey}
+              groupIdKey={groupIdKey}
+              groupRenderer={this.props.groupRenderer}
+              sortOrderTaskList={sortOrderTaskList}
+              isShowDragHandleButton={isShowDragHandleButton}
+              openAddGroupForm={this.props.openAddGroupForm}
+            />
+          </div>
+        ) : (
+          <div style={groupsStyle}>{groupLines}</div>
+        )}
       </div>
     )
   }

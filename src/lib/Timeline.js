@@ -121,7 +121,12 @@ export default class ReactCalendarTimeline extends Component {
     children: PropTypes.node,
 
     //Custom
-    isHoverToSelectedItem: PropTypes.bool
+    isHoverToSelectedItem: PropTypes.bool,
+
+    canSortableGroups: PropTypes.bool,
+    isShowDragHandleButton: PropTypes.bool,
+    sortOrderTaskList: PropTypes.func,
+    openAddGroupForm: PropTypes.func
   }
 
   static defaultProps = {
@@ -197,7 +202,10 @@ export default class ReactCalendarTimeline extends Component {
     selected: null,
 
     //Custom
-    isHoverToSelectedItem: false
+    isHoverToSelectedItem: false,
+    canSortableGroups: false,
+    isShowDragHandleButton: false,
+    sortOrderTaskList: null
   }
 
   static childContextTypes = {
@@ -828,7 +836,12 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   sidebar(height, groupHeights) {
-    const { sidebarWidth } = this.props
+    const {
+      sidebarWidth,
+      canSortableGroups,
+      isShowDragHandleButton,
+      sortOrderTaskList
+    } = this.props
     return (
       sidebarWidth && (
         <Sidebar
@@ -838,13 +851,21 @@ export default class ReactCalendarTimeline extends Component {
           width={sidebarWidth}
           groupHeights={groupHeights}
           height={height}
+          canSortableGroups={canSortableGroups}
+          isShowDragHandleButton={isShowDragHandleButton}
+          sortOrderTaskList={sortOrderTaskList}
+          openAddGroupForm={this.props.openAddGroupForm}
         />
       )
     )
   }
 
   rightSidebar(height, groupHeights) {
-    const { rightSidebarWidth } = this.props
+    const {
+      rightSidebarWidth,
+      canSortableGroups,
+      isShowDragHandleButton
+    } = this.props
     return (
       rightSidebarWidth && (
         <Sidebar
@@ -855,6 +876,9 @@ export default class ReactCalendarTimeline extends Component {
           width={rightSidebarWidth}
           groupHeights={groupHeights}
           height={height}
+          canSortableGroups={canSortableGroups}
+          isShowDragHandleButton={isShowDragHandleButton}
+          openAddGroupForm={this.props.openAddGroupForm}
         />
       )
     )
