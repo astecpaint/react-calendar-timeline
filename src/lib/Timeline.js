@@ -204,9 +204,12 @@ export default class ReactCalendarTimeline extends Component {
 
     //Custom
     isHoverToSelectedItem: false,
+    isShowInforGemba: true,
+
     canSortableGroups: false,
     isShowDragHandleButton: false,
-    sortOrderTaskList: null
+    sortOrderTaskList: null,
+    openAddGroupForm: null
   }
 
   static childContextTypes = {
