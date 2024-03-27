@@ -122,6 +122,7 @@ export default class ReactCalendarTimeline extends Component {
 
     //Custom
     isHoverToSelectedItem: PropTypes.bool,
+    isShowInforGemba: PropTypes.bool,
 
     canSortableGroups: PropTypes.bool,
     isShowDragHandleButton: PropTypes.bool,
@@ -667,7 +668,12 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   dropItem = (item, dragTime, newGroupOrder) => {
-    this.setState({ draggingItem: null, dragTime: null, dragGroupTitle: null })
+    this.setState({
+      draggingItem: null,
+      dragTime: null,
+      dragGroupTitle: null,
+      selectedItem: null
+    })
     if (this.props.onItemMove) {
       this.props.onItemMove(item, dragTime, newGroupOrder)
     }
@@ -689,7 +695,12 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   resizedItem = (item, resizeTime, edge, timeDelta) => {
-    this.setState({ resizingItem: null, resizingEdge: null, resizeTime: null })
+    this.setState({
+      resizingItem: null,
+      resizingEdge: null,
+      resizeTime: null,
+      selectedItem: null
+    })
     if (this.props.onItemResize && timeDelta !== 0) {
       this.props.onItemResize(item, resizeTime, edge)
     }
@@ -697,7 +708,13 @@ export default class ReactCalendarTimeline extends Component {
 
   updatingItem = ({ eventType, itemId, time, edge, newGroupOrder }) => {
     if (this.props.onItemDrag) {
-      this.props.onItemDrag({ eventType, itemId, time, edge, newGroupOrder })
+      this.props.onItemDrag({
+        eventType,
+        itemId,
+        time,
+        edge,
+        newGroupOrder
+      })
     }
   }
 
@@ -851,6 +868,7 @@ export default class ReactCalendarTimeline extends Component {
           width={sidebarWidth}
           groupHeights={groupHeights}
           height={height}
+          isShowInforGemba={this.props.isShowInforGemba}
           canSortableGroups={canSortableGroups}
           isShowDragHandleButton={isShowDragHandleButton}
           sortOrderTaskList={sortOrderTaskList}
@@ -876,8 +894,10 @@ export default class ReactCalendarTimeline extends Component {
           width={rightSidebarWidth}
           groupHeights={groupHeights}
           height={height}
+          isShowInforGemba={this.props.isShowInforGemba}
           canSortableGroups={canSortableGroups}
           isShowDragHandleButton={isShowDragHandleButton}
+          sortOrderTaskList={sortOrderTaskList}
           openAddGroupForm={this.props.openAddGroupForm}
         />
       )

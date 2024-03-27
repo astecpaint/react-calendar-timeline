@@ -25,6 +25,7 @@ export default class Sidebar extends Component {
       nextProps.height === this.props.height &&
       arraysEqual(nextProps.groups, this.props.groups) &&
       arraysEqual(nextProps.groupHeights, this.props.groupHeights) &&
+      nextProps.isShowInforGemba === this.props.isShowInforGemba &&
       nextProps.isShowDragHandleButton === this.props.isShowDragHandleButton &&
       nextProps.sortOrderTaskList === this.props.sortOrderTaskList
     )
@@ -89,7 +90,7 @@ export default class Sidebar extends Component {
             <></>
           )}
         </>
-       )
+      )
     })
 
     return (
