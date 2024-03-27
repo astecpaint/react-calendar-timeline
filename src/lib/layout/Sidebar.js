@@ -20,7 +20,8 @@ export default class Sidebar extends Component {
       nextProps.width === this.props.width &&
       nextProps.height === this.props.height &&
       arraysEqual(nextProps.groups, this.props.groups) &&
-      arraysEqual(nextProps.groupHeights, this.props.groupHeights)
+      arraysEqual(nextProps.groupHeights, this.props.groupHeights) &&
+      nextProps.isShowInforGemba === this.props.isShowInforGemba
     )
   }
 

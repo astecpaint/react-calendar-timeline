@@ -7,14 +7,14 @@ import { _get, arraysEqual, keyBy } from '../utility/generic'
 import { getGroupOrders, getVisibleItems } from '../utility/calendar'
 
 const canResizeLeft = (item, canResize) => {
-  const value =
-    _get(item, 'canResize') !== undefined ? _get(item, 'canResize') : canResize
+  if (!canResize) return false
+  const value = _get(item, 'canResize')
   return value === 'left' || value === 'both'
 }
 
 const canResizeRight = (item, canResize) => {
-  const value =
-    _get(item, 'canResize') !== undefined ? _get(item, 'canResize') : canResize
+  if (!canResize) return false
+  const value = _get(item, 'canResize')
   return value === 'right' || value === 'both' || value === true
 }
 
