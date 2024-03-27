@@ -860,7 +860,8 @@ export default class ReactCalendarTimeline extends Component {
       sidebarWidth,
       canSortableGroups,
       isShowDragHandleButton,
-      sortOrderTaskList
+      sortOrderTaskList,
+      openAddGroupForm
     } = this.props
     return (
       sidebarWidth && (
@@ -875,7 +876,7 @@ export default class ReactCalendarTimeline extends Component {
           canSortableGroups={canSortableGroups}
           isShowDragHandleButton={isShowDragHandleButton}
           sortOrderTaskList={sortOrderTaskList}
-          openAddGroupForm={this.props.openAddGroupForm}
+          openAddGroupForm={openAddGroupForm}
         />
       )
     )
@@ -885,7 +886,9 @@ export default class ReactCalendarTimeline extends Component {
     const {
       rightSidebarWidth,
       canSortableGroups,
-      isShowDragHandleButton
+      isShowDragHandleButton,
+      sortOrderTaskList,
+      openAddGroupForm
     } = this.props
     return (
       rightSidebarWidth && (
@@ -901,7 +904,7 @@ export default class ReactCalendarTimeline extends Component {
           canSortableGroups={canSortableGroups}
           isShowDragHandleButton={isShowDragHandleButton}
           sortOrderTaskList={sortOrderTaskList}
-          openAddGroupForm={this.props.openAddGroupForm}
+          openAddGroupForm={openAddGroupForm}
         />
       )
     )
