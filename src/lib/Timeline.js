@@ -137,7 +137,7 @@ export default class ReactCalendarTimeline extends Component {
     minResizeWidth: 20,
     lineHeight: 30,
     itemHeightRatio: 0.65,
-    buffer: 3,
+    buffer: 6,
 
     minZoom: 60 * 60 * 1000, // 1 hour
     maxZoom: 5 * 365.24 * 86400 * 1000, // 5 years
@@ -293,7 +293,13 @@ export default class ReactCalendarTimeline extends Component {
       dragGroupTitle: null,
       resizeTime: null,
       resizingItem: null,
-      resizingEdge: null
+      resizingEdge: null,
+      resizingItemCalled: false,
+      scrollTime: 0,
+      timeStartDefault: 0,
+      timeEndDefault: 0,
+      endScrollRight: 0,
+      endScrollLeft: 0
     }
 
     const canvasWidth = getCanvasWidth(this.state.width, props.buffer)
@@ -594,6 +600,9 @@ export default class ReactCalendarTimeline extends Component {
         this.props.onItemDeselect(e) // this isnt in the docs. Is this function even used?
       }
     }
+    this.setState({
+      scrollTime: this.calendarScrollWithTime(3)
+    })
   }
 
   doubleClickItem = (item, e) => {
@@ -681,8 +690,168 @@ export default class ReactCalendarTimeline extends Component {
       this.props.onItemMove(item, dragTime, newGroupOrder)
     }
   }
+  
+  handleDayToTime = numberOfDays => {
+    const oneDay = 24 * 60 * 60 * 1000
+    const time = numberOfDays * oneDay
+    return time
+  }
+
+  calendarScrollWithTime = scrollLeftPlus => {
+    const width = this.state.width
+
+    const canvasTimeStart = this.state.canvasTimeStart
+
+    const zoom = this.state.visibleTimeEnd - this.state.visibleTimeStart
+
+    const visibleTimeStartOld =
+      canvasTimeStart + (zoom * this.scrollComponent.scrollLeft) / width
+    const visibleTimeStart =
+      canvasTimeStart +
+      (zoom * (this.scrollComponent.scrollLeft + scrollLeftPlus)) / width
+
+    const visibleTimeChange = visibleTimeStart - visibleTimeStartOld
+    return visibleTimeChange
+  }
+  calendarStopAutoScroll = (defaultTimeStart, defaultTimeEnd) => {
+    const timeStart = new Date(defaultTimeStart)
+    const dayStartToTime = timeStart.getTime()
+    const endScrollLeft =
+      Number(dayStartToTime) - Number(this.handleDayToTime(90))
+    const timeEnd = new Date(defaultTimeEnd)
+    const dayEndToTime = timeEnd.getTime()
+    const endScrollRight =
+      Number(dayEndToTime) + Number(this.handleDayToTime(90))
+    return { dayStartToTime, dayEndToTime, endScrollLeft, endScrollRight }
+  }
 
   resizingItem = (item, resizeTime, edge) => {
+    if (!this.state.resizingItemCalled) {
+      const {
+        dayStartToTime,
+        dayEndToTime,
+        endScrollLeft,
+        endScrollRight
+      } = this.calendarStopAutoScroll(
+        this.props.items[item - 1].start_date,
+        this.props.items[item - 1].complete_date
+      )
+      this.setState({
+        timeStartDefault: dayStartToTime,
+        timeEndDefault: dayEndToTime,
+        endScrollLeft: endScrollLeft,
+        endScrollRight: endScrollRight,
+        resizingItemCalled: true
+      })
+    }
+
+    window.clearInterval(this.refreshIntervalId)
+
+    if (
+      this.state.endScrollRight < Number(resizeTime) ||
+      this.state.endScrollLeft > Number(resizeTime)
+    ) {
+      return
+    }
+
+    let stopScroll = false
+
+    if (
+      !stopScroll &&
+      this.state.visibleTimeEnd - this.handleDayToTime(1) < resizeTime
+    ) {
+      const dataItem = item
+      const dataEdge = edge
+      let dataResizeTime = resizeTime
+      this.refreshIntervalId = window.setInterval(
+        function() {
+          this.onScroll(this.scrollComponent.scrollLeft + 3)
+          if (dataResizeTime < this.state.endScrollRight) {
+            dataResizeTime += this.state.scrollTime
+          }
+
+          this.setState({
+            resizingItem: dataItem,
+            resizingEdge: dataEdge,
+            resizeTime: dataResizeTime
+          })
+
+          this.updatingItem({
+            eventType: 'resize',
+            itemId: dataItem,
+            time: dataResizeTime,
+            edge
+          })
+
+          if (
+            edge === 'right' &&
+            this.state.visibleTimeEnd - this.handleDayToTime(1) >=
+              this.state.endScrollRight
+          ) {
+            stopScroll = true
+            clearInterval(this.refreshIntervalId)
+          }
+
+          if (
+            edge === 'left' &&
+            Number(dataResizeTime) >
+              Number(this.state.timeEndDefault - this.handleDayToTime(0.49))
+          ) {
+            stopScroll = true
+            clearInterval(this.refreshIntervalId)
+          }
+        }.bind(this),
+        10
+      )
+    } else if (
+      !stopScroll &&
+      this.state.visibleTimeStart + this.handleDayToTime(1) > resizeTime
+    ) {
+      const dataItem = item
+      const dataEdge = edge
+      let dataResizeTime = resizeTime
+      this.refreshIntervalId = window.setInterval(
+        function() {
+          this.onScroll(this.scrollComponent.scrollLeft - 3)
+          if (dataResizeTime > this.state.endScrollLeft) {
+            dataResizeTime -= this.state.scrollTime
+          }
+          
+          this.setState({
+            resizingItem: dataItem,
+            resizingEdge: dataEdge,
+            resizeTime: dataResizeTime
+          })
+          this.updatingItem({
+            eventType: 'resize',
+            itemId: dataItem,
+            time: dataResizeTime,
+            edge
+          })
+
+          if (
+            edge === 'left' &&
+            this.state.visibleTimeStart + this.handleDayToTime(1) <=
+              this.state.endScrollLeft
+          ) {
+            stopScroll = true
+            clearInterval(this.refreshIntervalId)
+          }
+
+          if (
+            edge === 'right' &&
+            Number(dataResizeTime) <
+              Number(this.handleDayToTime(0.49) + this.state.timeStartDefault)
+          ) {
+            stopScroll = true
+            clearInterval(this.refreshIntervalId)
+            this.onScroll(this.scrollComponent.scrollLeft - 3)
+          }
+        }.bind(this),
+        10
+      )
+    }
+
     this.setState({
       resizingItem: item,
       resizingEdge: edge,
@@ -698,6 +867,18 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   resizedItem = (item, resizeTime, edge, timeDelta) => {
+    let dataResizeTime = resizeTime
+
+    if (edge === 'right' && dataResizeTime > this.state.endScrollRight) {
+      dataResizeTime = this.state.endScrollRight
+    }
+
+    if (edge === 'left' && this.state.endScrollLeft > dataResizeTime) {
+      dataResizeTime = this.state.endScrollLeft
+    }
+
+    window.clearInterval(this.refreshIntervalId)
+    this.setState({ resizingItemCalled: false })
     this.setState({
       resizingItem: null,
       resizingEdge: null,
@@ -705,7 +886,7 @@ export default class ReactCalendarTimeline extends Component {
       selectedItem: null
     })
     if (this.props.onItemResize && timeDelta !== 0) {
-      this.props.onItemResize(item, resizeTime, edge)
+      this.props.onItemResize(item, dataResizeTime, edge)
     }
   }
 
