@@ -295,6 +295,7 @@ export default class ReactCalendarTimeline extends Component {
       resizingItem: null,
       resizingEdge: null,
       resizingItemCalled: false,
+      dragMoveItemCalled: false,
       scrollTime: 0,
       timeStartDefault: 0,
       timeEndDefault: 0,
@@ -661,6 +662,107 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   dragItem = (item, dragTime, newGroupOrder) => {
+    if (!this.state.dragMoveItemCalled) {
+      const {
+        dayStartToTime,
+        dayEndToTime,
+        endScrollLeft,
+        endScrollRight
+      } = this.calendarStopAutoScroll(
+        this.props.items[item - 1].start_date,
+        this.props.items[item - 1].complete_date
+      )
+      this.setState({
+        timeStartDefault: dayStartToTime,
+        timeEndDefault: dayEndToTime,
+        endScrollLeft: endScrollLeft,
+        endScrollRight: endScrollRight,
+        dragMoveItemCalled: true
+      })
+    }
+
+    window.clearInterval(this.refreshIntervalId)
+
+    if (
+      this.state.endScrollRight < Number(dragTime) ||
+      this.state.endScrollLeft > Number(dragTime)
+    ) {
+      return
+    }
+
+    let stopScroll = false
+
+    if (
+      !stopScroll &&
+      this.state.visibleTimeEnd - this.handleDayToTime(2) < dragTime
+    ) {
+      const dataItem = item
+      let dataDragTime = dragTime
+      this.refreshIntervalId = window.setInterval(
+        function() {
+          this.onScroll(this.scrollComponent.scrollLeft + 3)
+          if (
+            dataDragTime +
+              (this.state.timeEndDefault - this.state.timeStartDefault) <
+            this.state.endScrollRight
+          ) {
+            dataDragTime += this.state.scrollTime
+          }
+
+          let newGroup = this.props.groups[newGroupOrder]
+          const keys = this.props.keys
+
+          this.setState({
+            draggingItem: dataItem,
+            dragTime: dataDragTime,
+            newGroupOrder: newGroupOrder,
+            dragGroupTitle: newGroup ? _get(newGroup, keys.groupLabelKey) : ''
+          })
+
+          this.updatingItem({
+            eventType: 'move',
+            itemId: dataItem,
+            time: dataDragTime,
+            newGroupOrder
+          })
+        }.bind(this),
+        10
+      )
+    } else if (
+      !stopScroll &&
+      this.state.visibleTimeStart + this.handleDayToTime(2) >
+        dragTime + (this.state.timeEndDefault - this.state.timeStartDefault)
+    ) {
+      const dataItem = item
+      let dataDragTime = dragTime
+      this.refreshIntervalId = window.setInterval(
+        function() {
+          this.onScroll(this.scrollComponent.scrollLeft - 3)
+          if (dataDragTime > this.state.endScrollLeft) {
+            dataDragTime -= this.state.scrollTime
+          }
+
+          let newGroup = this.props.groups[newGroupOrder]
+          const keys = this.props.keys
+
+          this.setState({
+            draggingItem: dataItem,
+            dragTime: dataDragTime,
+            newGroupOrder: newGroupOrder,
+            dragGroupTitle: newGroup ? _get(newGroup, keys.groupLabelKey) : ''
+          })
+
+          this.updatingItem({
+            eventType: 'move',
+            itemId: dataItem,
+            time: dataDragTime,
+            newGroupOrder
+          })
+        }.bind(this),
+        10
+      )
+    }
+
     let newGroup = this.props.groups[newGroupOrder]
     const keys = this.props.keys
 
@@ -680,6 +782,9 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   dropItem = (item, dragTime, newGroupOrder) => {
+    window.clearInterval(this.refreshIntervalId)
+    this.setState({ dragMoveItemCalled: false })
+
     this.setState({
       draggingItem: null,
       dragTime: null,
@@ -816,7 +921,7 @@ export default class ReactCalendarTimeline extends Component {
           if (dataResizeTime > this.state.endScrollLeft) {
             dataResizeTime -= this.state.scrollTime
           }
-          
+
           this.setState({
             resizingItem: dataItem,
             resizingEdge: dataEdge,
