@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { _get } from './generic'
+moment.locale('ja')
 
 /**
  * Calculate the ms / pixel ratio of the timeline state

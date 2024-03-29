@@ -260,6 +260,13 @@ export default class Item extends Component {
       .styleCursor(false)
       .on('dragstart', e => {
         if (this.props.selected) {
+          if (
+            Number(e?.rect?.left) + Number(e?.target.clientWidth) <
+            Number(e?.pageX)
+          ) {
+            return false
+          }
+
           const clickTime = this.timeFor(e)
           this.setState({
             dragging: true,
@@ -268,7 +275,10 @@ export default class Item extends Component {
               y: e.pageY,
               offset: this.itemTimeStart - clickTime
             },
-            preDragPosition: { x: e.target.offsetLeft, y: e.target.offsetTop },
+            preDragPosition: {
+              x: e.target.offsetLeft,
+              y: e.target.offsetTop
+            },
             dragTime: this.itemTimeStart,
             dragGroupDelta: 0
           })
@@ -530,7 +540,16 @@ export default class Item extends Component {
    * function handle event mouse move
    */
   onMouseMove = e => {
+    const divRect = e?.currentTarget.getBoundingClientRect()
+    if (
+      Number(divRect.left) + Number(e?.currentTarget?.clientWidth || 0) <
+      e.clientX
+    ) {
+      e.currentTarget.style.cursor = 'default'
+      return
+    }
     if (!this.props.isHoverToSelectedItem) return
+    e.currentTarget.style.cursor = 'move'
     this.actualClick(e, 'hover')
   }
 

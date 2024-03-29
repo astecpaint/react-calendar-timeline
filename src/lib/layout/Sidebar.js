@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 
 import { _get, arraysEqual } from '../utility/generic'
 import GroupSortable from './GroupSortable'
@@ -70,10 +70,9 @@ export default class Sidebar extends Component {
       }
 
       return (
-        <>
+        <Fragment key={_get(group, groupIdKey)}>
           {(!group?.isHide && !group?.isMerge) || group?.isMerge ? (
             <div
-              key={_get(group, groupIdKey)}
               className={`rct-sidebar-row rct-sidebar-row-${
                 index % 2 === 0 ? 'even' : 'odd'
               } ${group?.isMerge ? 'rct-sidebar-row-full-width' : ''}`}
@@ -89,7 +88,7 @@ export default class Sidebar extends Component {
           ) : (
             <></>
           )}
-        </>
+        </Fragment>
       )
     })
 

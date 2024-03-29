@@ -127,14 +127,15 @@ export default class ReactCalendarTimeline extends Component {
     canSortableGroups: PropTypes.bool,
     isShowDragHandleButton: PropTypes.bool,
     sortOrderTaskList: PropTypes.func,
-    openAddGroupForm: PropTypes.func
+    openAddGroupForm: PropTypes.func,
+    canMoveChart: PropTypes.bool
   }
 
   static defaultProps = {
     sidebarWidth: 150,
     rightSidebarWidth: 0,
     dragSnap: 1000 * 60 * 15, // 15min
-    minResizeWidth: 20,
+    minResizeWidth: 10,
     lineHeight: 30,
     itemHeightRatio: 0.65,
     buffer: 6,
@@ -209,7 +210,8 @@ export default class ReactCalendarTimeline extends Component {
     canSortableGroups: false,
     isShowDragHandleButton: false,
     sortOrderTaskList: null,
-    openAddGroupForm: null
+    openAddGroupForm: null,
+    canMoveChart: false
   }
 
   static childContextTypes = {
@@ -334,6 +336,9 @@ export default class ReactCalendarTimeline extends Component {
     this.state.groupHeights = groupHeights
     this.state.groupTops = groupTops
 
+    this.scrollComponentTemporary = null
+    this.scrollLeftTemporary = null
+    this.isScrolling = false
     /* eslint-enable */
   }
 
@@ -406,6 +411,22 @@ export default class ReactCalendarTimeline extends Component {
         )
       )
     }
+
+    if (!nextProps.canMoveChart) {
+      const temporaryScrollEl = document.querySelector('.scroll-temporary')
+      const chartEl = document.querySelector('.react-calendar-timeline')
+      if (temporaryScrollEl && chartEl) {
+        const chartBottomPosition = chartEl?.getBoundingClientRect().bottom
+        if (chartBottomPosition > innerHeight) {
+          temporaryScrollEl.style.bottom = `0`
+          temporaryScrollEl.style.top = `unset`
+        } else {
+          temporaryScrollEl.style.top = `${chartBottomPosition - 27}px`
+        }
+      }
+    }
+
+    // check update time
 
     return derivedState
   }
@@ -1330,6 +1351,40 @@ export default class ReactCalendarTimeline extends Component {
     this.scrollComponent = el
   }
 
+  refHandler = el => {
+    this.scrollComponentTemporary = el
+    if (el) {
+      el.addEventListener('scroll', this.handleScroll, {
+        passive: false
+      })
+      el.addEventListener('scrollend', this.handleScrollEnd)
+      this.scrollComponentTemporary.scrollLeft =
+        (this.scrollComponentTemporary.scrollWidth -
+          this.scrollComponentTemporary.offsetWidth) /
+        2
+    }
+  }
+
+  handleScroll = e => {
+    const distanceScroll =
+      (this.scrollComponentTemporary.scrollLeft - this.scrollLeftTemporary) /
+      3.2
+    if (!this.isScrolling) {
+      this.isScrolling = true
+    } else {
+      this.onScroll(this.scrollComponent.scrollLeft + Number(distanceScroll))
+    }
+    this.scrollLeftTemporary = this.scrollComponentTemporary.scrollLeft
+  }
+
+  handleScrollEnd = e => {
+    this.scrollComponentTemporary.scrollLeft =
+      (this.scrollComponentTemporary.scrollWidth -
+        this.scrollComponentTemporary.offsetWidth) /
+      2
+    this.isScrolling = false
+  }
+
   render() {
     const {
       items,
@@ -1338,7 +1393,8 @@ export default class ReactCalendarTimeline extends Component {
       rightSidebarWidth,
       timeSteps,
       traditionalZoom,
-      buffer
+      buffer,
+      canMoveChart
     } = this.props
     const {
       draggingItem,
@@ -1456,6 +1512,12 @@ export default class ReactCalendarTimeline extends Component {
                     )}
                   </MarkerCanvas>
                 </ScrollElement>
+                {groups?.length && !canMoveChart && (
+                  <div className="scroll-temporary" ref={this.refHandler}>
+                    <div className="content"> </div>
+                  </div>
+                )}
+
                 {rightSidebarWidth > 0
                   ? this.rightSidebar(height, groupHeights)
                   : null}

@@ -37,6 +37,21 @@ $weekend: rgba(250, 246, 225, 0.5);
     touch-action: none;
   }
 
+  .scroll-temporary {
+    width: calc(100% - 370px);
+    height: 27px;
+    position: fixed;
+    display: none;
+    top: 0;
+    right: 0;
+    z-index: 99;
+    overflow-x: overlay;
+    overflow-y: hidden;
+    .content {
+      width: 6000px;
+    }
+  }
+
   .rct-item {
     &:hover {
       z-index: 88;

@@ -53,7 +53,7 @@ class Columns extends Component {
     iterateTimes(
       canvasTimeStart,
       canvasTimeEnd,
-      minUnit,
+      'day',
       timeSteps,
       (time, nextTime) => {
         const minUnitValue = time.get(minUnit === 'day' ? 'date' : minUnit)
