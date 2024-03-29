@@ -684,7 +684,10 @@ export default class ReactCalendarTimeline extends Component {
     window.clearInterval(this.refreshIntervalId)
 
     if (
-      this.state.endScrollRight < Number(dragTime) ||
+      this.state.endScrollRight <
+        Number(
+          dragTime + (this.state.timeEndDefault - this.state.timeStartDefault)
+        ) ||
       this.state.endScrollLeft > Number(dragTime)
     ) {
       return
@@ -725,6 +728,15 @@ export default class ReactCalendarTimeline extends Component {
             time: dataDragTime,
             newGroupOrder
           })
+
+          if (
+            dataDragTime > this.state.visibleTimeStart &&
+            this.state.visibleTimeEnd - this.handleDayToTime(1) >=
+              this.state.endScrollRight
+          ) {
+            stopScroll = true
+            clearInterval(this.refreshIntervalId)
+          }
         }.bind(this),
         10
       )
@@ -758,6 +770,15 @@ export default class ReactCalendarTimeline extends Component {
             time: dataDragTime,
             newGroupOrder
           })
+
+          if (
+            dataDragTime > this.state.visibleTimeStart &&
+            this.state.visibleTimeStart + this.handleDayToTime(1) <=
+              this.state.endScrollLeft
+          ) {
+            stopScroll = true
+            clearInterval(this.refreshIntervalId)
+          }
         }.bind(this),
         10
       )
@@ -782,8 +803,23 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   dropItem = (item, dragTime, newGroupOrder) => {
+    let dataDragTime = dragTime
+
     window.clearInterval(this.refreshIntervalId)
     this.setState({ dragMoveItemCalled: false })
+
+    if (
+      dataDragTime + (this.state.timeEndDefault - this.state.timeStartDefault) >
+      this.state.endScrollRight
+    ) {
+      dataDragTime =
+        this.state.endScrollRight -
+        (this.state.timeEndDefault - this.state.timeStartDefault)
+    }
+
+    if (this.state.endScrollLeft > dataDragTime) {
+      dataDragTime = this.state.endScrollLeft
+    }
 
     this.setState({
       draggingItem: null,
@@ -792,10 +828,10 @@ export default class ReactCalendarTimeline extends Component {
       selectedItem: null
     })
     if (this.props.onItemMove) {
-      this.props.onItemMove(item, dragTime, newGroupOrder)
+      this.props.onItemMove(item, dataDragTime, newGroupOrder)
     }
   }
-  
+
   handleDayToTime = numberOfDays => {
     const oneDay = 24 * 60 * 60 * 1000
     const time = numberOfDays * oneDay
