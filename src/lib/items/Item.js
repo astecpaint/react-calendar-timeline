@@ -479,7 +479,9 @@ export default class Item extends Component {
         })
       }
       if (interactMounted && couldDrag !== willBeAbleToDrag) {
-        interact(this.item).draggable({ enabled: willBeAbleToDrag })
+        interact(this.item).draggable({
+          enabled: willBeAbleToDrag
+        })
       }
     } else {
       interactMounted = false
@@ -490,16 +492,24 @@ export default class Item extends Component {
   }
 
   onMouseDown = e => {
+    e.preventDefault()
     if (!this.state.interactMounted) {
-      e.preventDefault()
       this.startedClicking = true
     }
+
+    //Custom
+    this.startedClickingCustom = true
   }
 
   onMouseUp = e => {
     if (!this.state.interactMounted && this.startedClicking) {
       this.startedClicking = false
       this.actualClick(e, 'click')
+    }
+
+    //Custom
+    if (this.startedClickingCustom) {
+      this.startedClickingCustom = false
     }
   }
 
@@ -543,7 +553,8 @@ export default class Item extends Component {
    * function handle event mouse move
    */
   onMouseMove = e => {
-    if (!this.props.isGembaMode) return
+    if (!this.props.isGembaMode || !this.props.isHoverToSelectedItem) return
+
     const divRect = e?.currentTarget.getBoundingClientRect()
     if (
       Number(divRect.left) + Number(e?.currentTarget?.clientWidth || 0) <
@@ -552,23 +563,23 @@ export default class Item extends Component {
       e.currentTarget.style.cursor = 'default'
       return
     }
-    if (!this.props.isHoverToSelectedItem) return
+
     e.currentTarget.style.cursor = 'move'
     this.actualClick(e, 'hover')
-    if (this.timeOutResize !== -1) {
-      clearTimeout(this.timeOutResize)
-    }
   }
 
   /**
    * function handle event mouse leave
    */
   onMouseLeave = () => {
-    if (!this.props.isGembaMode) return
-    if (!this.props.isHoverToSelectedItem) return
-    this.timeOutResize = setTimeout(() => {
-      this.props.onSelect(null)
-    }, 200)
+    if (
+      !this.props.isHoverToSelectedItem ||
+      !this.props.isGembaMode ||
+      this.startedClickingCustom
+    )
+      return
+
+    this.props.onSelect(null)
   }
 
   getItemRef = el => (this.item = el)
