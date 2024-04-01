@@ -123,6 +123,7 @@ export default class ReactCalendarTimeline extends Component {
     //Custom
     isHoverToSelectedItem: PropTypes.bool,
     isShowInforGemba: PropTypes.bool,
+    isGembaMode: PropTypes.bool,
 
     canSortableGroups: PropTypes.bool,
     isShowDragHandleButton: PropTypes.bool,
@@ -206,6 +207,7 @@ export default class ReactCalendarTimeline extends Component {
     //Custom
     isHoverToSelectedItem: false,
     isShowInforGemba: true,
+    isGembaMode: true,
 
     canSortableGroups: false,
     isShowDragHandleButton: false,
@@ -410,20 +412,6 @@ export default class ReactCalendarTimeline extends Component {
           prevState.newGroupOrder
         )
       )
-    }
-
-    if (!nextProps.canMoveChart) {
-      const temporaryScrollEl = document.querySelector('.scroll-temporary')
-      const chartEl = document.querySelector('.react-calendar-timeline')
-      if (temporaryScrollEl && chartEl) {
-        const chartBottomPosition = chartEl?.getBoundingClientRect().bottom
-        if (chartBottomPosition > innerHeight) {
-          temporaryScrollEl.style.bottom = `0`
-          temporaryScrollEl.style.top = `unset`
-        } else {
-          temporaryScrollEl.style.top = `${chartBottomPosition - 27}px`
-        }
-      }
     }
 
     // check update time
@@ -1189,6 +1177,7 @@ export default class ReactCalendarTimeline extends Component {
         selected={this.props.selected}
         scrollRef={this.scrollComponent}
         isHoverToSelectedItem={this.props.isHoverToSelectedItem}
+        isGembaMode={this.props.isGembaMode}
       />
     )
   }
@@ -1411,7 +1400,8 @@ export default class ReactCalendarTimeline extends Component {
     const canvasWidth = getCanvasWidth(width, buffer)
     const minUnit = getMinUnit(zoom, width, timeSteps)
 
-    const isInteractingWithItem = !!draggingItem || !!resizingItem
+    const isInteractingWithItem =
+      !!draggingItem || !!resizingItem || !canMoveChart
 
     if (isInteractingWithItem) {
       const stackResults = stackTimelineItems(
@@ -1513,8 +1503,14 @@ export default class ReactCalendarTimeline extends Component {
                   </MarkerCanvas>
                 </ScrollElement>
                 {groups?.length && !canMoveChart && (
-                  <div className="scroll-temporary" ref={this.refHandler}>
-                    <div className="content"> </div>
+                  <div className="scroll-temporary-container">
+                    <div className="scroll-temporary-header"></div>
+                    <div
+                      className="scroll-temporary-body"
+                      ref={this.refHandler}
+                    >
+                      <div className="content"> </div>
+                    </div>
                   </div>
                 )}
 

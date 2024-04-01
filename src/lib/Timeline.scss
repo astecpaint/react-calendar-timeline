@@ -37,18 +37,36 @@ $weekend: rgba(250, 246, 225, 0.5);
     touch-action: none;
   }
 
-  .scroll-temporary {
-    width: calc(100% - 370px);
+  .scroll-temporary-container {
     height: 27px;
+    width: 100%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    z-index: 79;
     position: fixed;
-    display: none;
-    top: 0;
+    bottom: 0;
     right: 0;
-    z-index: 99;
-    overflow-x: overlay;
-    overflow-y: hidden;
-    .content {
-      width: 6000px;
+    .scroll-temporary-header {
+      height: 100%;
+      width: 371px;
+      border-right: 1px solid #ccc;
+    }
+    .scroll-temporary-body {
+      width: calc(100% - 371px);
+      height: 11px;
+      overflow-x: overlay;
+      overflow-y: hidden;
+      .content {
+        width: 6000px;
+      }
+    }
+    .scroll-temporary-body::-webkit-scrollbar-thumb {
+      height: 8px;
+      border-radius: 10px;
+    }
+    .scroll-temporary-body::-webkit-scrollbar-track {
+      background: #fff;
     }
   }
 

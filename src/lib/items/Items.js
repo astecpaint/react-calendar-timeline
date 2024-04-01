@@ -57,7 +57,8 @@ export default class Items extends Component {
     scrollRef: PropTypes.object,
 
     //Custom
-    isHoverToSelectedItem: PropTypes.bool
+    isHoverToSelectedItem: PropTypes.bool,
+    isGembaMode: PropTypes.bool
   }
 
   static defaultProps = {
@@ -106,7 +107,8 @@ export default class Items extends Component {
       dimensionItems,
       keys,
       groups,
-      isHoverToSelectedItem
+      isHoverToSelectedItem,
+      isGembaMode
     } = this.props
     const { itemIdKey, itemGroupKey } = keys
 
@@ -168,6 +170,7 @@ export default class Items extends Component {
               scrollRef={this.props.scrollRef}
               isHoverToSelectedItem={isHoverToSelectedItem}
               group={groupOrders?.[item?.group]?.group}
+              isGembaMode={isGembaMode}
             />
           ))}
       </div>

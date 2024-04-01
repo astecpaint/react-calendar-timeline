@@ -61,7 +61,8 @@ export default class Item extends Component {
 
     //Custom
     isHoverToSelectedItem: PropTypes.bool,
-    group: PropTypes.object
+    group: PropTypes.object,
+    isGembaMode: PropTypes.bool
   }
 
   static defaultProps = {
@@ -92,6 +93,7 @@ export default class Item extends Component {
       resizeStart: null,
       resizeTime: null
     }
+    this.timeOutResize = null
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -531,6 +533,7 @@ export default class Item extends Component {
   }
 
   actualClick(e, clickType) {
+    if (!this.props.isGembaMode) return
     if (this.props.canSelect && this.props.onSelect) {
       this.props.onSelect(this.itemId, clickType, e)
     }
@@ -540,6 +543,7 @@ export default class Item extends Component {
    * function handle event mouse move
    */
   onMouseMove = e => {
+    if (!this.props.isGembaMode) return
     const divRect = e?.currentTarget.getBoundingClientRect()
     if (
       Number(divRect.left) + Number(e?.currentTarget?.clientWidth || 0) <
@@ -551,14 +555,20 @@ export default class Item extends Component {
     if (!this.props.isHoverToSelectedItem) return
     e.currentTarget.style.cursor = 'move'
     this.actualClick(e, 'hover')
+    if (this.timeOutResize !== -1) {
+      clearTimeout(this.timeOutResize)
+    }
   }
 
   /**
    * function handle event mouse leave
    */
   onMouseLeave = () => {
+    if (!this.props.isGembaMode) return
     if (!this.props.isHoverToSelectedItem) return
-    this.props.onSelect(null)
+    this.timeOutResize = setTimeout(() => {
+      this.props.onSelect(null)
+    }, 200)
   }
 
   getItemRef = el => (this.item = el)
