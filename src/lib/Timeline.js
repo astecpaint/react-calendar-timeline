@@ -1346,7 +1346,7 @@ export default class ReactCalendarTimeline extends Component {
       el.addEventListener('scroll', this.handleScroll, {
         passive: false
       })
-      el.addEventListener('scrollend', this.handleScrollEnd)
+      el.addEventListener('mouseup', this.handleScrollEnd)
       this.scrollComponentTemporary.scrollLeft =
         (this.scrollComponentTemporary.scrollWidth -
           this.scrollComponentTemporary.offsetWidth) /
@@ -1509,7 +1509,7 @@ export default class ReactCalendarTimeline extends Component {
                       className="scroll-temporary-body"
                       ref={this.refHandler}
                     >
-                      <div className="content"> </div>
+                      <div className="content">&nbsp;</div>
                     </div>
                   </div>
                 )}
