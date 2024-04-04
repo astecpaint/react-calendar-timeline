@@ -62,7 +62,8 @@ export default class Item extends Component {
     //Custom
     isHoverToSelectedItem: PropTypes.bool,
     group: PropTypes.object,
-    isGembaMode: PropTypes.bool
+    isGembaMode: PropTypes.bool,
+    selectedItem: PropTypes.number
   }
 
   static defaultProps = {
@@ -312,6 +313,10 @@ export default class Item extends Component {
             dragTime: dragTime,
             dragGroupDelta: dragGroupDelta
           })
+
+          if (this.startedClickingCustom) {
+            this.startedClickingCustom = false
+          }
         }
       })
       .on('dragend', e => {
@@ -411,6 +416,10 @@ export default class Item extends Component {
             resizeEdge: null,
             resizeTime: null
           })
+
+          if (this.startedClickingCustom) {
+            this.startedClickingCustom = false
+          }
         }
       })
       .on('tap', e => {
@@ -440,6 +449,10 @@ export default class Item extends Component {
 
   canMove(props = this.props) {
     return !!props.canMove
+  }
+
+  canSelectItem = () => {
+    return this.canMove() || this.canResizeLeft() || this.canResizeRight()
   }
 
   componentDidUpdate(prevProps) {
@@ -543,7 +556,7 @@ export default class Item extends Component {
   }
 
   actualClick(e, clickType) {
-    if (!this.props.isGembaMode) return
+    if (!this.props.isGembaMode || !this.canSelectItem()) return
     if (this.props.canSelect && this.props.onSelect) {
       this.props.onSelect(this.itemId, clickType, e)
     }
@@ -553,7 +566,13 @@ export default class Item extends Component {
    * function handle event mouse move
    */
   onMouseMove = e => {
-    if (!this.props.isGembaMode || !this.props.isHoverToSelectedItem) return
+    if (
+      !this.props.isGembaMode ||
+      !this.props.isHoverToSelectedItem ||
+      !this.canSelectItem() ||
+      this.props.selectedItem === this.itemId
+    )
+      return
 
     const divRect = e?.currentTarget.getBoundingClientRect()
     if (
@@ -575,7 +594,8 @@ export default class Item extends Component {
     if (
       !this.props.isHoverToSelectedItem ||
       !this.props.isGembaMode ||
-      this.startedClickingCustom
+      this.startedClickingCustom ||
+      !this.canSelectItem()
     )
       return
 

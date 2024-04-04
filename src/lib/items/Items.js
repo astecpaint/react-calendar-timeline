@@ -108,7 +108,8 @@ export default class Items extends Component {
       keys,
       groups,
       isHoverToSelectedItem,
-      isGembaMode
+      isGembaMode,
+      selectedItem
     } = this.props
     const { itemIdKey, itemGroupKey } = keys
 
@@ -171,6 +172,7 @@ export default class Items extends Component {
               isHoverToSelectedItem={isHoverToSelectedItem}
               group={groupOrders?.[item?.group]?.group}
               isGembaMode={isGembaMode}
+              selectedItem={selectedItem}
             />
           ))}
       </div>
