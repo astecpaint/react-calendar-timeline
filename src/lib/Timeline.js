@@ -137,6 +137,7 @@ export default class ReactCalendarTimeline extends Component {
     rightSidebarWidth: 0,
     dragSnap: 1000 * 60 * 15, // 15min
     minResizeWidth: 10,
+    speedScrollHorizontal: 5, // scroll speed when moving or resizing
     lineHeight: 30,
     itemHeightRatio: 0.65,
     buffer: 6,
@@ -611,7 +612,7 @@ export default class ReactCalendarTimeline extends Component {
       }
     }
     this.setState({
-      scrollTime: this.calendarScrollWithTime(3)
+      scrollTime: this.calendarScrollWithTime(this.props.speedScrollHorizontal)
     })
   }
 
@@ -712,7 +713,9 @@ export default class ReactCalendarTimeline extends Component {
       let dataDragTime = dragTime
       this.refreshIntervalId = window.setInterval(
         function() {
-          this.onScroll(this.scrollComponent.scrollLeft + 3)
+          this.onScroll(
+            this.scrollComponent.scrollLeft + this.props.speedScrollHorizontal
+          )
           if (
             dataDragTime +
               (this.state.timeEndDefault - this.state.timeStartDefault) <
@@ -758,7 +761,7 @@ export default class ReactCalendarTimeline extends Component {
       let dataDragTime = dragTime
       this.refreshIntervalId = window.setInterval(
         function() {
-          this.onScroll(this.scrollComponent.scrollLeft - 3)
+          this.onScroll(this.scrollComponent.scrollLeft - 5)
           if (dataDragTime > this.state.endScrollLeft) {
             dataDragTime -= this.state.scrollTime
           }
@@ -915,7 +918,9 @@ export default class ReactCalendarTimeline extends Component {
       let dataResizeTime = resizeTime
       this.refreshIntervalId = window.setInterval(
         function() {
-          this.onScroll(this.scrollComponent.scrollLeft + 3)
+          this.onScroll(
+            this.scrollComponent.scrollLeft + this.props.speedScrollHorizontal
+          )
           if (dataResizeTime < this.state.endScrollRight) {
             dataResizeTime += this.state.scrollTime
           }
@@ -962,7 +967,9 @@ export default class ReactCalendarTimeline extends Component {
       let dataResizeTime = resizeTime
       this.refreshIntervalId = window.setInterval(
         function() {
-          this.onScroll(this.scrollComponent.scrollLeft - 3)
+          this.onScroll(
+            this.scrollComponent.scrollLeft - this.props.speedScrollHorizontal
+          )
           if (dataResizeTime > this.state.endScrollLeft) {
             dataResizeTime -= this.state.scrollTime
           }
@@ -995,7 +1002,9 @@ export default class ReactCalendarTimeline extends Component {
           ) {
             stopScroll = true
             clearInterval(this.refreshIntervalId)
-            this.onScroll(this.scrollComponent.scrollLeft - 3)
+            this.onScroll(
+              this.scrollComponent.scrollLeft - this.props.speedScrollHorizontal
+            )
           }
         }.bind(this),
         10
