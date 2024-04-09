@@ -33,8 +33,7 @@
     width: calc(100% - 371px);
     height: 11px;
     overflow-x: overlay;
-    overflow-y: hidden;
-    cursor: move; }
+    overflow-y: hidden; }
     .react-calendar-timeline .scroll-temporary-container .scroll-temporary-body .content {
       width: 6000px; }
   .react-calendar-timeline .scroll-temporary-container .scroll-temporary-body::-webkit-scrollbar-thumb {

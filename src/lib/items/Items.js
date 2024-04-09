@@ -6,14 +6,18 @@ import Item from './Item'
 import { _get, arraysEqual, keyBy } from '../utility/generic'
 import { getGroupOrders, getVisibleItems } from '../utility/calendar'
 
-const canResizeLeft = (item, canResize) => {
-  if (!canResize) return false
+// Add the isSelected param to ensure that only currently selected items update the canResizeLeft property,
+// helping to limit unnecessary re-rendering of other items.
+const canResizeLeft = (item, canResize, isSelected) => {
+  if (!canResize || !isSelected) return false
   const value = _get(item, 'canResize')
   return value === 'left' || value === 'both'
 }
 
-const canResizeRight = (item, canResize) => {
-  if (!canResize) return false
+// Add the isSelected param to ensure that only currently selected items update the canResizeRight property,
+// helping to limit unnecessary re-rendering of other items.
+const canResizeRight = (item, canResize, isSelected) => {
+  if (!canResize || !isSelected) return false
   const value = _get(item, 'canResize')
   return value === 'right' || value === 'both' || value === true
 }
@@ -145,8 +149,16 @@ export default class Items extends Component {
                   ? _get(item, 'canMove')
                   : this.props.canMove
               }
-              canResizeLeft={canResizeLeft(item, this.props.canResize)}
-              canResizeRight={canResizeRight(item, this.props.canResize)}
+              canResizeLeft={canResizeLeft(
+                item,
+                this.props.canResize,
+                this.isSelected(item, itemIdKey)
+              )}
+              canResizeRight={canResizeRight(
+                item,
+                this.props.canResize,
+                this.isSelected(item, itemIdKey)
+              )}
               canSelect={
                 _get(item, 'canSelect') !== undefined
                   ? _get(item, 'canSelect')

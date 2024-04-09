@@ -3,6 +3,7 @@ import React, { Component, Fragment } from 'react'
 
 import { _get, arraysEqual } from '../utility/generic'
 import GroupSortable from './GroupSortable'
+import GroupContent from './GroupContent'
 
 export default class Sidebar extends Component {
   static propTypes = {
@@ -50,7 +51,8 @@ export default class Sidebar extends Component {
       isRightSidebar,
       isShowDragHandleButton,
       sortOrderTaskList,
-      canSortableGroups
+      canSortableGroups,
+      groupRenderer
     } = this.props
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys
 
@@ -78,12 +80,13 @@ export default class Sidebar extends Component {
               } ${group?.isMerge ? 'rct-sidebar-row-full-width' : ''}`}
               style={elementStyle}
             >
-              {this.renderGroupContent(
-                group,
-                isRightSidebar,
-                groupTitleKey,
-                groupRightTitleKey
-              )}
+              <GroupContent
+                group={group}
+                isRightSidebar={isRightSidebar}
+                groupTitleKey={groupTitleKey}
+                groupRightTitleKey={groupRightTitleKey}
+                groupRenderer={groupRenderer}
+              />
             </div>
           ) : (
             <></>

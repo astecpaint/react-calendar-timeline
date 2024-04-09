@@ -120,7 +120,7 @@ export default class Item extends Component {
       nextProps.canMove !== this.props.canMove ||
       nextProps.canResizeLeft !== this.props.canResizeLeft ||
       nextProps.canResizeRight !== this.props.canResizeRight ||
-      nextProps.dimensions !== this.props.dimensions
+      !deepObjectCompare(nextProps.dimensions, this.props.dimensions) //The dimension attribute being compared '===' leads to the version before and after the update being the same in value but different in memory, still leading to unnecessary re-rendering, reducing performance.
     return shouldUpdate
   }
 
