@@ -219,7 +219,7 @@ export default class GroupSortable extends Component {
   clearTransformElements = elements => {
     for (let i = 0; i < elements.length; i++) {
       elements[i].style.transitionDuration = `0ms`
-      elements[i].style.transform = 'translate(0px, 0px)'
+      elements[i].style.transform = 'none' // fix bug ticket GP-15699. translate function will create a new viewport
       elements[i].style.setProperty('z-index', '80', 'important')
     }
   }
