@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import { SortableContainer } from 'react-sortable-hoc'
 import { SortableItem } from './SortableItem'
 import { arraysEqual } from '../utility/generic'
@@ -36,22 +36,36 @@ class SortableListClass extends Component {
         id="dropzone-task"
         style={{ borderTopWidth: '0px' }}
       >
-        {groups?.map((item, index) => (
-          <SortableItem
-            keyIndex={item.index}
-            key={`item-${item.index}`}
-            index={index}
-            group={item}
-            disabled={false}
-            groupIdKey={groupIdKey}
-            groupHeights={groupHeights}
-            openAddGroupForm={openAddGroupForm}
-            groupRenderer={groupRenderer}
-            isRightSidebar={isRightSidebar}
-            groupRightTitleKey={groupRightTitleKey}
-            groupTitleKey={groupTitleKey}
-          />
-        ))}
+        {groups?.map((item, index) => {
+          return item?.isEmptyGroup ? (
+            <Fragment key={index}>
+              {groupRenderer
+                ? React.createElement(groupRenderer, {
+                    group: item,
+                    isRightSidebar
+                  })
+                : _get(
+                    item,
+                    isRightSidebar ? groupRightTitleKey : groupTitleKey
+                  )}
+            </Fragment>
+          ) : (
+            <SortableItem
+              keyIndex={item.index}
+              key={`item-${item.index}`}
+              index={index}
+              group={item}
+              disabled={false}
+              groupIdKey={groupIdKey}
+              groupHeights={groupHeights}
+              openAddGroupForm={openAddGroupForm}
+              groupRenderer={groupRenderer}
+              isRightSidebar={isRightSidebar}
+              groupRightTitleKey={groupRightTitleKey}
+              groupTitleKey={groupTitleKey}
+            />
+          )
+        })}
       </div>
     )
   }

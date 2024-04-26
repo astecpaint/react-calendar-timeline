@@ -189,7 +189,8 @@ export default class GroupSortable extends Component {
     }
 
     if (sort.oldIndex !== sort.newIndex) {
-      const newList = arrayMove(groups, sort.oldIndex, sort.newIndex)
+      const groupFilter = groups.filter(group => !group?.isEmptyGroup)
+      const newList = arrayMove(groupFilter, sort.oldIndex, sort.newIndex)
       const result = newList.map((group, index) => {
         group.task['sort_order'] = index
         return group
