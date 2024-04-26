@@ -95,6 +95,14 @@ export default class Sidebar extends Component {
       )
     })
 
+    const newGroups =
+      this.props.groups?.filter(
+        group =>
+          (!group?.isHide && !group?.isMerge) ||
+          group?.isMerge ||
+          group?.isEmptyGroup
+      ) ?? []
+
     return (
       <div
         className={'rct-sidebar' + (isRightSidebar ? ' rct-sidebar-right' : '')}
@@ -103,7 +111,7 @@ export default class Sidebar extends Component {
         {canSortableGroups ? (
           <div style={groupsStyle}>
             <GroupSortable
-              groups={this.props.groups}
+              groups={newGroups}
               groupHeights={groupHeights}
               isRightSidebar={isRightSidebar}
               groupTitleKey={groupTitleKey}

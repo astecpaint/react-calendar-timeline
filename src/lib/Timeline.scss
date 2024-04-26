@@ -31,14 +31,14 @@ $weekend: rgba(250, 246, 225, 0.5);
     display: inline-block;
     white-space: normal; // was set to nowrap in .rct-outer
     vertical-align: top;
-    overflow-x: scroll;
+    overflow-x: hidden;
     overflow-y: hidden;
     -ms-touch-action: none;
     touch-action: none;
   }
 
   .scroll-temporary-container {
-    height: 27px;
+    height: 20px;
     width: 100%;
     background: #fff;
     display: flex;
@@ -53,7 +53,7 @@ $weekend: rgba(250, 246, 225, 0.5);
       border-right: 1px solid #ccc;
     }
     .scroll-temporary-body {
-      width: calc(100% - 371px);
+      width: calc(100% - 381px);
       height: 11px;
       overflow-x: overlay;
       overflow-y: hidden;

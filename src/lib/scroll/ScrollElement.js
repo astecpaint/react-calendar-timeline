@@ -181,7 +181,8 @@ class ScrollElement extends Component {
 
     const scrollComponentStyle = {
       width: `${width}px`,
-      height: `${height + 20}px`, //20px to push the scroll element down off screen...?
+      // height: `${height + 20}px`, //20px to push the scroll element down off screen...?
+      height: `${height}px`, // scroll hidden
       cursor: 'default',
       position: 'relative'
     }

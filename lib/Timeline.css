@@ -10,13 +10,13 @@
   display: inline-block;
   white-space: normal;
   vertical-align: top;
-  overflow-x: scroll;
+  overflow-x: hidden;
   overflow-y: hidden;
   -ms-touch-action: none;
   touch-action: none; }
 
 .react-calendar-timeline .scroll-temporary-container {
-  height: 27px;
+  height: 20px;
   width: 100%;
   background: #fff;
   display: flex;
@@ -30,7 +30,7 @@
     width: 371px;
     border-right: 1px solid #ccc; }
   .react-calendar-timeline .scroll-temporary-container .scroll-temporary-body {
-    width: calc(100% - 371px);
+    width: calc(100% - 381px);
     height: 11px;
     overflow-x: overlay;
     overflow-y: hidden; }

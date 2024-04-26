@@ -129,7 +129,10 @@ export default class ReactCalendarTimeline extends Component {
     isShowDragHandleButton: PropTypes.bool,
     sortOrderTaskList: PropTypes.func,
     openAddGroupForm: PropTypes.func,
-    canMoveChart: PropTypes.bool
+    canMoveChart: PropTypes.bool,
+    isCreateTaskList: PropTypes.bool,
+    onCreateTaskList: PropTypes.func,
+    isShowBgColorGroup: PropTypes.bool
   }
 
   static defaultProps = {
@@ -214,7 +217,10 @@ export default class ReactCalendarTimeline extends Component {
     isShowDragHandleButton: false,
     sortOrderTaskList: null,
     openAddGroupForm: null,
-    canMoveChart: false
+    canMoveChart: false,
+    isCreateTaskList: false,
+    onCreateTaskList: async (group, startTime, endTime) => {},
+    isShowBgColorGroup: false
   }
 
   static childContextTypes = {
@@ -638,7 +644,7 @@ export default class ReactCalendarTimeline extends Component {
     const { width, canvasTimeStart, canvasTimeEnd } = this.state
     // this gives us distance from left of row element, so event is in
     // context of the row element, not client or page
-    const { offsetX } = e.nativeEvent
+    const offsetX = e?.nativeEvent?.offsetX || e?.offsetX
 
     let time = calculateTimeForXPosition(
       canvasTimeStart,
@@ -1126,7 +1132,20 @@ export default class ReactCalendarTimeline extends Component {
     }
   }
 
-  rows(canvasWidth, groupHeights, groups) {
+  rows(
+    canvasWidth,
+    groupHeights,
+    groups,
+    width,
+    canvasTimeStart,
+    canvasTimeEnd,
+    visibleTimeStart,
+    visibleTimeEnd,
+    speedScrollHorizontal,
+    isCreateTaskList,
+    onCreateTaskList,
+    isShowBgColorGroup
+  ) {
     return (
       <GroupRows
         groups={groups}
@@ -1140,6 +1159,18 @@ export default class ReactCalendarTimeline extends Component {
           this.props.horizontalLineClassNamesForGroup
         }
         onRowContextClick={this.handleScrollContextMenu}
+        width={width}
+        canvasTimeStart={canvasTimeStart}
+        canvasTimeEnd={canvasTimeEnd}
+        visibleTimeStart={visibleTimeStart}
+        visibleTimeEnd={visibleTimeEnd}
+        speedScrollHorizontal={speedScrollHorizontal}
+        isCreateTaskList={isCreateTaskList}
+        onCreateTaskList={onCreateTaskList}
+        scrollRef={this.scrollComponent}
+        getTimeFromRowClickEvent={this.getTimeFromRowClickEvent}
+        onDayToTime={this.handleDayToTime}
+        isShowBgColorGroup={isShowBgColorGroup}
       />
     )
   }
@@ -1152,7 +1183,8 @@ export default class ReactCalendarTimeline extends Component {
     minUnit,
     dimensionItems,
     groupHeights,
-    groupTops
+    groupTops,
+    visibleTimeStart
   ) {
     return (
       <Items
@@ -1187,6 +1219,7 @@ export default class ReactCalendarTimeline extends Component {
         scrollRef={this.scrollComponent}
         isHoverToSelectedItem={this.props.isHoverToSelectedItem}
         isGembaMode={this.props.isGembaMode}
+        visibleTimeStart={visibleTimeStart}
       />
     )
   }
@@ -1392,7 +1425,11 @@ export default class ReactCalendarTimeline extends Component {
       timeSteps,
       traditionalZoom,
       buffer,
-      canMoveChart
+      canMoveChart,
+      speedScrollHorizontal,
+      isCreateTaskList,
+      onCreateTaskList,
+      isShowBgColorGroup
     } = this.props
     const {
       draggingItem,
@@ -1437,7 +1474,7 @@ export default class ReactCalendarTimeline extends Component {
     }
 
     const outerComponentStyle = {
-      height: `${height}px`
+      height: `${height + 20}px` // 20px because custom scroll-y
     }
 
     return (
@@ -1485,7 +1522,20 @@ export default class ReactCalendarTimeline extends Component {
                       timeSteps,
                       height
                     )}
-                    {this.rows(canvasWidth, groupHeights, groups)}
+                    {this.rows(
+                      canvasWidth,
+                      groupHeights,
+                      groups,
+                      width,
+                      canvasTimeStart,
+                      canvasTimeEnd,
+                      visibleTimeStart,
+                      visibleTimeEnd,
+                      speedScrollHorizontal,
+                      isCreateTaskList,
+                      onCreateTaskList,
+                      isShowBgColorGroup
+                    )}
                     {this.items(
                       canvasTimeStart,
                       zoom,
@@ -1494,7 +1544,8 @@ export default class ReactCalendarTimeline extends Component {
                       minUnit,
                       dimensionItems,
                       groupHeights,
-                      groupTops
+                      groupTops,
+                      visibleTimeStart
                     )}
                     {this.childrenWithProps(
                       canvasTimeStart,

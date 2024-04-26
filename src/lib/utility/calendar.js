@@ -741,3 +741,25 @@ export function calculateScrollCanvas(
   }
   return newState
 }
+
+export const checkValueDate = value => {
+  if (
+    !value ||
+    value === null ||
+    value === 'Invalid date' ||
+    value === '' ||
+    value === '0000-00-00' ||
+    value === '0000-00-00 00:00:00'
+  )
+    return null
+  const momentVal = moment(value)
+  if (
+    _.isNaN(momentVal) ||
+    momentVal === 'Invalid date' ||
+    momentVal === '' ||
+    momentVal === '0000-00-00' ||
+    momentVal === '0000-00-00 00:00:00'
+  )
+    return null
+  return momentVal
+}
