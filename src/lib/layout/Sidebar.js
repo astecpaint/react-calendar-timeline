@@ -77,7 +77,11 @@ export default class Sidebar extends Component {
             <div
               className={`rct-sidebar-row rct-sidebar-row-${
                 index % 2 === 0 ? 'even' : 'odd'
-              } ${group?.isMerge ? 'rct-sidebar-row-full-width' : ''}`}
+              } ${
+                !!group?.isMerge && !!group?.isCustomGroup
+                  ? 'rct-sidebar-row-full-width'
+                  : ''
+              }`}
               style={elementStyle}
             >
               <GroupContent

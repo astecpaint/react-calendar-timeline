@@ -17,7 +17,9 @@ const HEIGHT_TASK = 32,
   COUNT_TIME = 4,
   MAX_NUMBER_OF_DRAG_DAYS = 59,
   HEIGHT_ROW_TASK = 60,
-  BG_COLOR_GROUP_TASK = 'rgba(203, 228, 254, 0.3)'
+  BG_COLOR_GROUP_TASK = 'rgba(203, 228, 254, 0.3)',
+  HEIGHT_ROW_GEMBA = 64,
+  OPACITY_ROW_TASK = 0.3
 
 class GroupRow extends Component {
   static propTypes = {
@@ -68,35 +70,6 @@ class GroupRow extends Component {
     }
   }
 
-  renderBorderTaskList = group => {
-    const { height, task_list, expanded, isGroupLoading } = group
-
-    const numberOfTaskList = task_list?.length ?? 0
-    if (!numberOfTaskList) return <></>
-
-    const topPositionOfTaskFirst =
-      height - (HEIGHT_TASK * numberOfTaskList + PADDING_BOTTOM)
-
-    return (
-      <>
-        {expanded &&
-          !isGroupLoading &&
-          task_list.map((task, taskIndex) => (
-            <div
-              key={`${task?.task_id}-${taskIndex}`}
-              style={{
-                position: 'absolute',
-                top: `${topPositionOfTaskFirst + HEIGHT_TASK * taskIndex}px`,
-                left: 0,
-                width: '100%',
-                borderTop: '1px dashed #e3e3e3'
-              }}
-            />
-          ))}
-      </>
-    )
-  }
-
   renderCreateTask = (group, countTime, left, width) => {
     if (countTime < COUNT_TIME) return <></>
 
@@ -127,7 +100,8 @@ class GroupRow extends Component {
     group,
     canvasTimeStart,
     canvasTimeEnd,
-    canvasWidth
+    canvasWidth,
+    isCreateTaskList
   ) => {
     const {
       isHide,
@@ -135,13 +109,15 @@ class GroupRow extends Component {
       task,
       minBeginDate,
       maxEndDate,
-      bgColor
+      isTaskList,
+      expanded
     } = group
-    const { isEmptySubGroup } = task ?? {}
+    const { isEmptySubGroup, task_color, parent_task_color } = task ?? {}
+    const newIsHide = !isTaskList ? isHide : isHide || !expanded
 
     if (
       !isShowBgColorGroup ||
-      isHide ||
+      newIsHide ||
       isEmptyGroup ||
       isEmptySubGroup ||
       !minBeginDate ||
@@ -176,6 +152,8 @@ class GroupRow extends Component {
 
     const width = right - left
 
+    const bgColor = isTaskList ? task_color : parent_task_color
+
     return (
       <div
         style={{
@@ -183,8 +161,9 @@ class GroupRow extends Component {
           width,
           top: 0,
           left,
-          height: `${HEIGHT_ROW_TASK}px`,
+          height: `${isCreateTaskList ? HEIGHT_ROW_TASK : HEIGHT_ROW_GEMBA}px`,
           backgroundColor: bgColor ?? BG_COLOR_GROUP_TASK,
+          opacity: bgColor ? OPACITY_ROW_TASK : 1,
           zIndex: 1
         }}
       />
@@ -466,7 +445,8 @@ class GroupRow extends Component {
       canvasTimeStart,
       canvasTimeEnd,
       canvasWidth,
-      isShowBgColorGroup
+      isShowBgColorGroup,
+      isCreateTaskList
     } = this.props
 
     const { countTime, left, width } = this.state
@@ -495,14 +475,14 @@ class GroupRow extends Component {
               }
               style={style}
             >
-              {this.renderBorderTaskList(group)}
               {this.renderCreateTask(group, countTime, left, width)}
               {this.renderBgColor(
                 isShowBgColorGroup,
                 group,
                 canvasTimeStart,
                 canvasTimeEnd,
-                canvasWidth
+                canvasWidth,
+                isCreateTaskList
               )}
             </div>
           </PreventClickOnDrag>
