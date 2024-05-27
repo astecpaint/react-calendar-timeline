@@ -110,7 +110,8 @@ class GroupRow extends Component {
       minBeginDate,
       maxEndDate,
       isTaskList,
-      expanded
+      expanded,
+      isCustomGroup
     } = group
     const { isEmptySubGroup, task_color, parent_task_color } = task ?? {}
     const newIsHide = !isTaskList ? isHide : isHide || !expanded
@@ -152,7 +153,7 @@ class GroupRow extends Component {
 
     const width = right - left
 
-    const bgColor = isTaskList ? task_color : parent_task_color
+    const bgColor = isTaskList || isCustomGroup ? task_color : parent_task_color
 
     return (
       <div

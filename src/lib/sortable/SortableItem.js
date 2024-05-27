@@ -72,7 +72,9 @@ class SortableItemClass extends Component {
         <div className={'rct-drag-drop'}>
           <div className={'rct-siderbar-control-btns'}>
             <DragHandle />
-            <button onClick={() => openAddGroupForm(_get(group, groupIdKey))}>
+            <button
+              onClick={() => openAddGroupForm(_get(group, groupIdKey), group)}
+            >
               <i className="fas fa-plus"></i>
             </button>
           </div>
