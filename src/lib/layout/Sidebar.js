@@ -16,7 +16,9 @@ export default class Sidebar extends Component {
     isRightSidebar: PropTypes.bool,
     isShowDragHandleButton: PropTypes.bool,
     sortOrderTaskList: PropTypes.func,
-    openAddGroupForm: PropTypes.func
+    openAddGroupForm: PropTypes.func,
+    scrollContainer: PropTypes.node,
+    showTooltip: PropTypes.func
   }
 
   shouldComponentUpdate(nextProps) {
@@ -52,7 +54,9 @@ export default class Sidebar extends Component {
       isShowDragHandleButton,
       sortOrderTaskList,
       canSortableGroups,
-      groupRenderer
+      groupRenderer,
+      scrollContainer,
+      showTooltip
     } = this.props
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys
 
@@ -125,6 +129,8 @@ export default class Sidebar extends Component {
               sortOrderTaskList={sortOrderTaskList}
               isShowDragHandleButton={isShowDragHandleButton}
               openAddGroupForm={this.props.openAddGroupForm}
+              scrollContainer={scrollContainer}
+              showTooltip={showTooltip}
             />
           </div>
         ) : (

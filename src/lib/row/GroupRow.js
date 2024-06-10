@@ -210,7 +210,8 @@ class GroupRow extends Component {
       !isCreateTaskList ||
       (checkValueDate(group?.task?.begin_date) &&
         checkValueDate(group?.task?.end_date)) ||
-      !!group?.isEmptyGroup
+      !!group?.isEmptyGroup ||
+      !!group?.isAddinationForm
     ) {
       return
     }

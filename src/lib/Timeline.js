@@ -132,7 +132,9 @@ export default class ReactCalendarTimeline extends Component {
     canMoveChart: PropTypes.bool,
     isCreateTaskList: PropTypes.bool,
     onCreateTaskList: PropTypes.func,
-    isShowBgColorGroup: PropTypes.bool
+    isShowBgColorGroup: PropTypes.bool,
+    scrollContainer: PropTypes.node,
+    showTooltip: PropTypes.func
   }
 
   static defaultProps = {
@@ -220,7 +222,9 @@ export default class ReactCalendarTimeline extends Component {
     canMoveChart: false,
     isCreateTaskList: false,
     onCreateTaskList: async (group, startTime, endTime) => {},
-    isShowBgColorGroup: false
+    isShowBgColorGroup: false,
+    scrollContainer: null,
+    showTooltip: null
   }
 
   static childContextTypes = {
@@ -1235,7 +1239,9 @@ export default class ReactCalendarTimeline extends Component {
       canSortableGroups,
       isShowDragHandleButton,
       sortOrderTaskList,
-      openAddGroupForm
+      openAddGroupForm,
+      scrollContainer,
+      showTooltip
     } = this.props
     return (
       sidebarWidth && (
@@ -1251,6 +1257,8 @@ export default class ReactCalendarTimeline extends Component {
           isShowDragHandleButton={isShowDragHandleButton}
           sortOrderTaskList={sortOrderTaskList}
           openAddGroupForm={openAddGroupForm}
+          showTooltip={showTooltip}
+          scrollContainer={scrollContainer}
         />
       )
     )
@@ -1262,7 +1270,9 @@ export default class ReactCalendarTimeline extends Component {
       canSortableGroups,
       isShowDragHandleButton,
       sortOrderTaskList,
-      openAddGroupForm
+      openAddGroupForm,
+      scrollContainer,
+      showTooltip
     } = this.props
     return (
       rightSidebarWidth && (
@@ -1279,6 +1289,8 @@ export default class ReactCalendarTimeline extends Component {
           isShowDragHandleButton={isShowDragHandleButton}
           sortOrderTaskList={sortOrderTaskList}
           openAddGroupForm={openAddGroupForm}
+          scrollContainer={scrollContainer}
+          showTooltip={showTooltip}
         />
       )
     )

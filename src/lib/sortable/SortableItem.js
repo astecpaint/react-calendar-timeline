@@ -37,6 +37,7 @@ class SortableItemClass extends Component {
         this.props.groupTitleKey
       )
     }
+    this.btnAddRef = React.createRef()
   }
   static getDerivedStateFromProps(nextProps, prevState) {
     const derivedState = {}
@@ -55,7 +56,14 @@ class SortableItemClass extends Component {
   }
 
   render() {
-    const { group, groupIdKey, groupHeights, openAddGroupForm } = this.props
+    const {
+      group,
+      groupIdKey,
+      groupHeights,
+      openAddGroupForm,
+      index,
+      showTooltip
+    } = this.props
     return (
       <div
         key={_get(group, groupIdKey)}
@@ -69,11 +77,30 @@ class SortableItemClass extends Component {
         }}
       >
         {this.state.groupChildren}
-        <div className={'rct-drag-drop'}>
-          <div className={'rct-siderbar-control-btns'}>
+        <div
+          className={
+            'rct-drag-drop' +
+            (group?.task?.parent_id != null &&
+            group?.task?.parent_id != undefined
+              ? ' -sub'
+              : '')
+          }
+        >
+          <div
+            className={
+              'rct-siderbar-control-btns' +
+              (group?.task?.parent_id != null &&
+              group?.task?.parent_id != undefined
+                ? ' -sub'
+                : '')
+            }
+          >
             <DragHandle />
             <button
               onClick={() => openAddGroupForm(_get(group, groupIdKey), group)}
+              onMouseEnter={() => showTooltip(this.btnAddRef.current, group)}
+              onMouseLeave={() => showTooltip(null, group)}
+              ref={this.btnAddRef}
             >
               <i className="fas fa-plus"></i>
             </button>

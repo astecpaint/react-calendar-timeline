@@ -28,7 +28,8 @@ class SortableListClass extends Component {
       groupTitleKey,
       isRightSidebar,
       openAddGroupForm,
-      groupRenderer
+      groupRenderer,
+      showTooltip
     } = this.props
     return (
       <div
@@ -63,6 +64,7 @@ class SortableListClass extends Component {
               isRightSidebar={isRightSidebar}
               groupRightTitleKey={groupRightTitleKey}
               groupTitleKey={groupTitleKey}
+              showTooltip={showTooltip}
             />
           )
         })}
