@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import Item from './Item'
 // import ItemGroup from './ItemGroup'
 
-import { _get, arraysEqual, keyBy } from '../utility/generic'
+import { _get, arraysEqual, deepObjectCompare, keyBy } from '../utility/generic'
 import { getGroupOrders, getVisibleItems } from '../utility/calendar'
 
 // Add the isSelected param to ensure that only currently selected items update the canResizeLeft property,
@@ -61,8 +61,9 @@ export default class Items extends Component {
     scrollRef: PropTypes.object,
 
     //Custom
-    isHoverToSelectedItem: PropTypes.bool,
-    isGembaMode: PropTypes.bool
+    isHoverToSelectedItem: PropTypes.bool.isRequired,
+    isGembaMode: PropTypes.bool.isRequired,
+    itemPositionDisplayed: PropTypes.object.isRequired
   }
 
   static defaultProps = {
@@ -85,7 +86,13 @@ export default class Items extends Component {
       nextProps.canChangeGroup === this.props.canChangeGroup &&
       nextProps.canMove === this.props.canMove &&
       nextProps.canResize === this.props.canResize &&
-      nextProps.canSelect === this.props.canSelect
+      nextProps.canSelect === this.props.canSelect &&
+      nextProps.isHoverToSelectedItem === this.props.isHoverToSelectedItem &&
+      nextProps.isGembaMode === this.props.isGembaMode &&
+      deepObjectCompare(
+        this.props.itemPositionDisplayed,
+        nextProps.itemPositionDisplayed
+      )
     )
   }
 
@@ -113,11 +120,12 @@ export default class Items extends Component {
       groups,
       isHoverToSelectedItem,
       isGembaMode,
-      selectedItem
+      selectedItem,
+      itemPositionDisplayed
     } = this.props
     const { itemIdKey, itemGroupKey } = keys
 
-    const groupOrders = getGroupOrders(groups, keys)
+    const groupOrders = getGroupOrders(groups, keys, itemPositionDisplayed)
     const visibleItems = this.getVisibleItems(
       canvasTimeStart,
       canvasTimeEnd,
@@ -129,6 +137,7 @@ export default class Items extends Component {
       <div className="rct-items">
         {visibleItems
           .filter(item => sortedDimensionItems[_get(item, itemIdKey)])
+          .filter(item => !!groupOrders?.[item?.group]?.isShow)
           .map(item => (
             <Item
               key={_get(item, itemIdKey)}

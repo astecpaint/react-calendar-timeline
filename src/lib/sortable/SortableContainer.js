@@ -11,11 +11,12 @@ class SortableListClass extends Component {
   shouldComponentUpdate(nextProps) {
     return !(
       arraysEqual(nextProps.groups, this.props.groups) &&
-      arraysEqual(nextProps.groupHeights, this.props.groupHeights) &&
+      // arraysEqual(nextProps.groupHeights, this.props.groupHeights) &&
       nextProps.groupIdKey === this.props.groupIdKey &&
       nextProps.groupRightTitleKey === this.props.groupRightTitleKey &&
       nextProps.groupTitleKey === this.props.groupTitleKey &&
-      nextProps.isRightSidebar === this.props.isRightSidebar
+      nextProps.isRightSidebar === this.props.isRightSidebar &&
+      nextProps.sidebarPositionDisplayed === this.props.sidebarPositionDisplayed
     )
   }
 
@@ -29,7 +30,8 @@ class SortableListClass extends Component {
       isRightSidebar,
       openAddGroupForm,
       groupRenderer,
-      showTooltip
+      showTooltip,
+      sidebarPositionDisplayed
     } = this.props
     return (
       <div
@@ -65,6 +67,8 @@ class SortableListClass extends Component {
               groupRightTitleKey={groupRightTitleKey}
               groupTitleKey={groupTitleKey}
               showTooltip={showTooltip}
+              currentIndex={index}
+              sidebarPositionDisplayed={sidebarPositionDisplayed}
             />
           )
         })}

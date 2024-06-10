@@ -232,13 +232,31 @@ export function calculateDimensions({
  * @param {*} keys the keys object
  * @returns Ordered hash of objects with their array index and group
  */
-export function getGroupOrders(groups, keys) {
+export function getGroupOrders(groups, keys, itemPositionDisplayed) {
   const { groupIdKey } = keys
 
   let groupOrders = {}
 
-  for (let i = 0; i < groups.length; i++) {
-    groupOrders[_get(groups[i], groupIdKey)] = { index: i, group: groups[i] }
+  if (itemPositionDisplayed) {
+    let { start, end } = itemPositionDisplayed
+
+    for (let i = 0; i < groups.length; i++) {
+      const group = groups[i]
+      const isValidGroup =
+        (!group?.isHide && !group?.isMerge) || !!group?.isMerge
+
+      if (!isValidGroup) end++
+
+      groupOrders[_get(groups[i], groupIdKey)] = {
+        index: i,
+        group,
+        isShow: isValidGroup && i >= start && i <= end
+      }
+    }
+  } else {
+    for (let i = 0; i < groups.length; i++) {
+      groupOrders[_get(groups[i], groupIdKey)] = { index: i, group: groups[i] }
+    }
   }
 
   return groupOrders
@@ -742,7 +760,7 @@ export function calculateScrollCanvas(
   return newState
 }
 
-export const checkValueDate = value => {
+export function checkValueDate(value) {
   if (
     !value ||
     value === null ||

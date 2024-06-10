@@ -25,6 +25,14 @@ import { TimelineHeadersProvider } from './headers/HeadersContext'
 import TimelineHeaders from './headers/TimelineHeaders'
 import DateHeader from './headers/DateHeader'
 
+export const DEFAULT_HEIGHT_ROW = 64,
+  DEFAULT_HEIGHT_ROW_PROCESS_BASIC = 60,
+  DEFAULT_HEIGHT_HEADER = 112,
+  DEFAULT_ROW_DISPLAYED = 12,
+  DEFAULT_BUFFER_ROW = 1,
+  DEFAULT_SCROLL_TOP = 0,
+  DEFAULT_BUFFER_ROW_IN_SIDEBAR = 2
+
 export default class ReactCalendarTimeline extends Component {
   static propTypes = {
     groups: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
@@ -134,7 +142,12 @@ export default class ReactCalendarTimeline extends Component {
     onCreateTaskList: PropTypes.func,
     isShowBgColorGroup: PropTypes.bool,
     scrollContainer: PropTypes.node,
-    showTooltip: PropTypes.func
+    showTooltip: PropTypes.func,
+
+    isScheduleScreen: PropTypes.bool,
+    defaultRowDisplayed: PropTypes.number,
+    defaultBufferRow: PropTypes.number,
+    scrollTop: PropTypes.number
   }
 
   static defaultProps = {
@@ -224,7 +237,12 @@ export default class ReactCalendarTimeline extends Component {
     onCreateTaskList: async (group, startTime, endTime) => {},
     isShowBgColorGroup: false,
     scrollContainer: null,
-    showTooltip: null
+    showTooltip: null,
+
+    isScheduleScreen: false,
+    defaultRowDisplayed: DEFAULT_ROW_DISPLAYED,
+    defaultBufferRow: DEFAULT_BUFFER_ROW,
+    scrollTop: DEFAULT_SCROLL_TOP
   }
 
   static childContextTypes = {
@@ -1148,7 +1166,8 @@ export default class ReactCalendarTimeline extends Component {
     speedScrollHorizontal,
     isCreateTaskList,
     onCreateTaskList,
-    isShowBgColorGroup
+    isShowBgColorGroup,
+    itemPositionDisplayed
   ) {
     return (
       <GroupRows
@@ -1175,6 +1194,8 @@ export default class ReactCalendarTimeline extends Component {
         getTimeFromRowClickEvent={this.getTimeFromRowClickEvent}
         onDayToTime={this.handleDayToTime}
         isShowBgColorGroup={isShowBgColorGroup}
+        isScheduleScreen={this.props.isScheduleScreen}
+        itemPositionDisplayed={itemPositionDisplayed}
       />
     )
   }
@@ -1188,7 +1209,7 @@ export default class ReactCalendarTimeline extends Component {
     dimensionItems,
     groupHeights,
     groupTops,
-    visibleTimeStart
+    itemPositionDisplayed
   ) {
     return (
       <Items
@@ -1223,7 +1244,7 @@ export default class ReactCalendarTimeline extends Component {
         scrollRef={this.scrollComponent}
         isHoverToSelectedItem={this.props.isHoverToSelectedItem}
         isGembaMode={this.props.isGembaMode}
-        visibleTimeStart={visibleTimeStart}
+        itemPositionDisplayed={itemPositionDisplayed}
       />
     )
   }
@@ -1241,8 +1262,13 @@ export default class ReactCalendarTimeline extends Component {
       sortOrderTaskList,
       openAddGroupForm,
       scrollContainer,
-      showTooltip
+      showTooltip,
+      isScheduleScreen
     } = this.props
+    const sidebarPositionDisplayed = this.getItemDisplayPosition(
+      DEFAULT_BUFFER_ROW_IN_SIDEBAR
+    )
+
     return (
       sidebarWidth && (
         <Sidebar
@@ -1259,6 +1285,8 @@ export default class ReactCalendarTimeline extends Component {
           openAddGroupForm={openAddGroupForm}
           showTooltip={showTooltip}
           scrollContainer={scrollContainer}
+          isScheduleScreen={isScheduleScreen}
+          sidebarPositionDisplayed={sidebarPositionDisplayed}
         />
       )
     )
@@ -1428,6 +1456,37 @@ export default class ReactCalendarTimeline extends Component {
     this.isScrolling = false
   }
 
+  getItemDisplayPosition = (
+    bufferRowInSidebar = DEFAULT_BUFFER_ROW,
+    scrollTop = this.props.scrollTop,
+    numberOfRowDisplayed = this.props.defaultRowDisplayed,
+    bufferRow = this.props.defaultBufferRow
+  ) => {
+    const numberOfMaxItemTopOrBottom = Math.round(
+      numberOfRowDisplayed * bufferRow * bufferRowInSidebar
+    )
+    const numberOfItemTopHided =
+      (scrollTop - DEFAULT_HEIGHT_HEADER) / DEFAULT_HEIGHT_ROW
+
+    if (
+      !scrollTop ||
+      numberOfItemTopHided < numberOfMaxItemTopOrBottom / bufferRowInSidebar
+    ) {
+      return {
+        start: 0,
+        end: numberOfRowDisplayed + numberOfMaxItemTopOrBottom - 1
+      }
+    }
+
+    let start = Math.floor(numberOfItemTopHided) - numberOfMaxItemTopOrBottom // start position: calculate number of item top will display at buffer block
+    if (start < 0) start = 0 // check case value start of sidebar
+
+    const end =
+      start + numberOfRowDisplayed + numberOfMaxItemTopOrBottom * 2 - 1 // end position: position top + number of default display (between) + maxItem * 2 (top + max & bottom)
+
+    return { start, end }
+  }
+
   render() {
     const {
       items,
@@ -1489,6 +1548,8 @@ export default class ReactCalendarTimeline extends Component {
       height: `${height + 20}px` // 20px because custom scroll-y
     }
 
+    const itemPositionDisplayed = this.getItemDisplayPosition()
+
     return (
       <TimelineStateProvider
         visibleTimeStart={visibleTimeStart}
@@ -1546,7 +1607,8 @@ export default class ReactCalendarTimeline extends Component {
                       speedScrollHorizontal,
                       isCreateTaskList,
                       onCreateTaskList,
-                      isShowBgColorGroup
+                      isShowBgColorGroup,
+                      itemPositionDisplayed
                     )}
                     {this.items(
                       canvasTimeStart,
@@ -1557,7 +1619,7 @@ export default class ReactCalendarTimeline extends Component {
                       dimensionItems,
                       groupHeights,
                       groupTops,
-                      visibleTimeStart
+                      itemPositionDisplayed
                     )}
                     {this.childrenWithProps(
                       canvasTimeStart,

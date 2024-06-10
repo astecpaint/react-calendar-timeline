@@ -1,6 +1,11 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import GroupRow from './GroupRow'
+import { deepObjectCompare } from '../utility/generic'
+import {
+  DEFAULT_HEIGHT_ROW,
+  DEFAULT_HEIGHT_ROW_PROCESS_BASIC
+} from '../Timeline'
 
 export default class GroupRows extends Component {
   static propTypes = {
@@ -24,15 +29,22 @@ export default class GroupRows extends Component {
     scrollRef: PropTypes.object,
     getTimeFromRowClickEvent: PropTypes.func.isRequired,
     onDayToTime: PropTypes.func.isRequired,
-    isShowBgColorGroup: PropTypes.bool.isRequired
+    isShowBgColorGroup: PropTypes.bool.isRequired,
+    isScheduleScreen: PropTypes.bool.isRequired,
+    itemPositionDisplayed: PropTypes.object.isRequired
   }
 
   shouldComponentUpdate(nextProps) {
     return !(
       nextProps.canvasWidth === this.props.canvasWidth &&
       nextProps.lineCount === this.props.lineCount &&
-      nextProps.groupHeights === this.props.groupHeights &&
-      nextProps.groups === this.props.groups
+      // nextProps.groupHeights === this.props.groupHeights &&
+      nextProps.groups === this.props.groups &&
+      nextProps.isScheduleScreen === this.props.isScheduleScreen &&
+      deepObjectCompare(
+        this.props.itemPositionDisplayed,
+        nextProps.itemPositionDisplayed
+      )
     )
   }
 
@@ -58,11 +70,21 @@ export default class GroupRows extends Component {
       scrollRef,
       getTimeFromRowClickEvent,
       onDayToTime,
-      isShowBgColorGroup
+      isShowBgColorGroup,
+      isScheduleScreen,
+      itemPositionDisplayed
     } = this.props
     let lines = []
 
-    for (let i = 0; i < lineCount; i++) {
+    const newGroups = groups.filter(
+      group => (!group?.isHide && !group?.isMerge) || !!group?.isMerge
+    )
+    const newLineCount = newGroups.length
+    const defaultHeight = isScheduleScreen
+      ? DEFAULT_HEIGHT_ROW
+      : DEFAULT_HEIGHT_ROW_PROCESS_BASIC
+
+    for (let i = 0; i < newLineCount; i++) {
       lines.push(
         <GroupRow
           clickTolerance={clickTolerance}
@@ -71,11 +93,11 @@ export default class GroupRows extends Component {
           onDoubleClick={evt => onRowDoubleClick(evt, i)}
           key={`horizontal-line-${i}`}
           isEvenRow={i % 2 === 0}
-          group={groups[i]}
+          group={newGroups[i]}
           horizontalLineClassNamesForGroup={horizontalLineClassNamesForGroup}
           style={{
             width: `${canvasWidth}px`,
-            height: `${groupHeights[i]}px`,
+            height: `${newGroups[i]?.height || defaultHeight}px`,
             position: 'relative'
           }}
           width={width}
@@ -91,6 +113,8 @@ export default class GroupRows extends Component {
           onDayToTime={onDayToTime}
           canvasWidth={canvasWidth}
           isShowBgColorGroup={isShowBgColorGroup}
+          index={i}
+          itemPositionDisplayed={itemPositionDisplayed}
         />
       )
     }

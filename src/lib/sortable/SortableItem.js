@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { SortableElement, SortableHandle } from 'react-sortable-hoc'
 import { _get, deepObjectCompare } from '../utility/generic'
+import { DEFAULT_HEIGHT_ROW_PROCESS_BASIC } from '../Timeline'
 
 const renderGroupContent = (
   group,
@@ -62,8 +63,13 @@ class SortableItemClass extends Component {
       groupHeights,
       openAddGroupForm,
       index,
-      showTooltip
+      showTooltip,
+      currentIndex,
+      sidebarPositionDisplayed
     } = this.props
+
+    const { start, end } = sidebarPositionDisplayed
+
     return (
       <div
         key={_get(group, groupIdKey)}
@@ -72,40 +78,48 @@ class SortableItemClass extends Component {
           (group.index % 2 === 0 ? 'even' : 'odd')
         }
         style={{
-          height: `${groupHeights[group.index]}px`,
-          lineHeight: `${groupHeights[group.index]}px`
+          height: `${group?.height || DEFAULT_HEIGHT_ROW_PROCESS_BASIC}px`,
+          lineHeight: `${group?.height || DEFAULT_HEIGHT_ROW_PROCESS_BASIC}px`
         }}
       >
-        {this.state.groupChildren}
-        <div
-          className={
-            'rct-drag-drop' +
-            (group?.task?.parent_id != null &&
-            group?.task?.parent_id != undefined
-              ? ' -sub'
-              : '')
-          }
-        >
-          <div
-            className={
-              'rct-siderbar-control-btns' +
-              (group?.task?.parent_id != null &&
-              group?.task?.parent_id != undefined
-                ? ' -sub'
-                : '')
-            }
-          >
-            <DragHandle />
-            <button
-              onClick={() => openAddGroupForm(_get(group, groupIdKey), group)}
-              onMouseEnter={() => showTooltip(this.btnAddRef.current, group)}
-              onMouseLeave={() => showTooltip(null, group)}
-              ref={this.btnAddRef}
+        {currentIndex >= start && currentIndex <= end && (
+          <>
+            {this.state.groupChildren}
+            <div
+              className={
+                'rct-drag-drop' +
+                (group?.task?.parent_id != null &&
+                group?.task?.parent_id != undefined
+                  ? ' -sub'
+                  : '')
+              }
             >
-              <i className="fas fa-plus"></i>
-            </button>
-          </div>
-        </div>
+              <div
+                className={
+                  'rct-siderbar-control-btns' +
+                  (group?.task?.parent_id != null &&
+                  group?.task?.parent_id != undefined
+                    ? ' -sub'
+                    : '')
+                }
+              >
+                <DragHandle />
+                <button
+                  onClick={() =>
+                    openAddGroupForm(_get(group, groupIdKey), group)
+                  }
+                  onMouseEnter={() =>
+                    showTooltip(this.btnAddRef.current, group)
+                  }
+                  onMouseLeave={() => showTooltip(null, group)}
+                  ref={this.btnAddRef}
+                >
+                  <i className="fas fa-plus"></i>
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     )
   }

@@ -8,9 +8,7 @@ import {
 } from '../utility/calendar'
 import moment from 'moment'
 
-const HEIGHT_TASK = 32,
-  PADDING_BOTTOM = 8,
-  HEIGHT_GEMBA = 23,
+const HEIGHT_GEMBA = 23,
   SPACING_TOP_ROW = 7,
   BG_COLOR_TASK = '#8CD1FF',
   MIN_WIDTH_TASK = 52,
@@ -43,7 +41,9 @@ class GroupRow extends Component {
     getTimeFromRowClickEvent: PropTypes.func.isRequired,
     onDayToTime: PropTypes.func.isRequired,
     canvasWidth: PropTypes.number.isRequired,
-    isShowBgColorGroup: PropTypes.bool.isRequired
+    isShowBgColorGroup: PropTypes.bool.isRequired,
+    index: PropTypes.number.isRequired,
+    itemPositionDisplayed: PropTypes.object.isRequired
   }
 
   constructor(props) {
@@ -448,7 +448,9 @@ class GroupRow extends Component {
       canvasTimeEnd,
       canvasWidth,
       isShowBgColorGroup,
-      isCreateTaskList
+      isCreateTaskList,
+      index,
+      itemPositionDisplayed
     } = this.props
 
     const { countTime, left, width } = this.state
@@ -457,26 +459,27 @@ class GroupRow extends Component {
     if (horizontalLineClassNamesForGroup) {
       classNamesForGroup = horizontalLineClassNamesForGroup(group)
     }
+    const { start, end } = itemPositionDisplayed
 
     return (
-      <>
-        {!group?.isHide || group?.isMerge ? (
-          <PreventClickOnDrag
-            clickTolerance={clickTolerance}
-            onClick={onClick}
-            onRowMouseDown={this.handleMouseDown}
-            onRowMouseUp={this.handleMouseUp}
-            onRowMouseMove={this.handleMouseMove}
-          >
-            <div
-              onContextMenu={onContextMenu}
-              onDoubleClick={onDoubleClick}
-              className={
-                (isEvenRow ? 'rct-hl-even ' : 'rct-hl-odd ') +
-                (classNamesForGroup ? classNamesForGroup.join(' ') : '')
-              }
-              style={style}
-            >
+      <PreventClickOnDrag
+        clickTolerance={clickTolerance}
+        onClick={onClick}
+        onRowMouseDown={this.handleMouseDown}
+        onRowMouseUp={this.handleMouseUp}
+        onRowMouseMove={this.handleMouseMove}
+      >
+        <div
+          onContextMenu={onContextMenu}
+          onDoubleClick={onDoubleClick}
+          className={
+            (isEvenRow ? 'rct-hl-even ' : 'rct-hl-odd ') +
+            (classNamesForGroup ? classNamesForGroup.join(' ') : '')
+          }
+          style={style}
+        >
+          {index >= start && index <= end && (
+            <>
               {this.renderCreateTask(group, countTime, left, width)}
               {this.renderBgColor(
                 isShowBgColorGroup,
@@ -486,12 +489,10 @@ class GroupRow extends Component {
                 canvasWidth,
                 isCreateTaskList
               )}
-            </div>
-          </PreventClickOnDrag>
-        ) : (
-          <></>
-        )}
-      </>
+            </>
+          )}
+        </div>
+      </PreventClickOnDrag>
     )
   }
 }

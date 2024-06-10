@@ -1,9 +1,13 @@
 import PropTypes from 'prop-types'
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 
-import { _get, arraysEqual } from '../utility/generic'
+import { _get, arraysEqual, deepObjectCompare } from '../utility/generic'
 import GroupSortable from './GroupSortable'
 import GroupContent from './GroupContent'
+import {
+  DEFAULT_HEIGHT_ROW,
+  DEFAULT_HEIGHT_ROW_PROCESS_BASIC
+} from '../Timeline'
 
 export default class Sidebar extends Component {
   static propTypes = {
@@ -18,7 +22,10 @@ export default class Sidebar extends Component {
     sortOrderTaskList: PropTypes.func,
     openAddGroupForm: PropTypes.func,
     scrollContainer: PropTypes.node,
-    showTooltip: PropTypes.func
+    showTooltip: PropTypes.func,
+
+    isScheduleScreen: PropTypes.bool.isRequired,
+    sidebarPositionDisplayed: PropTypes.object.isRequired
   }
 
   shouldComponentUpdate(nextProps) {
@@ -27,10 +34,14 @@ export default class Sidebar extends Component {
       nextProps.width === this.props.width &&
       nextProps.height === this.props.height &&
       arraysEqual(nextProps.groups, this.props.groups) &&
-      arraysEqual(nextProps.groupHeights, this.props.groupHeights) &&
+      // arraysEqual(nextProps.groupHeights, this.props.groupHeights) &&
       nextProps.isShowInforGemba === this.props.isShowInforGemba &&
       nextProps.isShowDragHandleButton === this.props.isShowDragHandleButton &&
-      nextProps.sortOrderTaskList === this.props.sortOrderTaskList
+      nextProps.isScheduleScreen === this.props.isScheduleScreen &&
+      deepObjectCompare(
+        this.props.sidebarPositionDisplayed,
+        nextProps.sidebarPositionDisplayed
+      )
     )
   }
 
@@ -56,7 +67,10 @@ export default class Sidebar extends Component {
       canSortableGroups,
       groupRenderer,
       scrollContainer,
-      showTooltip
+      showTooltip,
+      groups,
+      isScheduleScreen,
+      sidebarPositionDisplayed
     } = this.props
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys
 
@@ -69,42 +83,48 @@ export default class Sidebar extends Component {
       width: `${width}px`
     }
 
-    let groupLines = this.props.groups.map((group, index) => {
+    const { start, end } = sidebarPositionDisplayed
+    const newGroupDisplayed = groups.filter(
+      group => (!group?.isHide && !group?.isMerge) || !!group?.isMerge
+    )
+
+    const groupLines = newGroupDisplayed.map((group, index) => {
+      const defaultHeight = isScheduleScreen
+        ? DEFAULT_HEIGHT_ROW
+        : DEFAULT_HEIGHT_ROW_PROCESS_BASIC
+
       const elementStyle = {
-        height: `${groupHeights[index]}px`,
-        lineHeight: `${groupHeights[index]}px`
+        height: `${group?.height || defaultHeight}px`,
+        lineHeight: `${group?.height || defaultHeight}px`
       }
 
       return (
-        <Fragment key={_get(group, groupIdKey)}>
-          {(!group?.isHide && !group?.isMerge) || group?.isMerge ? (
-            <div
-              className={`rct-sidebar-row rct-sidebar-row-${
-                index % 2 === 0 ? 'even' : 'odd'
-              } ${
-                !!group?.isMerge && !!group?.isCustomGroup
-                  ? 'rct-sidebar-row-full-width'
-                  : ''
-              }`}
-              style={elementStyle}
-            >
-              <GroupContent
-                group={group}
-                isRightSidebar={isRightSidebar}
-                groupTitleKey={groupTitleKey}
-                groupRightTitleKey={groupRightTitleKey}
-                groupRenderer={groupRenderer}
-              />
-            </div>
-          ) : (
-            <></>
+        <div
+          key={_get(group, groupIdKey)}
+          className={`rct-sidebar-row rct-sidebar-row-${
+            index % 2 === 0 ? 'even' : 'odd'
+          } ${
+            !!group?.isMerge && !!group?.isCustomGroup
+              ? 'rct-sidebar-row-full-width'
+              : ''
+          }`}
+          style={elementStyle}
+        >
+          {index >= start && index <= end && (
+            <GroupContent
+              group={group}
+              isRightSidebar={isRightSidebar}
+              groupTitleKey={groupTitleKey}
+              groupRightTitleKey={groupRightTitleKey}
+              groupRenderer={groupRenderer}
+            />
           )}
-        </Fragment>
+        </div>
       )
     })
 
     const newGroups =
-      this.props.groups?.filter(
+      groups.filter(
         group =>
           (!group?.isHide && !group?.isMerge) ||
           group?.isMerge ||
@@ -131,6 +151,7 @@ export default class Sidebar extends Component {
               openAddGroupForm={this.props.openAddGroupForm}
               scrollContainer={scrollContainer}
               showTooltip={showTooltip}
+              sidebarPositionDisplayed={sidebarPositionDisplayed}
             />
           </div>
         ) : (
