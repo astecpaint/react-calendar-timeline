@@ -142,7 +142,7 @@ export default class ReactCalendarTimeline extends Component {
     onCreateTaskList: PropTypes.func,
     isShowBgColorGroup: PropTypes.bool,
     scrollContainer: PropTypes.node,
-    showTooltip: PropTypes.func,
+    ButtonTooltip: PropTypes.node,
 
     isScheduleScreen: PropTypes.bool,
     defaultRowDisplayed: PropTypes.number,
@@ -237,7 +237,7 @@ export default class ReactCalendarTimeline extends Component {
     onCreateTaskList: async (group, startTime, endTime) => {},
     isShowBgColorGroup: false,
     scrollContainer: null,
-    showTooltip: null,
+    ButtonTooltip: null,
 
     isScheduleScreen: false,
     defaultRowDisplayed: DEFAULT_ROW_DISPLAYED,
@@ -903,7 +903,12 @@ export default class ReactCalendarTimeline extends Component {
     const dayEndToTime = timeEnd.getTime()
     const endScrollRight =
       Number(dayEndToTime) + Number(this.handleDayToTime(90))
-    return { dayStartToTime, dayEndToTime, endScrollLeft, endScrollRight }
+    return {
+      dayStartToTime,
+      dayEndToTime,
+      endScrollLeft,
+      endScrollRight
+    }
   }
 
   resizingItem = (item, resizeTime, edge) => {
@@ -1262,7 +1267,7 @@ export default class ReactCalendarTimeline extends Component {
       sortOrderTaskList,
       openAddGroupForm,
       scrollContainer,
-      showTooltip,
+      ButtonTooltip,
       isScheduleScreen
     } = this.props
     const sidebarPositionDisplayed = this.getItemDisplayPosition(
@@ -1283,7 +1288,7 @@ export default class ReactCalendarTimeline extends Component {
           isShowDragHandleButton={isShowDragHandleButton}
           sortOrderTaskList={sortOrderTaskList}
           openAddGroupForm={openAddGroupForm}
-          showTooltip={showTooltip}
+          ButtonTooltip={ButtonTooltip}
           scrollContainer={scrollContainer}
           isScheduleScreen={isScheduleScreen}
           sidebarPositionDisplayed={sidebarPositionDisplayed}
@@ -1300,7 +1305,7 @@ export default class ReactCalendarTimeline extends Component {
       sortOrderTaskList,
       openAddGroupForm,
       scrollContainer,
-      showTooltip
+      ButtonTooltip
     } = this.props
     return (
       rightSidebarWidth && (
@@ -1318,7 +1323,7 @@ export default class ReactCalendarTimeline extends Component {
           sortOrderTaskList={sortOrderTaskList}
           openAddGroupForm={openAddGroupForm}
           scrollContainer={scrollContainer}
-          showTooltip={showTooltip}
+          ButtonTooltip={ButtonTooltip}
         />
       )
     )

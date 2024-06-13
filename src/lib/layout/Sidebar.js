@@ -22,7 +22,7 @@ export default class Sidebar extends Component {
     sortOrderTaskList: PropTypes.func,
     openAddGroupForm: PropTypes.func,
     scrollContainer: PropTypes.node,
-    showTooltip: PropTypes.func,
+    ButtonTooltip: PropTypes.node,
 
     isScheduleScreen: PropTypes.bool.isRequired,
     sidebarPositionDisplayed: PropTypes.object.isRequired
@@ -67,7 +67,7 @@ export default class Sidebar extends Component {
       canSortableGroups,
       groupRenderer,
       scrollContainer,
-      showTooltip,
+      ButtonTooltip,
       groups,
       isScheduleScreen,
       sidebarPositionDisplayed
@@ -150,7 +150,7 @@ export default class Sidebar extends Component {
               isShowDragHandleButton={isShowDragHandleButton}
               openAddGroupForm={this.props.openAddGroupForm}
               scrollContainer={scrollContainer}
-              showTooltip={showTooltip}
+              ButtonTooltip={ButtonTooltip}
               sidebarPositionDisplayed={sidebarPositionDisplayed}
             />
           </div>
