@@ -136,13 +136,14 @@ export default class ReactCalendarTimeline extends Component {
     canSortableGroups: PropTypes.bool,
     isShowDragHandleButton: PropTypes.bool,
     sortOrderTaskList: PropTypes.func,
+    onStartSort: PropTypes.func,
     openAddGroupForm: PropTypes.func,
     canMoveChart: PropTypes.bool,
     isCreateTaskList: PropTypes.bool,
     onCreateTaskList: PropTypes.func,
     isShowBgColorGroup: PropTypes.bool,
     scrollContainer: PropTypes.node,
-    ButtonTooltip: PropTypes.node,
+    buttonTooltipRenderer: PropTypes.node,
 
     isScheduleScreen: PropTypes.bool,
     defaultRowDisplayed: PropTypes.number,
@@ -231,13 +232,14 @@ export default class ReactCalendarTimeline extends Component {
     canSortableGroups: false,
     isShowDragHandleButton: false,
     sortOrderTaskList: null,
+    onStartSort: null,
     openAddGroupForm: null,
     canMoveChart: false,
     isCreateTaskList: false,
     onCreateTaskList: async (group, startTime, endTime) => {},
     isShowBgColorGroup: false,
     scrollContainer: null,
-    ButtonTooltip: null,
+    buttonTooltipRenderer: null,
 
     isScheduleScreen: false,
     defaultRowDisplayed: DEFAULT_ROW_DISPLAYED,
@@ -1267,8 +1269,9 @@ export default class ReactCalendarTimeline extends Component {
       sortOrderTaskList,
       openAddGroupForm,
       scrollContainer,
-      ButtonTooltip,
-      isScheduleScreen
+      buttonTooltipRenderer,
+      isScheduleScreen,
+      onStartSort
     } = this.props
     const sidebarPositionDisplayed = this.getItemDisplayPosition(
       DEFAULT_BUFFER_ROW_IN_SIDEBAR
@@ -1287,8 +1290,9 @@ export default class ReactCalendarTimeline extends Component {
           canSortableGroups={canSortableGroups}
           isShowDragHandleButton={isShowDragHandleButton}
           sortOrderTaskList={sortOrderTaskList}
+          onStartSort={onStartSort}
           openAddGroupForm={openAddGroupForm}
-          ButtonTooltip={ButtonTooltip}
+          buttonTooltipRenderer={buttonTooltipRenderer}
           scrollContainer={scrollContainer}
           isScheduleScreen={isScheduleScreen}
           sidebarPositionDisplayed={sidebarPositionDisplayed}
@@ -1305,7 +1309,8 @@ export default class ReactCalendarTimeline extends Component {
       sortOrderTaskList,
       openAddGroupForm,
       scrollContainer,
-      ButtonTooltip
+      buttonTooltipRenderer,
+      onStartSort
     } = this.props
     return (
       rightSidebarWidth && (
@@ -1321,9 +1326,10 @@ export default class ReactCalendarTimeline extends Component {
           canSortableGroups={canSortableGroups}
           isShowDragHandleButton={isShowDragHandleButton}
           sortOrderTaskList={sortOrderTaskList}
+          onStartSort={onStartSort}
           openAddGroupForm={openAddGroupForm}
           scrollContainer={scrollContainer}
-          ButtonTooltip={ButtonTooltip}
+          buttonTooltipRenderer={buttonTooltipRenderer}
         />
       )
     )

@@ -244,7 +244,7 @@ export default class GroupSortable extends Component {
       groupRenderer,
       isShowDragHandleButton,
       openAddGroupForm,
-      ButtonTooltip,
+      buttonTooltipRenderer,
       sidebarPositionDisplayed
     } = this.props
     return (
@@ -273,7 +273,7 @@ export default class GroupSortable extends Component {
           groupRenderer={groupRenderer}
           groupRightTitleKey={groupRightTitleKey}
           groupTitleKey={groupTitleKey}
-          ButtonTooltip={ButtonTooltip}
+          buttonTooltipRenderer={buttonTooltipRenderer}
           sidebarPositionDisplayed={sidebarPositionDisplayed}
         />
       </div>

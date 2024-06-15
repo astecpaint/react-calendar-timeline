@@ -30,7 +30,7 @@ class SortableListClass extends Component {
       isRightSidebar,
       openAddGroupForm,
       groupRenderer,
-      ButtonTooltip,
+      buttonTooltipRenderer,
       sidebarPositionDisplayed
     } = this.props
     return (
@@ -66,7 +66,7 @@ class SortableListClass extends Component {
               isRightSidebar={isRightSidebar}
               groupRightTitleKey={groupRightTitleKey}
               groupTitleKey={groupTitleKey}
-              ButtonTooltip={ButtonTooltip}
+              ButtonTooltip={buttonTooltipRenderer}
               currentIndex={index}
               sidebarPositionDisplayed={sidebarPositionDisplayed}
             />
