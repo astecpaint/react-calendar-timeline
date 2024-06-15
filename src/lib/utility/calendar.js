@@ -684,6 +684,33 @@ export function getCanvasBoundariesFromVisibleTime(
   return [canvasTimeStart, canvasTimeEnd]
 }
 
+export function checkValueDate(value) {
+  if (
+    !value ||
+    value === null ||
+    value === 'Invalid date' ||
+    value === '' ||
+    value === '0000-00-00' ||
+    value === '0000-00-00 00:00:00'
+  ) {
+    return null
+  }
+
+  const momentVal = moment(value)
+
+  if (
+    _.isNaN(momentVal) ||
+    momentVal === 'Invalid date' ||
+    momentVal === '' ||
+    momentVal === '0000-00-00' ||
+    momentVal === '0000-00-00 00:00:00'
+  ) {
+    return null
+  }
+
+  return momentVal
+}
+
 /**
  * Get the the canvas area for a given visible time
  * Will shift the start/end of the canvas if the visible time
@@ -758,26 +785,4 @@ export function calculateScrollCanvas(
     )
   }
   return newState
-}
-
-export function checkValueDate(value) {
-  if (
-    !value ||
-    value === null ||
-    value === 'Invalid date' ||
-    value === '' ||
-    value === '0000-00-00' ||
-    value === '0000-00-00 00:00:00'
-  )
-    return null
-  const momentVal = moment(value)
-  if (
-    _.isNaN(momentVal) ||
-    momentVal === 'Invalid date' ||
-    momentVal === '' ||
-    momentVal === '0000-00-00' ||
-    momentVal === '0000-00-00 00:00:00'
-  )
-    return null
-  return momentVal
 }

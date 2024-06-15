@@ -8,16 +8,19 @@ import {
 } from '../utility/calendar'
 import moment from 'moment'
 
-const HEIGHT_GEMBA = 23,
-  SPACING_TOP_ROW = 7,
+const HEIGHT_TASK = 23,
+  MARGIN_TOP_OF_TASK = 7,
   BG_COLOR_TASK = '#8CD1FF',
-  MIN_WIDTH_TASK = 52,
-  COUNT_TIME = 4,
+  MIN_WIDTH = 52,
+  COUNT_TIME = 1,
   MAX_NUMBER_OF_DRAG_DAYS = 59,
   HEIGHT_ROW_TASK = 60,
   BG_COLOR_GROUP_TASK = 'rgba(203, 228, 254, 0.3)',
   HEIGHT_ROW_GEMBA = 64,
-  OPACITY_ROW_TASK = 0.15
+  OPACITY_ROW_TASK = 0.15,
+  BG_COLOR_TRACK_RECORD = '#ccc',
+  HEIGHT_TRACK_RECORD = 14,
+  MARGIN_TOP_OF_TRACK_RECORD = 39
 
 class GroupRow extends Component {
   static propTypes = {
@@ -36,14 +39,16 @@ class GroupRow extends Component {
     visibleTimeEnd: PropTypes.number.isRequired,
     speedScrollHorizontal: PropTypes.number.isRequired,
     isCreateTaskList: PropTypes.bool.isRequired,
-    onCreateTaskList: PropTypes.func.isRequired,
+    onCreateTask: PropTypes.func.isRequired,
     scrollRef: PropTypes.object,
     getTimeFromRowClickEvent: PropTypes.func.isRequired,
     onDayToTime: PropTypes.func.isRequired,
     canvasWidth: PropTypes.number.isRequired,
     isShowBgColorGroup: PropTypes.bool.isRequired,
     index: PropTypes.number.isRequired,
-    itemPositionDisplayed: PropTypes.object.isRequired
+    itemPositionDisplayed: PropTypes.object.isRequired,
+    isScheduleScreen: PropTypes.bool.isRequired,
+    isCreateTrackRecord: PropTypes.bool.isRequired
   }
 
   constructor(props) {
@@ -60,6 +65,7 @@ class GroupRow extends Component {
     this.startTimeTaskCreating = 0
     this.refreshIntervalId = null
     this.endTimeTmp = 0
+    this.isCreatingPositionAbove = true
   }
 
   componentDidUpdate() {
@@ -70,28 +76,51 @@ class GroupRow extends Component {
     }
   }
 
-  renderCreateTask = (group, countTime, left, width) => {
+  renderCreateTask = (
+    group,
+    countTime,
+    left,
+    width,
+    isCreatingPositionAbove
+  ) => {
     if (countTime < COUNT_TIME) return <></>
 
     return (
-      <div
-        style={{
-          position: 'absolute',
-          left: `${left}px`,
-          top: `${SPACING_TOP_ROW}px`,
-          height: `${HEIGHT_GEMBA}px`,
-          width: `${width}px`,
-          minWidth: `${MIN_WIDTH_TASK}px`,
-          backgroundColor: BG_COLOR_TASK,
-          borderRadius: '6px',
-          paddingLeft: '5px',
-          display: 'flex',
-          alignItems: 'center',
-          zIndex: 2
-        }}
-      >
-        <span style={{ whiteSpace: 'nowrap' }}>{group?.title}</span>
-      </div>
+      <>
+        {isCreatingPositionAbove ? (
+          <div
+            style={{
+              position: 'absolute',
+              left: `${left}px`,
+              top: `${MARGIN_TOP_OF_TASK}px`,
+              height: `${HEIGHT_TASK}px`,
+              width: `${width}px`,
+              minWidth: `${MIN_WIDTH}px`,
+              backgroundColor: BG_COLOR_TASK,
+              borderRadius: '6px',
+              paddingLeft: '5px',
+              display: 'flex',
+              alignItems: 'center',
+              zIndex: 2
+            }}
+          >
+            <span style={{ whiteSpace: 'nowrap' }}>{group?.title}</span>
+          </div>
+        ) : (
+          <div
+            style={{
+              position: 'absolute',
+              left: `${left}px`,
+              top: `${MARGIN_TOP_OF_TRACK_RECORD}px`,
+              height: `${HEIGHT_TRACK_RECORD}px`,
+              width: `${width}px`,
+              minWidth: `${MIN_WIDTH}px`,
+              backgroundColor: BG_COLOR_TRACK_RECORD,
+              zIndex: 2
+            }}
+          />
+        )}
+      </>
     )
   }
 
@@ -101,7 +130,7 @@ class GroupRow extends Component {
     canvasTimeStart,
     canvasTimeEnd,
     canvasWidth,
-    isCreateTaskList
+    isScheduleScreen
   ) => {
     const {
       isHide,
@@ -162,7 +191,7 @@ class GroupRow extends Component {
           width,
           top: 0,
           left,
-          height: `${isCreateTaskList ? HEIGHT_ROW_TASK : HEIGHT_ROW_GEMBA}px`,
+          height: `${isScheduleScreen ? HEIGHT_ROW_GEMBA : HEIGHT_ROW_TASK}px`,
           backgroundColor: bgColor ?? BG_COLOR_GROUP_TASK,
           opacity: bgColor ? OPACITY_ROW_TASK : 1,
           zIndex: 1
@@ -204,19 +233,41 @@ class GroupRow extends Component {
   }
 
   handleMouseDown = e => {
-    const { group, isCreateTaskList, getTimeFromRowClickEvent } = this.props
+    const {
+      group,
+      isCreateTaskList,
+      getTimeFromRowClickEvent,
+      isCreateTrackRecord
+    } = this.props
+    const { task, isEmptyGroup, isAddinationForm } = group
+
+    const isHasDateTimeTask =
+      !!checkValueDate(task?.begin_date) && !!checkValueDate(task?.end_date)
+    const isHasTrackRecord = !!task?.track_record_list?.length
+
+    const offsetY = e?.nativeEvent?.offsetY || e?.offsetY || 0
+    this.isCreatingPositionAbove = offsetY <= HEIGHT_ROW_TASK / 2
+
+    const isCreatingInvalidTask =
+      this.isCreatingPositionAbove && (!isCreateTaskList || isHasDateTimeTask)
+    const isCreatingInvalidTrackRecord =
+      !this.isCreatingPositionAbove &&
+      (!isCreateTrackRecord || isHasTrackRecord)
 
     if (
-      !isCreateTaskList ||
-      (checkValueDate(group?.task?.begin_date) &&
-        checkValueDate(group?.task?.end_date)) ||
-      !!group?.isEmptyGroup ||
-      !!group?.isAddinationForm
+      (!isCreateTaskList && !isCreateTrackRecord) ||
+      isCreatingInvalidTask ||
+      isCreatingInvalidTrackRecord ||
+      isEmptyGroup ||
+      isAddinationForm
     ) {
       return
     }
 
-    this.startTimeTaskCreating = getTimeFromRowClickEvent(e)
+    this.startTimeTaskCreating = moment(
+      moment(getTimeFromRowClickEvent(e)).format('YYYY-MM-DD')
+    ).valueOf()
+
     this.intervalTouchTime = setInterval(
       function() {
         if (this.state.countTime < COUNT_TIME) {
@@ -231,16 +282,24 @@ class GroupRow extends Component {
   }
 
   handleMouseUp = () => {
-    if (!this.intervalTouchTime) return
+    const { isCreateTaskList, isCreateTrackRecord } = this.props
+
+    if (!this.intervalTouchTime || (!isCreateTaskList && !isCreateTrackRecord))
+      return
 
     clearInterval(this.intervalTouchTime)
     this.intervalTouchTime = null
   }
 
   handleResetData = async e => {
-    const { isCreateTaskList, group, getTimeFromRowClickEvent } = this.props
+    const {
+      isCreateTaskList,
+      group,
+      getTimeFromRowClickEvent,
+      isCreateTrackRecord
+    } = this.props
 
-    if (!isCreateTaskList) return
+    if (!isCreateTaskList && !isCreateTrackRecord) return
 
     const endTime = this.endTimeTmp || getTimeFromRowClickEvent(e)
 
@@ -254,14 +313,16 @@ class GroupRow extends Component {
         endDate = maxEndDate
       }
 
-      await this.props.onCreateTaskList(
+      await this.props.onCreateTask(
         group,
         this.startTimeTaskCreating,
-        endDate
+        endDate,
+        this.isCreatingPositionAbove
       )
     } else {
       let startDate = endTime
-      const minStartDate = moment(this.startTimeTaskCreating)
+      const endDate = moment(this.startTimeTaskCreating).add(-1, 'days')
+      const minStartDate = moment(endDate)
         .add(-MAX_NUMBER_OF_DRAG_DAYS, 'days')
         .valueOf()
 
@@ -269,10 +330,11 @@ class GroupRow extends Component {
         startDate = minStartDate
       }
 
-      await this.props.onCreateTaskList(
+      await this.props.onCreateTask(
         group,
         startDate,
-        this.startTimeTaskCreating
+        endDate,
+        this.isCreatingPositionAbove
       )
     }
 
@@ -280,6 +342,7 @@ class GroupRow extends Component {
     clearInterval(this.refreshIntervalId)
     document.querySelector('.rct-horizontal-lines').style.cursor = 'default'
 
+    this.isCreatingPositionAbove = true
     this.startTimeTaskCreating = 0
     this.endTimeTmp = 0
     this.intervalTouchTime = null
@@ -298,10 +361,15 @@ class GroupRow extends Component {
       scrollRef,
       getTimeFromRowClickEvent,
       onDayToTime,
-      canvasWidth
+      canvasWidth,
+      isCreateTrackRecord
     } = this.props
 
-    if (!isCreateTaskList || this.state.countTime < COUNT_TIME || !scrollRef) {
+    if (
+      (!isCreateTaskList && !isCreateTrackRecord) ||
+      this.state.countTime < COUNT_TIME ||
+      !scrollRef
+    ) {
       return
     }
 
@@ -448,9 +516,9 @@ class GroupRow extends Component {
       canvasTimeEnd,
       canvasWidth,
       isShowBgColorGroup,
-      isCreateTaskList,
       index,
-      itemPositionDisplayed
+      itemPositionDisplayed,
+      isScheduleScreen
     } = this.props
 
     const { countTime, left, width } = this.state
@@ -480,14 +548,20 @@ class GroupRow extends Component {
         >
           {index >= start && index <= end && (
             <>
-              {this.renderCreateTask(group, countTime, left, width)}
+              {this.renderCreateTask(
+                group,
+                countTime,
+                left,
+                width,
+                this.isCreatingPositionAbove
+              )}
               {this.renderBgColor(
                 isShowBgColorGroup,
                 group,
                 canvasTimeStart,
                 canvasTimeEnd,
                 canvasWidth,
-                isCreateTaskList
+                isScheduleScreen
               )}
             </>
           )}

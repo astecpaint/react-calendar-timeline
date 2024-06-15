@@ -140,7 +140,7 @@ export default class ReactCalendarTimeline extends Component {
     openAddGroupForm: PropTypes.func,
     canMoveChart: PropTypes.bool,
     isCreateTaskList: PropTypes.bool,
-    onCreateTaskList: PropTypes.func,
+    onCreateTask: PropTypes.func,
     isShowBgColorGroup: PropTypes.bool,
     scrollContainer: PropTypes.node,
     buttonTooltipRenderer: PropTypes.node,
@@ -148,7 +148,9 @@ export default class ReactCalendarTimeline extends Component {
     isScheduleScreen: PropTypes.bool,
     defaultRowDisplayed: PropTypes.number,
     defaultBufferRow: PropTypes.number,
-    scrollTop: PropTypes.number
+    scrollTop: PropTypes.number,
+
+    isCreateTrackRecord: PropTypes.bool
   }
 
   static defaultProps = {
@@ -236,7 +238,7 @@ export default class ReactCalendarTimeline extends Component {
     openAddGroupForm: null,
     canMoveChart: false,
     isCreateTaskList: false,
-    onCreateTaskList: async (group, startTime, endTime) => {},
+    onCreateTask: async (group, startTime, endTime, isCreateTaskList) => {},
     isShowBgColorGroup: false,
     scrollContainer: null,
     buttonTooltipRenderer: null,
@@ -244,7 +246,9 @@ export default class ReactCalendarTimeline extends Component {
     isScheduleScreen: false,
     defaultRowDisplayed: DEFAULT_ROW_DISPLAYED,
     defaultBufferRow: DEFAULT_BUFFER_ROW,
-    scrollTop: DEFAULT_SCROLL_TOP
+    scrollTop: DEFAULT_SCROLL_TOP,
+
+    isCreateTrackRecord: false
   }
 
   static childContextTypes = {
@@ -1172,9 +1176,10 @@ export default class ReactCalendarTimeline extends Component {
     visibleTimeEnd,
     speedScrollHorizontal,
     isCreateTaskList,
-    onCreateTaskList,
+    onCreateTask,
     isShowBgColorGroup,
-    itemPositionDisplayed
+    itemPositionDisplayed,
+    isCreateTrackRecord
   ) {
     return (
       <GroupRows
@@ -1196,13 +1201,14 @@ export default class ReactCalendarTimeline extends Component {
         visibleTimeEnd={visibleTimeEnd}
         speedScrollHorizontal={speedScrollHorizontal}
         isCreateTaskList={isCreateTaskList}
-        onCreateTaskList={onCreateTaskList}
+        onCreateTask={onCreateTask}
         scrollRef={this.scrollComponent}
         getTimeFromRowClickEvent={this.getTimeFromRowClickEvent}
         onDayToTime={this.handleDayToTime}
         isShowBgColorGroup={isShowBgColorGroup}
         isScheduleScreen={this.props.isScheduleScreen}
         itemPositionDisplayed={itemPositionDisplayed}
+        isCreateTrackRecord={isCreateTrackRecord}
       />
     )
   }
@@ -1510,8 +1516,9 @@ export default class ReactCalendarTimeline extends Component {
       canMoveChart,
       speedScrollHorizontal,
       isCreateTaskList,
-      onCreateTaskList,
-      isShowBgColorGroup
+      onCreateTask,
+      isShowBgColorGroup,
+      isCreateTrackRecord
     } = this.props
     const {
       draggingItem,
@@ -1617,9 +1624,10 @@ export default class ReactCalendarTimeline extends Component {
                       visibleTimeEnd,
                       speedScrollHorizontal,
                       isCreateTaskList,
-                      onCreateTaskList,
+                      onCreateTask,
                       isShowBgColorGroup,
-                      itemPositionDisplayed
+                      itemPositionDisplayed,
+                      isCreateTrackRecord
                     )}
                     {this.items(
                       canvasTimeStart,

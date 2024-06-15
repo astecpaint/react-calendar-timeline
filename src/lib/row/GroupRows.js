@@ -25,13 +25,14 @@ export default class GroupRows extends Component {
     visibleTimeEnd: PropTypes.number.isRequired,
     speedScrollHorizontal: PropTypes.number.isRequired,
     isCreateTaskList: PropTypes.bool.isRequired,
-    onCreateTaskList: PropTypes.func.isRequired,
+    onCreateTask: PropTypes.func.isRequired,
     scrollRef: PropTypes.object,
     getTimeFromRowClickEvent: PropTypes.func.isRequired,
     onDayToTime: PropTypes.func.isRequired,
     isShowBgColorGroup: PropTypes.bool.isRequired,
     isScheduleScreen: PropTypes.bool.isRequired,
-    itemPositionDisplayed: PropTypes.object.isRequired
+    itemPositionDisplayed: PropTypes.object.isRequired,
+    isCreateTrackRecord: PropTypes.bool.isRequired
   }
 
   shouldComponentUpdate(nextProps) {
@@ -40,7 +41,6 @@ export default class GroupRows extends Component {
       nextProps.lineCount === this.props.lineCount &&
       nextProps.groupHeights === this.props.groupHeights &&
       nextProps.groups === this.props.groups &&
-      nextProps.isScheduleScreen === this.props.isScheduleScreen &&
       deepObjectCompare(
         this.props.itemPositionDisplayed,
         nextProps.itemPositionDisplayed
@@ -66,13 +66,14 @@ export default class GroupRows extends Component {
       visibleTimeEnd,
       speedScrollHorizontal,
       isCreateTaskList,
-      onCreateTaskList,
+      onCreateTask,
       scrollRef,
       getTimeFromRowClickEvent,
       onDayToTime,
       isShowBgColorGroup,
       isScheduleScreen,
-      itemPositionDisplayed
+      itemPositionDisplayed,
+      isCreateTrackRecord
     } = this.props
     let lines = []
 
@@ -107,7 +108,7 @@ export default class GroupRows extends Component {
           visibleTimeEnd={visibleTimeEnd}
           speedScrollHorizontal={speedScrollHorizontal}
           isCreateTaskList={isCreateTaskList}
-          onCreateTaskList={onCreateTaskList}
+          onCreateTask={onCreateTask}
           scrollRef={scrollRef}
           getTimeFromRowClickEvent={getTimeFromRowClickEvent}
           onDayToTime={onDayToTime}
@@ -115,6 +116,8 @@ export default class GroupRows extends Component {
           isShowBgColorGroup={isShowBgColorGroup}
           index={i}
           itemPositionDisplayed={itemPositionDisplayed}
+          isScheduleScreen={isScheduleScreen}
+          isCreateTrackRecord={isCreateTrackRecord}
         />
       )
     }
