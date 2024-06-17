@@ -245,7 +245,6 @@ class GroupRow extends Component {
       isCreateTrackRecord
     } = this.props
     const { task, isEmptyGroup, isAddinationForm } = group
-    const { isEmptySubGroup } = task
 
     const isHasDateTimeTask =
       !!checkValueDate(task?.begin_date) && !!checkValueDate(task?.end_date)
@@ -266,7 +265,7 @@ class GroupRow extends Component {
       isCreatingInvalidTrackRecord ||
       isEmptyGroup ||
       isAddinationForm ||
-      isEmptySubGroup
+      task?.isEmptySubGroup
     ) {
       return
     }
