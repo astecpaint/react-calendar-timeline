@@ -63,7 +63,8 @@ export default class Items extends Component {
     //Custom
     isHoverToSelectedItem: PropTypes.bool.isRequired,
     isGembaMode: PropTypes.bool.isRequired,
-    itemPositionDisplayed: PropTypes.object.isRequired
+    itemPositionDisplayed: PropTypes.object.isRequired,
+    isScheduleScreen: PropTypes.bool.isRequired
   }
 
   static defaultProps = {
@@ -92,7 +93,8 @@ export default class Items extends Component {
       deepObjectCompare(
         this.props.itemPositionDisplayed,
         nextProps.itemPositionDisplayed
-      )
+      ) &&
+      nextProps.isScheduleScreen === this.props.isScheduleScreen
     )
   }
 
@@ -121,7 +123,8 @@ export default class Items extends Component {
       isHoverToSelectedItem,
       isGembaMode,
       selectedItem,
-      itemPositionDisplayed
+      itemPositionDisplayed,
+      isScheduleScreen
     } = this.props
     const { itemIdKey, itemGroupKey } = keys
 
@@ -194,6 +197,7 @@ export default class Items extends Component {
               group={groupOrders?.[item?.group]?.group}
               isGembaMode={isGembaMode}
               selectedItem={selectedItem}
+              isScheduleScreen={isScheduleScreen}
             />
           ))}
       </div>

@@ -1258,6 +1258,7 @@ export default class ReactCalendarTimeline extends Component {
         isHoverToSelectedItem={this.props.isHoverToSelectedItem}
         isGembaMode={this.props.isGembaMode}
         itemPositionDisplayed={itemPositionDisplayed}
+        isScheduleScreen={this.props.isScheduleScreen}
       />
     )
   }
@@ -1563,7 +1564,7 @@ export default class ReactCalendarTimeline extends Component {
     }
 
     const outerComponentStyle = {
-      height: `${height + 20}px` // 20px because custom scroll-y
+      height: `${height}px` // 20px because custom scroll-y
     }
 
     const itemPositionDisplayed = this.getItemDisplayPosition()

@@ -19,6 +19,11 @@ import {
   leftResizeStyle,
   rightResizeStyle
 } from './styles'
+
+const DEFAULT_TYPE_TRACK_RECORD = 2,
+  DEFAULT_MARGIN_TOP_TRACK_RECORD_IN_SCHEDULE = 28,
+  DEFAULT_MARGIN_TOP_TRACK_RECORD_IN_PROCESS_BASIC = 25
+
 export default class Item extends Component {
   // removed prop type check for SPEED!
   // they are coming from a trusted component anyway
@@ -63,7 +68,8 @@ export default class Item extends Component {
     isHoverToSelectedItem: PropTypes.bool,
     group: PropTypes.object,
     isGembaMode: PropTypes.bool,
-    selectedItem: PropTypes.number
+    selectedItem: PropTypes.number,
+    isScheduleScreen: PropTypes.bool
   }
 
   static defaultProps = {
@@ -659,12 +665,20 @@ export default class Item extends Component {
 
   getItemStyle(props) {
     const dimensions = this.props.dimensions
+    let dimensionsTop = dimensions.top
+
+    if (this.props.item?.type === DEFAULT_TYPE_TRACK_RECORD) {
+      const marginTop = this.props.isScheduleScreen
+        ? DEFAULT_MARGIN_TOP_TRACK_RECORD_IN_SCHEDULE
+        : DEFAULT_MARGIN_TOP_TRACK_RECORD_IN_PROCESS_BASIC
+      dimensionsTop += marginTop
+    }
 
     const baseStyles = {
       position: 'absolute',
       boxSizing: 'border-box',
       left: `${dimensions.left}px`,
-      top: `${dimensions.top}px`,
+      top: `${dimensionsTop}px`,
       width: `${dimensions.width}px`,
       height: `${dimensions.height}px`,
       lineHeight: `${dimensions.height}px`

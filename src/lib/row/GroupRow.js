@@ -10,7 +10,8 @@ import moment from 'moment'
 
 const HEIGHT_TASK = 23,
   MARGIN_TOP_OF_TASK = 7,
-  BG_COLOR_TASK = '#8CD1FF',
+  BG_COLOR_TASK = '#4fc3f7',
+  BG_COLOR_SUB_TASK = '#a6e0fa',
   MIN_WIDTH = 52,
   COUNT_TIME = 1,
   MAX_NUMBER_OF_DRAG_DAYS = 59,
@@ -18,7 +19,8 @@ const HEIGHT_TASK = 23,
   BG_COLOR_GROUP_TASK = 'rgba(203, 228, 254, 0.3)',
   HEIGHT_ROW_GEMBA = 64,
   OPACITY_ROW_TASK = 0.15,
-  BG_COLOR_TRACK_RECORD = '#ccc',
+  BG_COLOR_TRACK_RECORD = '#27AE60',
+  BG_COLOR_SUB_TRACK_RECORD = '#92D6AF',
   HEIGHT_TRACK_RECORD = 14,
   MARGIN_TOP_OF_TRACK_RECORD = 39
 
@@ -84,6 +86,7 @@ class GroupRow extends Component {
     isCreatingPositionAbove
   ) => {
     if (countTime < COUNT_TIME) return <></>
+    const { isMerge } = group
 
     return (
       <>
@@ -96,7 +99,7 @@ class GroupRow extends Component {
               height: `${HEIGHT_TASK}px`,
               width: `${width}px`,
               minWidth: `${MIN_WIDTH}px`,
-              backgroundColor: BG_COLOR_TASK,
+              backgroundColor: isMerge ? BG_COLOR_TASK : BG_COLOR_SUB_TASK,
               borderRadius: '6px',
               paddingLeft: '5px',
               display: 'flex',
@@ -115,7 +118,9 @@ class GroupRow extends Component {
               height: `${HEIGHT_TRACK_RECORD}px`,
               width: `${width}px`,
               minWidth: `${MIN_WIDTH}px`,
-              backgroundColor: BG_COLOR_TRACK_RECORD,
+              backgroundColor: isMerge
+                ? BG_COLOR_TRACK_RECORD
+                : BG_COLOR_SUB_TRACK_RECORD,
               zIndex: 2
             }}
           />
@@ -240,6 +245,7 @@ class GroupRow extends Component {
       isCreateTrackRecord
     } = this.props
     const { task, isEmptyGroup, isAddinationForm } = group
+    const { isEmptySubGroup } = task
 
     const isHasDateTimeTask =
       !!checkValueDate(task?.begin_date) && !!checkValueDate(task?.end_date)
@@ -259,7 +265,8 @@ class GroupRow extends Component {
       isCreatingInvalidTask ||
       isCreatingInvalidTrackRecord ||
       isEmptyGroup ||
-      isAddinationForm
+      isAddinationForm ||
+      isEmptySubGroup
     ) {
       return
     }
