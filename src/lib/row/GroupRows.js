@@ -32,19 +32,23 @@ export default class GroupRows extends Component {
     isShowBgColorGroup: PropTypes.bool.isRequired,
     isScheduleScreen: PropTypes.bool.isRequired,
     itemPositionDisplayed: PropTypes.object.isRequired,
-    isCreateTrackRecord: PropTypes.bool.isRequired
+    isCreateTrackRecord: PropTypes.bool.isRequired,
+    resizingItemCalled: PropTypes.bool,
+    dragMoveItemCalled: PropTypes.bool
   }
 
   shouldComponentUpdate(nextProps) {
     return !(
-      nextProps.canvasWidth === this.props.canvasWidth &&
-      nextProps.lineCount === this.props.lineCount &&
-      nextProps.groupHeights === this.props.groupHeights &&
-      nextProps.groups === this.props.groups &&
-      deepObjectCompare(
-        this.props.itemPositionDisplayed,
-        nextProps.itemPositionDisplayed
-      )
+      nextProps.resizingItemCalled ||
+      nextProps.dragMoveItemCalled ||
+      (nextProps.canvasWidth === this.props.canvasWidth &&
+        nextProps.lineCount === this.props.lineCount &&
+        nextProps.groupHeights === this.props.groupHeights &&
+        nextProps.groups === this.props.groups &&
+        deepObjectCompare(
+          this.props.itemPositionDisplayed,
+          nextProps.itemPositionDisplayed
+        ))
     )
   }
 

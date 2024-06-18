@@ -1209,6 +1209,8 @@ export default class ReactCalendarTimeline extends Component {
         isScheduleScreen={this.props.isScheduleScreen}
         itemPositionDisplayed={itemPositionDisplayed}
         isCreateTrackRecord={isCreateTrackRecord}
+        resizingItemCalled={this.state.resizingItemCalled}
+        dragMoveItemCalled={this.state.dragMoveItemCalled}
       />
     )
   }
@@ -1564,7 +1566,7 @@ export default class ReactCalendarTimeline extends Component {
     }
 
     const outerComponentStyle = {
-      height: `${height}px` // 20px because custom scroll-y
+      height: `${height + 20}px` // 20px because custom scroll-y
     }
 
     const itemPositionDisplayed = this.getItemDisplayPosition()

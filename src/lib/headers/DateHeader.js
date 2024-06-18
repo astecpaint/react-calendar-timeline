@@ -20,7 +20,18 @@ class DateHeader extends React.Component {
     ]).isRequired,
     intervalRenderer: PropTypes.func,
     headerData: PropTypes.object,
-    height: PropTypes.number
+    height: PropTypes.number,
+    dragMoveItemCalled: PropTypes.bool
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return !(
+      nextProps.unit === this.props.unit &&
+      nextProps.style === this.props.style &&
+      nextProps.height === this.props.height &&
+      nextProps.timelineUnit === this.props.timelineUnit &&
+      nextProps.labelFormat === this.props.labelFormat
+    )
   }
 
   getHeaderUnit = () => {
@@ -131,7 +142,8 @@ DateHeaderWrapper.propTypes = {
   ]),
   intervalRenderer: PropTypes.func,
   headerData: PropTypes.object,
-  height: PropTypes.number
+  height: PropTypes.number,
+  dragMoveItemCalled: PropTypes.bool
 }
 
 DateHeaderWrapper.defaultProps = {

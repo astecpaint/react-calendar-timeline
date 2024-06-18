@@ -117,7 +117,7 @@ export default class Item extends Component {
       nextProps.canvasTimeStart !== this.props.canvasTimeStart ||
       nextProps.canvasTimeEnd !== this.props.canvasTimeEnd ||
       nextProps.canvasWidth !== this.props.canvasWidth ||
-      (nextProps.order ? nextProps.order.index : undefined) !==
+      (nextProps.order ? nextProps.order.index : undefined) !== 
         (this.props.order ? this.props.order.index : undefined) ||
       nextProps.dragSnap !== this.props.dragSnap ||
       nextProps.minResizeWidth !== this.props.minResizeWidth ||
@@ -126,7 +126,8 @@ export default class Item extends Component {
       nextProps.canMove !== this.props.canMove ||
       nextProps.canResizeLeft !== this.props.canResizeLeft ||
       nextProps.canResizeRight !== this.props.canResizeRight ||
-      !deepObjectCompare(nextProps.dimensions, this.props.dimensions) //The dimension attribute being compared '===' leads to the version before and after the update being the same in value but different in memory, still leading to unnecessary re-rendering, reducing performance.
+      !deepObjectCompare(nextProps.dimensions, this.props.dimensions) || //The dimension attribute being compared '===' leads to the version before and after the update being the same in value but different in memory, still leading to unnecessary re-rendering, reducing performance.
+      nextProps.isScheduleScreen !== this.props.isScheduleScreen
     return shouldUpdate
   }
 
@@ -187,7 +188,7 @@ export default class Item extends Component {
 
     const offset = getSumOffset(this.props.scrollRef).offsetLeft
     const scrolls = getSumScroll(this.props.scrollRef)
-
+      
     return (
       (e.pageX - offset + scrolls.scrollLeft) * ratio +
       this.props.canvasTimeStart
@@ -204,7 +205,7 @@ export default class Item extends Component {
 
       const offset = getSumOffset(this.props.scrollRef).offsetTop
       const scrolls = getSumScroll(this.props.scrollRef)
-
+      
       for (var key of Object.keys(groupTops)) {
         var groupTop = groupTops[key]
         if (e.pageY - offset + scrolls.scrollTop > groupTop) {
@@ -279,7 +280,7 @@ export default class Item extends Component {
           const clickTime = this.timeFor(e)
           this.setState({
             dragging: true,
-            dragStart: {
+            dragStart: { 
               x: e.pageX,
               y: e.pageY,
               offset: this.itemTimeStart - clickTime
@@ -314,11 +315,8 @@ export default class Item extends Component {
               this.props.order.index + dragGroupDelta
             )
           }
-
-          this.setState({
-            dragTime: dragTime,
-            dragGroupDelta: dragGroupDelta
-          })
+          this.state.dragTime = dragTime
+          this.state.dragGroupDelta = dragGroupDelta
 
           if (this.startedClickingCustom) {
             this.startedClickingCustom = false
@@ -375,7 +373,6 @@ export default class Item extends Component {
             this.setState({ resizeEdge })
           }
           let resizeTime = this.resizeTimeSnap(this.timeFor(e))
-
           if (this.props.moveResizeValidator) {
             resizeTime = this.props.moveResizeValidator(
               'resize',
@@ -384,7 +381,6 @@ export default class Item extends Component {
               resizeEdge
             )
           }
-
           if (this.props.onResizing) {
             this.props.onResizing(this.itemId, resizeTime, resizeEdge)
           }
@@ -486,7 +482,7 @@ export default class Item extends Component {
       ) {
         const leftResize = this.props.useResizeHandle ? this.dragLeft : true
         const rightResize = this.props.useResizeHandle ? this.dragRight : true
-
+  
         interact(this.item).resizable({
           enabled: willBeAbleToResizeLeft || willBeAbleToResizeRight,
           edges: {

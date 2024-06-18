@@ -78,6 +78,10 @@ class GroupRow extends Component {
     }
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('mouseup', this.handleResetData, true)
+  }
+
   renderCreateTask = (
     group,
     countTime,
@@ -537,8 +541,6 @@ class GroupRow extends Component {
 
     return (
       <PreventClickOnDrag
-        clickTolerance={clickTolerance}
-        onClick={onClick}
         onRowMouseDown={this.handleMouseDown}
         onRowMouseUp={this.handleMouseUp}
         onRowMouseMove={this.handleMouseMove}
