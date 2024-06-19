@@ -149,6 +149,7 @@ export default class ReactCalendarTimeline extends Component {
     defaultRowDisplayed: PropTypes.number,
     defaultBufferRow: PropTypes.number,
     scrollTop: PropTypes.number,
+    isDragDrop: PropTypes.object,
 
     isCreateTrackRecord: PropTypes.bool
   }
@@ -247,6 +248,7 @@ export default class ReactCalendarTimeline extends Component {
     defaultRowDisplayed: DEFAULT_ROW_DISPLAYED,
     defaultBufferRow: DEFAULT_BUFFER_ROW,
     scrollTop: DEFAULT_SCROLL_TOP,
+    isDragDrop: { current: null },
 
     isCreateTrackRecord: false
   }
@@ -1280,7 +1282,8 @@ export default class ReactCalendarTimeline extends Component {
       scrollContainer,
       buttonTooltipRenderer,
       isScheduleScreen,
-      onStartSort
+      onStartSort,
+      isDragDrop
     } = this.props
     const sidebarPositionDisplayed = this.getItemDisplayPosition(
       DEFAULT_BUFFER_ROW_IN_SIDEBAR
@@ -1305,6 +1308,7 @@ export default class ReactCalendarTimeline extends Component {
           scrollContainer={scrollContainer}
           isScheduleScreen={isScheduleScreen}
           sidebarPositionDisplayed={sidebarPositionDisplayed}
+          isDragDrop={isDragDrop}
         />
       )
     )
@@ -1319,7 +1323,8 @@ export default class ReactCalendarTimeline extends Component {
       openAddGroupForm,
       scrollContainer,
       buttonTooltipRenderer,
-      onStartSort
+      onStartSort,
+      isDragDrop
     } = this.props
     return (
       rightSidebarWidth && (
@@ -1339,6 +1344,7 @@ export default class ReactCalendarTimeline extends Component {
           openAddGroupForm={openAddGroupForm}
           scrollContainer={scrollContainer}
           buttonTooltipRenderer={buttonTooltipRenderer}
+          isDragDrop={isDragDrop}
         />
       )
     )

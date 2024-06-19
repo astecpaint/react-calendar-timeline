@@ -21,6 +21,21 @@ $weekend: rgba(250, 246, 225, 0.5);
     box-sizing: border-box;
   }
 
+  .transform-to-above {
+    transform: translate3d(0, 60px, 0) !important;
+    transition-duration: 300ms !important;
+  }
+
+  .transform-to-below {
+    transform: translate3d(0, -60px, 0) !important;
+    transition-duration: 300ms !important;
+  }
+
+  .transform-reset {
+    transform: translate3d(0, 0, 0) !important;
+    transition-duration: 300ms !important;
+  }
+
   .rct-outer {
     display: block;
     overflow: hidden;
@@ -186,6 +201,9 @@ $weekend: rgba(250, 246, 225, 0.5);
           cursor: move;
         }
       }
+    }
+    .disable-transform {
+      transform: none !important;
     }
   }
 

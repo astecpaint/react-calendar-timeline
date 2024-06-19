@@ -1,6 +1,18 @@
 .react-calendar-timeline * {
   box-sizing: border-box; }
 
+.react-calendar-timeline .transform-to-above {
+  transform: translate3d(0, 60px, 0) !important;
+  transition-duration: 300ms !important; }
+
+.react-calendar-timeline .transform-to-below {
+  transform: translate3d(0, -60px, 0) !important;
+  transition-duration: 300ms !important; }
+
+.react-calendar-timeline .transform-reset {
+  transform: translate3d(0, 0, 0) !important;
+  transition-duration: 300ms !important; }
+
 .react-calendar-timeline .rct-outer {
   display: block;
   overflow: hidden;
@@ -133,6 +145,8 @@
         color: #ffffff; }
       .react-calendar-timeline .rct-sidebar .rct-sidebar-row .rct-siderbar-control-btns .drag-handle-btn {
         cursor: move; }
+  .react-calendar-timeline .rct-sidebar .disable-transform {
+    transform: none !important; }
 
 .react-calendar-timeline .rct-vertical-lines .rct-vl {
   position: absolute;

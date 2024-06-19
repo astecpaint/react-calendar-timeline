@@ -25,7 +25,8 @@ export default class Sidebar extends Component {
     buttonTooltipRenderer: PropTypes.node,
 
     isScheduleScreen: PropTypes.bool.isRequired,
-    sidebarPositionDisplayed: PropTypes.object.isRequired
+    sidebarPositionDisplayed: PropTypes.object.isRequired,
+    isDragDrop: PropTypes.object
   }
 
   shouldComponentUpdate(nextProps) {
@@ -64,13 +65,15 @@ export default class Sidebar extends Component {
       isRightSidebar,
       isShowDragHandleButton,
       sortOrderTaskList,
+      onStartSort,
       canSortableGroups,
       groupRenderer,
       scrollContainer,
       buttonTooltipRenderer,
       groups,
       isScheduleScreen,
-      sidebarPositionDisplayed
+      sidebarPositionDisplayed,
+      isDragDrop
     } = this.props
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys
 
@@ -147,11 +150,13 @@ export default class Sidebar extends Component {
               groupIdKey={groupIdKey}
               groupRenderer={this.props.groupRenderer}
               sortOrderTaskList={sortOrderTaskList}
+              onStartSort={onStartSort}
               isShowDragHandleButton={isShowDragHandleButton}
               openAddGroupForm={this.props.openAddGroupForm}
               scrollContainer={scrollContainer}
               buttonTooltipRenderer={buttonTooltipRenderer}
               sidebarPositionDisplayed={sidebarPositionDisplayed}
+              isDragDrop={isDragDrop}
             />
           </div>
         ) : (

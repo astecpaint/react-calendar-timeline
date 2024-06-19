@@ -117,7 +117,7 @@ export default class Item extends Component {
       nextProps.canvasTimeStart !== this.props.canvasTimeStart ||
       nextProps.canvasTimeEnd !== this.props.canvasTimeEnd ||
       nextProps.canvasWidth !== this.props.canvasWidth ||
-      (nextProps.order ? nextProps.order.index : undefined) !== 
+      (nextProps.order ? nextProps.order.index : undefined) !==
         (this.props.order ? this.props.order.index : undefined) ||
       nextProps.dragSnap !== this.props.dragSnap ||
       nextProps.minResizeWidth !== this.props.minResizeWidth ||
@@ -188,7 +188,7 @@ export default class Item extends Component {
 
     const offset = getSumOffset(this.props.scrollRef).offsetLeft
     const scrolls = getSumScroll(this.props.scrollRef)
-      
+
     return (
       (e.pageX - offset + scrolls.scrollLeft) * ratio +
       this.props.canvasTimeStart
@@ -205,7 +205,7 @@ export default class Item extends Component {
 
       const offset = getSumOffset(this.props.scrollRef).offsetTop
       const scrolls = getSumScroll(this.props.scrollRef)
-      
+
       for (var key of Object.keys(groupTops)) {
         var groupTop = groupTops[key]
         if (e.pageY - offset + scrolls.scrollTop > groupTop) {
@@ -280,7 +280,7 @@ export default class Item extends Component {
           const clickTime = this.timeFor(e)
           this.setState({
             dragging: true,
-            dragStart: { 
+            dragStart: {
               x: e.pageX,
               y: e.pageY,
               offset: this.itemTimeStart - clickTime
@@ -482,7 +482,7 @@ export default class Item extends Component {
       ) {
         const leftResize = this.props.useResizeHandle ? this.dragLeft : true
         const rightResize = this.props.useResizeHandle ? this.dragRight : true
-  
+
         interact(this.item).resizable({
           enabled: willBeAbleToResizeLeft || willBeAbleToResizeRight,
           edges: {
@@ -614,7 +614,10 @@ export default class Item extends Component {
       'rct-item' +
       (this.props.item.className ? ` ${this.props.item.className}` : '') +
       ' rct_draggable_' +
-      this.props?.item?.group
+      this.props?.item?.group +
+      (this.props?.item?.task?.parent_id
+        ? ' group-move-' + this.props?.item?.task?.parent_id
+        : ' group-move-' + this.props?.item?.task?.task_id)
 
     return {
       key: this.itemId,

@@ -195,6 +195,13 @@ class GroupRow extends Component {
 
     return (
       <div
+        className={
+          ' -sort-index-' +
+          group?.index +
+          (group?.task?.parent_id
+            ? ' group-move-' + group?.task?.parent_id
+            : ' group-move-' + group?.task?.task_id)
+        }
         style={{
           position: 'absolute',
           width,

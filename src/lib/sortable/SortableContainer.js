@@ -56,7 +56,7 @@ class SortableListClass extends Component {
             <SortableItem
               keyIndex={item.index}
               key={`item-${item.index}`}
-              index={index}
+              index={item.index}
               group={item}
               disabled={false}
               groupIdKey={groupIdKey}

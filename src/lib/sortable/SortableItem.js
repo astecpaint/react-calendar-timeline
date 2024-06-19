@@ -74,7 +74,11 @@ class SortableItemClass extends Component {
         key={_get(group, groupIdKey)}
         className={
           'rct-sidebar-row rct-sidebar-row-' +
-          (group.index % 2 === 0 ? 'even' : 'odd')
+          (group.index % 2 === 0 ? 'even' : 'odd') +
+          (' -sort-index-' + group?.index) +
+          (group?.task?.parent_id
+            ? ' group-move-' + group?.task?.parent_id
+            : ' group-move-' + group?.task?.task_id)
         }
         style={{
           height: `${group?.height || DEFAULT_HEIGHT_ROW_PROCESS_BASIC}px`,
