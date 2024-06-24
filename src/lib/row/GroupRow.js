@@ -548,6 +548,8 @@ class GroupRow extends Component {
 
     return (
       <PreventClickOnDrag
+        clickTolerance={clickTolerance}
+        onClick={onClick}
         onRowMouseDown={this.handleMouseDown}
         onRowMouseUp={this.handleMouseUp}
         onRowMouseMove={this.handleMouseMove}

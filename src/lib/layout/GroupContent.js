@@ -16,7 +16,10 @@ import { _get, deepObjectCompare } from '../utility/generic'
 export default class GroupContent extends Component {
   // The sidebar content only updates when the group or groupRenderer property changes
   shouldComponentUpdate(nextProps) {
-    return !deepObjectCompare(this.props.group, nextProps.group)
+    return (
+      !deepObjectCompare(this.props.group, nextProps.group) ||
+      nextProps.isShowDataAssigned !== this.props.isShowDataAssigned
+    )
   }
 
   render() {

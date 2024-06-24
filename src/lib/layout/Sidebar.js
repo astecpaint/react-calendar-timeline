@@ -26,7 +26,8 @@ export default class Sidebar extends Component {
 
     isScheduleScreen: PropTypes.bool.isRequired,
     sidebarPositionDisplayed: PropTypes.object.isRequired,
-    isDragDrop: PropTypes.object
+    isDragDrop: PropTypes.object,
+    isShowDataAssigned: PropTypes.bool
   }
 
   shouldComponentUpdate(nextProps) {
@@ -42,7 +43,8 @@ export default class Sidebar extends Component {
       deepObjectCompare(
         this.props.sidebarPositionDisplayed,
         nextProps.sidebarPositionDisplayed
-      )
+      ) &&
+      nextProps.isShowDataAssigned === this.props.isShowDataAssigned
     )
   }
 
@@ -73,7 +75,8 @@ export default class Sidebar extends Component {
       groups,
       isScheduleScreen,
       sidebarPositionDisplayed,
-      isDragDrop
+      isDragDrop,
+      isShowDataAssigned
     } = this.props
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys
 
@@ -120,6 +123,7 @@ export default class Sidebar extends Component {
               groupTitleKey={groupTitleKey}
               groupRightTitleKey={groupRightTitleKey}
               groupRenderer={groupRenderer}
+              isShowDataAssigned={isShowDataAssigned}
             />
           )}
         </div>

@@ -151,7 +151,8 @@ export default class ReactCalendarTimeline extends Component {
     scrollTop: PropTypes.number,
     isDragDrop: PropTypes.object,
 
-    isCreateTrackRecord: PropTypes.bool
+    isCreateTrackRecord: PropTypes.bool,
+    isShowDataAssigned: PropTypes.bool
   }
 
   static defaultProps = {
@@ -250,7 +251,8 @@ export default class ReactCalendarTimeline extends Component {
     scrollTop: DEFAULT_SCROLL_TOP,
     isDragDrop: { current: null },
 
-    isCreateTrackRecord: false
+    isCreateTrackRecord: false,
+    isShowDataAssigned: false
   }
 
   static childContextTypes = {
@@ -1309,6 +1311,7 @@ export default class ReactCalendarTimeline extends Component {
           isScheduleScreen={isScheduleScreen}
           sidebarPositionDisplayed={sidebarPositionDisplayed}
           isDragDrop={isDragDrop}
+          isShowDataAssigned={this.props.isShowDataAssigned}
         />
       )
     )
