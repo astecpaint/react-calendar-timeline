@@ -27,7 +27,8 @@ export default class Sidebar extends Component {
     isScheduleScreen: PropTypes.bool.isRequired,
     sidebarPositionDisplayed: PropTypes.object.isRequired,
     isDragDrop: PropTypes.object,
-    isShowDataAssigned: PropTypes.bool
+    isShowDataAssigned: PropTypes.bool,
+    viewOption: PropTypes.number
   }
 
   shouldComponentUpdate(nextProps) {
@@ -44,7 +45,8 @@ export default class Sidebar extends Component {
         this.props.sidebarPositionDisplayed,
         nextProps.sidebarPositionDisplayed
       ) &&
-      nextProps.isShowDataAssigned === this.props.isShowDataAssigned
+      nextProps.isShowDataAssigned === this.props.isShowDataAssigned &&
+      nextProps.viewOption === this.props.viewOption
     )
   }
 
@@ -76,7 +78,8 @@ export default class Sidebar extends Component {
       isScheduleScreen,
       sidebarPositionDisplayed,
       isDragDrop,
-      isShowDataAssigned
+      isShowDataAssigned,
+      viewOption
     } = this.props
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys
 
@@ -124,6 +127,7 @@ export default class Sidebar extends Component {
               groupRightTitleKey={groupRightTitleKey}
               groupRenderer={groupRenderer}
               isShowDataAssigned={isShowDataAssigned}
+              viewOption={viewOption}
             />
           )}
         </div>
@@ -161,6 +165,7 @@ export default class Sidebar extends Component {
               buttonTooltipRenderer={buttonTooltipRenderer}
               sidebarPositionDisplayed={sidebarPositionDisplayed}
               isDragDrop={isDragDrop}
+              viewOption={viewOption}
             />
           </div>
         ) : (

@@ -18,7 +18,8 @@ export default class GroupContent extends Component {
   shouldComponentUpdate(nextProps) {
     return (
       !deepObjectCompare(this.props.group, nextProps.group) ||
-      nextProps.isShowDataAssigned !== this.props.isShowDataAssigned
+      nextProps.isShowDataAssigned !== this.props.isShowDataAssigned ||
+      nextProps.viewOption !== this.props.viewOption
     )
   }
 

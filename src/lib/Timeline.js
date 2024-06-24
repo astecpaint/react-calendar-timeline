@@ -152,7 +152,8 @@ export default class ReactCalendarTimeline extends Component {
     isDragDrop: PropTypes.object,
 
     isCreateTrackRecord: PropTypes.bool,
-    isShowDataAssigned: PropTypes.bool
+    isShowDataAssigned: PropTypes.bool,
+    viewOption: PropTypes.number
   }
 
   static defaultProps = {
@@ -252,7 +253,8 @@ export default class ReactCalendarTimeline extends Component {
     isDragDrop: { current: null },
 
     isCreateTrackRecord: false,
-    isShowDataAssigned: false
+    isShowDataAssigned: false,
+    viewOption: 1
   }
 
   static childContextTypes = {
@@ -1285,7 +1287,9 @@ export default class ReactCalendarTimeline extends Component {
       buttonTooltipRenderer,
       isScheduleScreen,
       onStartSort,
-      isDragDrop
+      isDragDrop,
+      isShowDataAssigned,
+      viewOption
     } = this.props
     const sidebarPositionDisplayed = this.getItemDisplayPosition(
       DEFAULT_BUFFER_ROW_IN_SIDEBAR
@@ -1311,7 +1315,8 @@ export default class ReactCalendarTimeline extends Component {
           isScheduleScreen={isScheduleScreen}
           sidebarPositionDisplayed={sidebarPositionDisplayed}
           isDragDrop={isDragDrop}
-          isShowDataAssigned={this.props.isShowDataAssigned}
+          isShowDataAssigned={isShowDataAssigned}
+          viewOption={viewOption}
         />
       )
     )

@@ -16,7 +16,9 @@ class SortableListClass extends Component {
       nextProps.groupRightTitleKey === this.props.groupRightTitleKey &&
       nextProps.groupTitleKey === this.props.groupTitleKey &&
       nextProps.isRightSidebar === this.props.isRightSidebar &&
-      nextProps.sidebarPositionDisplayed === this.props.sidebarPositionDisplayed
+      nextProps.sidebarPositionDisplayed ===
+        this.props.sidebarPositionDisplayed &&
+      nextProps.viewOption === this.props.viewOption
     )
   }
 
