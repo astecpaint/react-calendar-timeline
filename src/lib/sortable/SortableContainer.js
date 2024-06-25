@@ -42,7 +42,7 @@ class SortableListClass extends Component {
         style={{ borderTopWidth: '0px' }}
       >
         {groups?.map((item, index) => {
-          return !!item?.isEmptyGroup || !!item?.task?.isEmptySubGroup ? (
+          return !!item?.isEmptyGroup ? (
             <Fragment key={index}>
               {groupRenderer
                 ? React.createElement(groupRenderer, {

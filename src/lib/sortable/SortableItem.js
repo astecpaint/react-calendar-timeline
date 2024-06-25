@@ -20,9 +20,12 @@ const renderGroupContent = (
   }
 }
 
-const DragHandle = SortableHandle(() => (
-  <button className="drag-handle-btn">
-    <i class="icon-drag fas fa-grip-lines-vertical"></i>
+const DragHandle = SortableHandle(({ groupIndex }) => (
+  <button className="drag-handle-btn" data-group-index={groupIndex}>
+    <i
+      class="icon-drag fas fa-grip-lines-vertical"
+      style={{ pointerEvents: 'none' }}
+    ></i>
   </button>
 ))
 
@@ -88,50 +91,52 @@ class SortableItemClass extends Component {
         {currentIndex >= start && currentIndex <= end && (
           <>
             {this.state.groupChildren}
-            <div
-              className={
-                'rct-drag-drop' +
-                (group?.task?.parent_id != null &&
-                group?.task?.parent_id != undefined
-                  ? ' -sub'
-                  : '')
-              }
-            >
+            {!group?.task?.isEmptySubGroup && (
               <div
                 className={
-                  'rct-siderbar-control-btns' +
+                  'rct-drag-drop' +
                   (group?.task?.parent_id != null &&
                   group?.task?.parent_id != undefined
                     ? ' -sub'
                     : '')
                 }
               >
-                <DragHandle />
+                <div
+                  className={
+                    'rct-siderbar-control-btns' +
+                    (group?.task?.parent_id != null &&
+                    group?.task?.parent_id != undefined
+                      ? ' -sub'
+                      : '')
+                  }
+                >
+                  <DragHandle groupIndex={group?.index} />
 
-                {ButtonTooltip ? (
-                  <ButtonTooltip
-                    group={group}
-                    children={
-                      <button
-                        onClick={() =>
-                          openAddGroupForm(_get(group, groupIdKey), group)
-                        }
-                      >
-                        <i className="fas fa-plus"></i>
-                      </button>
-                    }
-                  ></ButtonTooltip>
-                ) : (
-                  <button
-                    onClick={() =>
-                      openAddGroupForm(_get(group, groupIdKey), group)
-                    }
-                  >
-                    <i className="fas fa-plus"></i>
-                  </button>
-                )}
+                  {ButtonTooltip ? (
+                    <ButtonTooltip
+                      group={group}
+                      children={
+                        <button
+                          onClick={() =>
+                            openAddGroupForm(_get(group, groupIdKey), group)
+                          }
+                        >
+                          <i className="fas fa-plus"></i>
+                        </button>
+                      }
+                    ></ButtonTooltip>
+                  ) : (
+                    <button
+                      onClick={() =>
+                        openAddGroupForm(_get(group, groupIdKey), group)
+                      }
+                    >
+                      <i className="fas fa-plus"></i>
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </>
         )}
       </div>
