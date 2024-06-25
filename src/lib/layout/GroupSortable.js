@@ -262,7 +262,7 @@ export default class GroupSortable extends Component {
         )
       } else if (
         sort.newIndex < sort.oldIndex &&
-        sort.newIndex < rctItemElements.get(oldIndexKey)?.firstIndex
+        sort.newIndex <= rctItemElements.get(oldIndexKey)?.firstIndex
       ) {
         this.transformElements(
           rctItemElements.get(oldIndexKey),
@@ -389,7 +389,6 @@ export default class GroupSortable extends Component {
     const firstIndex = groupFilter[0].index
     const lastIndex = groupFilter[groupFilter.length - 1].index
 
-    if (sort.newIndex === sort.oldIndex) return
     if (sortParentId) {
       if (sort.newIndex <= firstIndex) {
         newIndex = firstIndex + 1
@@ -428,7 +427,7 @@ export default class GroupSortable extends Component {
       scrollContainer.removeEventListener('scroll', this.autoScrollEvent)
     }
 
-    sortOrderTaskList(arrayMove, sort.oldIndex, newIndex)
+    sortOrderTaskList(arrayMove, sort.oldIndex, newIndex, currentGroup)
 
     this.setState({
       isDraging: false, // state check move action

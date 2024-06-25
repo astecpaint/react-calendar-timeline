@@ -615,9 +615,14 @@ export default class Item extends Component {
       (this.props.item.className ? ` ${this.props.item.className}` : '') +
       ' rct_draggable_' +
       this.props?.item?.group +
-      (this.props?.item?.task?.parent_id
+      (this.props?.item?.task?.parent_id &&
+      this.props?.item?.type !== DEFAULT_TYPE_TRACK_RECORD
         ? ' group-move-' + this.props?.item?.task?.parent_id
-        : ' group-move-' + this.props?.item?.task?.task_id)
+        : ' group-move-' + this.props?.item?.task?.task_id) +
+      (this.props?.item?.belongTaskParentId &&
+      this.props?.item?.type === DEFAULT_TYPE_TRACK_RECORD
+        ? ' group-move-' + this.props?.item?.belongTaskParentId
+        : ' group-move-' + this.props?.item?.belongTaskId)
 
     return {
       key: this.itemId,
