@@ -48,7 +48,8 @@ export default class GroupSortable extends Component {
       nextProps.isShowDragHandleButton === this.props.isShowDragHandleButton &&
       nextProps.sidebarPositionDisplayed ===
         this.props.sidebarPositionDisplayed &&
-      nextProps.viewOption === this.props.viewOption
+      nextProps.viewOption === this.props.viewOption &&
+      nextProps.isShowTrackRecord === this.props.isShowTrackRecord
     )
   }
 
@@ -503,7 +504,8 @@ export default class GroupSortable extends Component {
       openAddGroupForm,
       buttonTooltipRenderer,
       sidebarPositionDisplayed,
-      viewOption
+      viewOption,
+      isShowTrackRecord
     } = this.props
     return (
       <div
@@ -535,6 +537,7 @@ export default class GroupSortable extends Component {
           buttonTooltipRenderer={buttonTooltipRenderer}
           sidebarPositionDisplayed={sidebarPositionDisplayed}
           viewOption={viewOption}
+          isShowTrackRecord={isShowTrackRecord}
         />
       </div>
     )

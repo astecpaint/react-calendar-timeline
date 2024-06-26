@@ -34,7 +34,8 @@ export default class GroupRows extends Component {
     itemPositionDisplayed: PropTypes.object.isRequired,
     isCreateTrackRecord: PropTypes.bool.isRequired,
     resizingItemCalled: PropTypes.bool,
-    dragMoveItemCalled: PropTypes.bool
+    dragMoveItemCalled: PropTypes.bool,
+    isShowTrackRecord: PropTypes.bool
   }
 
   shouldComponentUpdate(nextProps) {
@@ -48,7 +49,8 @@ export default class GroupRows extends Component {
         deepObjectCompare(
           this.props.itemPositionDisplayed,
           nextProps.itemPositionDisplayed
-        ))
+        ) &&
+        nextProps.isShowTrackRecord === this.props.isShowTrackRecord)
     )
   }
 

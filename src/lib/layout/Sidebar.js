@@ -28,7 +28,8 @@ export default class Sidebar extends Component {
     sidebarPositionDisplayed: PropTypes.object.isRequired,
     isDragDrop: PropTypes.object,
     isShowDataAssigned: PropTypes.bool,
-    viewOption: PropTypes.number
+    viewOption: PropTypes.number,
+    isShowTrackRecord: PropTypes.bool
   }
 
   shouldComponentUpdate(nextProps) {
@@ -46,7 +47,8 @@ export default class Sidebar extends Component {
         nextProps.sidebarPositionDisplayed
       ) &&
       nextProps.isShowDataAssigned === this.props.isShowDataAssigned &&
-      nextProps.viewOption === this.props.viewOption
+      nextProps.viewOption === this.props.viewOption &&
+      nextProps.isShowTrackRecord === this.props.isShowTrackRecord
     )
   }
 
@@ -79,7 +81,8 @@ export default class Sidebar extends Component {
       sidebarPositionDisplayed,
       isDragDrop,
       isShowDataAssigned,
-      viewOption
+      viewOption,
+      isShowTrackRecord
     } = this.props
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys
 
@@ -128,6 +131,7 @@ export default class Sidebar extends Component {
               groupRenderer={groupRenderer}
               isShowDataAssigned={isShowDataAssigned}
               viewOption={viewOption}
+              isShowTrackRecord={isShowTrackRecord}
             />
           )}
         </div>
@@ -166,6 +170,7 @@ export default class Sidebar extends Component {
               sidebarPositionDisplayed={sidebarPositionDisplayed}
               isDragDrop={isDragDrop}
               viewOption={viewOption}
+              isShowTrackRecord={isShowTrackRecord}
             />
           </div>
         ) : (

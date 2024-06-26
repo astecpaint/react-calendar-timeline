@@ -18,7 +18,8 @@ class SortableListClass extends Component {
       nextProps.isRightSidebar === this.props.isRightSidebar &&
       nextProps.sidebarPositionDisplayed ===
         this.props.sidebarPositionDisplayed &&
-      nextProps.viewOption === this.props.viewOption
+      nextProps.viewOption === this.props.viewOption &&
+      nextProps.isShowTrackRecord === this.props.isShowTrackRecord
     )
   }
 
