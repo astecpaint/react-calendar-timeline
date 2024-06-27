@@ -90,7 +90,8 @@ class GroupRow extends Component {
     isCreatingPositionAbove
   ) => {
     if (countTime < COUNT_TIME) return <></>
-    const { isMerge } = group
+    const { isMerge, task } = group
+    const { track_record_color } = task
 
     return (
       <>
@@ -122,9 +123,7 @@ class GroupRow extends Component {
               height: `${HEIGHT_TRACK_RECORD}px`,
               width: `${width}px`,
               minWidth: `${MIN_WIDTH}px`,
-              backgroundColor: isMerge
-                ? BG_COLOR_TRACK_RECORD
-                : BG_COLOR_SUB_TRACK_RECORD,
+              backgroundColor: track_record_color,
               zIndex: 2
             }}
           />
