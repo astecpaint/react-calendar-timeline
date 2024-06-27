@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import PreventClickOnDrag from '../interaction/PreventClickOnDrag'
 import {
   calculateTimeForXPosition,
   calculateXPositionForTime,
@@ -90,8 +89,7 @@ class GroupRow extends Component {
     isCreatingPositionAbove
   ) => {
     if (countTime < COUNT_TIME) return <></>
-    const { isMerge, task } = group
-    const { track_record_color } = task
+    const { isMerge } = group
 
     return (
       <>
@@ -123,7 +121,9 @@ class GroupRow extends Component {
               height: `${HEIGHT_TRACK_RECORD}px`,
               width: `${width}px`,
               minWidth: `${MIN_WIDTH}px`,
-              backgroundColor: track_record_color,
+              backgroundColor: isMerge
+                ? BG_COLOR_TRACK_RECORD
+                : BG_COLOR_SUB_TRACK_RECORD,
               zIndex: 2
             }}
           />
@@ -285,7 +285,7 @@ class GroupRow extends Component {
     ).valueOf()
 
     this.intervalTouchTime = setInterval(
-      function() {
+      function () {
         if (this.state.countTime < COUNT_TIME) {
           this.setState({ countTime: this.state.countTime + 1 })
         } else {
@@ -546,43 +546,39 @@ class GroupRow extends Component {
     const { start, end } = itemPositionDisplayed
 
     return (
-      <PreventClickOnDrag
-        clickTolerance={clickTolerance}
+      <div
         onClick={onClick}
-        onRowMouseDown={this.handleMouseDown}
-        onRowMouseUp={this.handleMouseUp}
-        onRowMouseMove={this.handleMouseMove}
+        onMouseDown={this.handleMouseDown}
+        onMouseUp={this.handleMouseUp}
+        onMouseMove={this.handleMouseMove}
+        onContextMenu={onContextMenu}
+        onDoubleClick={onDoubleClick}
+        className={
+          (isEvenRow ? 'rct-hl-even ' : 'rct-hl-odd ') +
+          (classNamesForGroup ? classNamesForGroup.join(' ') : '')
+        }
+        style={style}
       >
-        <div
-          onContextMenu={onContextMenu}
-          onDoubleClick={onDoubleClick}
-          className={
-            (isEvenRow ? 'rct-hl-even ' : 'rct-hl-odd ') +
-            (classNamesForGroup ? classNamesForGroup.join(' ') : '')
-          }
-          style={style}
-        >
-          {index >= start && index <= end && (
-            <>
-              {this.renderCreateTask(
-                group,
-                countTime,
-                left,
-                width,
-                this.isCreatingPositionAbove
-              )}
-              {this.renderBgColor(
-                isShowBgColorGroup,
-                group,
-                canvasTimeStart,
-                canvasTimeEnd,
-                canvasWidth,
-                isScheduleScreen
-              )}
-            </>
-          )}
-        </div>
-      </PreventClickOnDrag>
+        {index >= start && index <= end && (
+          <>
+            {this.renderCreateTask(
+              group,
+              countTime,
+              left,
+              width,
+              this.isCreatingPositionAbove
+            )}
+            {this.renderBgColor(
+              isShowBgColorGroup,
+              group,
+              canvasTimeStart,
+              canvasTimeEnd,
+              canvasWidth,
+              isScheduleScreen
+            )}
+          </>
+        )}
+      </div>
     )
   }
 }
