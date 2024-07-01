@@ -1682,7 +1682,7 @@ export default class ReactCalendarTimeline extends Component {
                     <div className="scroll-temporary-header"></div>
                     <div
                       className="scroll-temporary-body"
-                      ref={el => this.refHandler(el)}
+                      ref={this.refHandler}
                     >
                       <div className="content">&nbsp;</div>
                     </div>
