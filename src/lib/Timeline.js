@@ -1477,7 +1477,7 @@ export default class ReactCalendarTimeline extends Component {
 
   handleScroll = e => {
     const distanceScroll =
-      (this.scrollComponentTemporary.scrollLeft - this.scrollLeftTemporary) /
+      (this.scrollComponentTemporary?.scrollLeft - this.scrollLeftTemporary) /
       3.2
     if (!this.isScrolling) {
       this.isScrolling = true
@@ -1682,7 +1682,7 @@ export default class ReactCalendarTimeline extends Component {
                     <div className="scroll-temporary-header"></div>
                     <div
                       className="scroll-temporary-body"
-                      ref={this.refHandler}
+                      ref={el => this.refHandler(el)}
                     >
                       <div className="content">&nbsp;</div>
                     </div>
