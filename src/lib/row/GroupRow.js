@@ -11,7 +11,6 @@ const HEIGHT_TASK = 23,
   MARGIN_TOP_OF_TASK = 7,
   BG_COLOR_TASK = '#4fc3f7',
   BG_COLOR_SUB_TASK = '#a6e0fa',
-  MIN_WIDTH = 52,
   COUNT_TIME = 1,
   MAX_NUMBER_OF_DRAG_DAYS = 59,
   HEIGHT_ROW_TASK = 60,
@@ -86,10 +85,34 @@ class GroupRow extends Component {
     countTime,
     left,
     width,
-    isCreatingPositionAbove
+    isCreatingPositionAbove,
+    canvasTimeStart,
+    canvasTimeEnd,
+    canvasWidth,
   ) => {
     if (countTime < COUNT_TIME) return <></>
     const { isMerge } = group
+
+    const startTimeToday = moment(moment(new Date()).format('YYYY-MM-DD')).valueOf()
+    const endTimeToday = moment(startTimeToday).set({
+      hour: 23,
+      minute: 59,
+      second: 59,
+      millisecond: 59
+    }).valueOf()
+    const startPosition = calculateXPositionForTime(
+      canvasTimeStart,
+      canvasTimeEnd,
+      canvasWidth,
+      startTimeToday
+    )
+    const endPosition = calculateXPositionForTime(
+      canvasTimeStart,
+      canvasTimeEnd,
+      canvasWidth,
+      endTimeToday
+    )
+    const minWidth = endPosition - startPosition
 
     return (
       <>
@@ -101,7 +124,7 @@ class GroupRow extends Component {
               top: `${MARGIN_TOP_OF_TASK}px`,
               height: `${HEIGHT_TASK}px`,
               width: `${width}px`,
-              minWidth: `${MIN_WIDTH}px`,
+              minWidth: `${minWidth}px`,
               backgroundColor: isMerge ? BG_COLOR_TASK : BG_COLOR_SUB_TASK,
               borderRadius: '6px',
               paddingLeft: '5px',
@@ -120,7 +143,7 @@ class GroupRow extends Component {
               top: `${MARGIN_TOP_OF_TRACK_RECORD}px`,
               height: `${HEIGHT_TRACK_RECORD}px`,
               width: `${width}px`,
-              minWidth: `${MIN_WIDTH}px`,
+              minWidth: `${minWidth}px`,
               backgroundColor: isMerge
                 ? BG_COLOR_TRACK_RECORD
                 : BG_COLOR_SUB_TRACK_RECORD,
@@ -566,7 +589,10 @@ class GroupRow extends Component {
               countTime,
               left,
               width,
-              this.isCreatingPositionAbove
+              this.isCreatingPositionAbove,
+              canvasTimeStart,
+              canvasTimeEnd,
+              canvasWidth,
             )}
             {this.renderBgColor(
               isShowBgColorGroup,
