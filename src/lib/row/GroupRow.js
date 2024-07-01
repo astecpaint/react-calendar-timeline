@@ -285,7 +285,7 @@ class GroupRow extends Component {
     ).valueOf()
 
     this.intervalTouchTime = setInterval(
-      function () {
+      function() {
         if (this.state.countTime < COUNT_TIME) {
           this.setState({ countTime: this.state.countTime + 1 })
         } else {

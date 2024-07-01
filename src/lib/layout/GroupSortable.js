@@ -8,7 +8,7 @@ export default class GroupSortable extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      isDraging: false, // state check move action
+      isDragging: false, // state check move action
       scrollContainer: null, // state scroll container element
 
       dragControlElement: null,
@@ -17,11 +17,12 @@ export default class GroupSortable extends Component {
       displacementSize: 0, // the distance from the position of the mouse pointer holding the move group to the top border of the scroll container
       lastDragPosition: 0, // the last drag position before triggering scroll event
       dragIndex: -1, // the index of the current group which are being dragged
-      groupPositionLimit: null, // Maximum top and bottom border position when dragging a sub group
+      groupSortableConstraints: null, // Maximum top and bottom border position when dragging a sub group
       firstDragScrollTop: 0, // Distance to top of container when dragging starts
       rctItemElements: new Map(), // the item elements on chart
       sortParentId: null, // the parent id of the current group which are being dragged,
-      currentGroup: null
+      currentGroup: null,
+      rctLockItemElements: new Map() // the item elements will be locked motion
     }
   }
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -44,7 +45,7 @@ export default class GroupSortable extends Component {
       nextProps.groupRightTitleKey === this.props.groupRightTitleKey &&
       nextProps.groupTitleKey === this.props.groupTitleKey &&
       nextProps.isRightSidebar === this.props.isRightSidebar &&
-      nextState.isDraging === this.state.isDraging &&
+      nextState.isDragging === this.state.isDragging &&
       nextProps.isShowDragHandleButton === this.props.isShowDragHandleButton &&
       nextProps.sidebarPositionDisplayed ===
         this.props.sidebarPositionDisplayed &&
@@ -62,6 +63,12 @@ export default class GroupSortable extends Component {
     }
   }
 
+  /**
+   * This function is invoked before sorting begins, and can be used to cancel sorting before it begins
+   * @param {object} event - draggable handle element event
+   * @returns {boolean}
+   * return if return true then sort event will be cancel else the sort event will be start
+   */
   shouldCancelStart = event => {
     const { onStartSort, groups } = this.props
     const currentGroupIndex = Number(
@@ -75,33 +82,56 @@ export default class GroupSortable extends Component {
   }
 
   /**
+   * This function is invoked before sorting begins.
+   * It can update state before sorting begins
+   * @param {*} sort
+   * @param {*} event
+   */
+  updateBeforeSortStart = (sort, event) => {
+    const { scrollContainer, currentGroup, dragIndex } = this.state
+    const parentId = currentGroup?.task?.parent_id
+    let sortParentId = null,
+      groupSortableConstraints = {
+        top: 0,
+        bottom: 0
+      },
+      firstDragScrollTop = 0
+    if (parentId) {
+      const subGroups = []
+      document
+        .querySelectorAll('.sidebar-grouped-by-' + parentId)
+        .forEach(group => {
+          if (!group.classList.contains('draggable_task_item')) {
+            subGroups.push(group)
+          }
+        })
+      const subGroupsSize = subGroups?.length
+      if (subGroupsSize) {
+        groupSortableConstraints.top =
+          subGroups[1].getBoundingClientRect().top + scrollContainer.scrollTop
+        groupSortableConstraints.bottom =
+          subGroups[subGroupsSize - 1].getBoundingClientRect().top +
+          scrollContainer.scrollTop
+        firstDragScrollTop = scrollContainer.scrollTop
+      }
+      sortParentId = parentId
+    }
+    this.setState({
+      isDragging: true,
+      dragIndex: sort.index,
+      groupSortableConstraints,
+      firstDragScrollTop,
+      sortParentId
+    })
+  }
+
+  /**
    * the function handle event start sort
    * @param {*} sort
    * @param {*} event
    */
   onSortStart = (sort, event) => {
-    const { groups } = this.props
-    const { scrollContainer, currentGroup } = this.state
-    const parentId = currentGroup?.task?.parent_id
-    const groupPositionLimit = {}
-
-    if (parentId) {
-      const subGroups = document.querySelectorAll('.group-move-' + parentId)
-      const subGroupsSize = subGroups?.length
-      if (subGroupsSize) {
-        groupPositionLimit.top =
-          subGroups[1].getBoundingClientRect().top + scrollContainer.scrollTop
-        groupPositionLimit.bottom =
-          subGroups[subGroupsSize - 2].getBoundingClientRect().top +
-          groups[0].height +
-          scrollContainer.scrollTop
-        this.state.groupPositionLimit = groupPositionLimit
-        this.state.firstDragScrollTop = scrollContainer.scrollTop
-      }
-      this.state.sortParentId = parentId
-    }
-
-    const dragIndex = sort.index
+    const { scrollContainer, currentGroup, dragIndex } = this.state
     const displacementSize = event.y + scrollContainer.scrollTop
 
     const dragItemElements = document.querySelectorAll(
@@ -113,16 +143,16 @@ export default class GroupSortable extends Component {
       element.classList.add('draggable_task_process')
     })
 
+    const draggableItem = document.querySelector('.draggable_task_item')
+    const draggableButton = document.createElement('i')
+    draggableButton.className = 'fas fa-arrows-alt draggable_button'
+    draggableButton.style.cssText =
+      'font-size: 16x; width: 16px; color: white; position: absolute; top: 30px; left: 15px; transform: translate(-50%, -50%); z-index: 83; pointer-events: none;'
+    draggableItem.appendChild(draggableButton)
+
     if (scrollContainer) {
       scrollContainer.addEventListener('scroll', this.autoScrollEvent)
     }
-
-    const dragableItem = document.querySelector('.draggable_task_item')
-    const dragableButton = document.createElement('i')
-    dragableButton.className = 'fas fa-arrows-alt draggable_button'
-    dragableButton.style.cssText =
-      'font-size: 16x; width: 16px; color: white; position: absolute; top: 30px; left: 15px; transform: translate(-50%, -50%); z-index: 83; pointer-events: none;'
-    dragableItem.appendChild(dragableButton)
 
     this.state.displacementSize = displacementSize
     this.state.dragItemElements = {
@@ -130,10 +160,6 @@ export default class GroupSortable extends Component {
       lastIndex: currentGroup.index,
       groupMove: '.rct_draggable_' + dragIndex
     }
-    this.setState({
-      isDraging: true,
-      dragIndex: dragIndex
-    })
   }
 
   /**
@@ -146,28 +172,35 @@ export default class GroupSortable extends Component {
       scrollContainer,
       dragItemElements,
       displacementSize,
-      groupPositionLimit,
-      firstDragScrollTop
+      groupSortableConstraints,
+      firstDragScrollTop,
+      sortParentId
     } = this.state
-    let dragTransform = 0
-    if (groupPositionLimit?.top > event.clientY + scrollContainer.scrollTop) {
-      dragTransform =
-        groupPositionLimit?.top -
-        displacementSize +
-        (firstDragScrollTop - scrollContainer.scrollTop)
-    } else if (
-      groupPositionLimit?.bottom <
-      event.clientY + scrollContainer.scrollTop
-    ) {
-      dragTransform =
-        groupPositionLimit?.bottom -
-        displacementSize +
-        (firstDragScrollTop - scrollContainer.scrollTop)
-    }
     if (
-      groupPositionLimit?.top > event.clientY + scrollContainer.scrollTop ||
-      groupPositionLimit?.bottom < event.clientY + scrollContainer.scrollTop
+      (groupSortableConstraints?.top >
+        event.clientY + scrollContainer.scrollTop ||
+        groupSortableConstraints?.bottom <
+          event.clientY + scrollContainer.scrollTop) &&
+      sortParentId
     ) {
+      let dragTransform = 0
+      if (
+        groupSortableConstraints?.top >
+        event.clientY + scrollContainer.scrollTop
+      ) {
+        dragTransform =
+          groupSortableConstraints?.top -
+          displacementSize +
+          (firstDragScrollTop - scrollContainer.scrollTop)
+      } else if (
+        groupSortableConstraints?.bottom <
+        event.clientY + scrollContainer.scrollTop
+      ) {
+        dragTransform =
+          groupSortableConstraints?.bottom -
+          displacementSize +
+          (firstDragScrollTop - scrollContainer.scrollTop)
+      }
       document.querySelector('.draggable_task_item').style.transform =
         'translate3d(0px, ' + dragTransform + 'px, 0px)'
     } else {
@@ -187,7 +220,7 @@ export default class GroupSortable extends Component {
    */
   onSortOver = sort => {
     const { groups, isDragDrop } = this.props
-    const { rctItemElements, sortParentId } = this.state
+    const { rctItemElements, sortParentId, rctLockItemElements } = this.state
     let newIndexKey = '.rct_draggable_' + sort.newIndex
     let oldIndexKey = '.rct_draggable_' + sort.oldIndex
     const oldGroup = groups?.find(group => group?.index === sort.oldIndex)
@@ -196,9 +229,15 @@ export default class GroupSortable extends Component {
 
     if (sortParentId) {
       if (newGroup?.task?.parent_id !== sortParentId) {
+        const lockedIndexKey = '.-sort-index-' + sort.newIndex
         document
-          .querySelector('.-sort-index-' + sort.newIndex)
+          .querySelector(lockedIndexKey)
           .classList.add('disable-transform')
+        if (!rctLockItemElements.has(lockedIndexKey)) {
+          this.state.rctLockItemElements.set(lockedIndexKey, {
+            groupMove: lockedIndexKey
+          })
+        }
         return
       }
       if (!rctItemElements.has(newIndexKey)) {
@@ -241,70 +280,93 @@ export default class GroupSortable extends Component {
       }
     }
 
-    if (sort.newIndex % 12 === 0) {
+    if (
+      sort.newIndex % 12 === 0 &&
+      sort.newIndex !== 0 &&
+      sort.newIndex !== groups?.length - 1
+    ) {
       isDragDrop.current = false
       setTimeout(() => {
         isDragDrop.current = true
-      }, 500)
+      }, [500])
+    } else {
+      isDragDrop.current = true
     }
 
-    if (sort.newIndex > sort.index) {
-      if (
-        (sort.newIndex > sort.oldIndex &&
-          sort.newIndex >= rctItemElements.get(newIndexKey)?.lastIndex) ||
-        (sort.newIndex < sort.oldIndex &&
-          sort.newIndex > rctItemElements.get(newIndexKey)?.firstIndex &&
-          sort.newIndex < rctItemElements.get(newIndexKey)?.lastIndex)
-      ) {
-        this.transformElements(
-          rctItemElements.get(newIndexKey),
-          -60,
-          DEFAULT_SORTABLE_DURATION
-        )
-      } else if (
-        sort.newIndex < sort.oldIndex &&
-        sort.newIndex <= rctItemElements.get(oldIndexKey)?.firstIndex
-      ) {
-        this.transformElements(
-          rctItemElements.get(oldIndexKey),
-          0,
-          DEFAULT_SORTABLE_DURATION
-        )
+    const itemElementsAtOldIndex = rctItemElements.get(oldIndexKey)
+    const itemElementsAtNewIndex = rctItemElements.get(newIndexKey)
+    const { firstIndex, lastIndex } = itemElementsAtNewIndex
+    const {
+      firstIndex: oldFirstIndex,
+      lastIndex: oldLastIndex
+    } = itemElementsAtOldIndex || {
+      firstIndex: undefined,
+      lastIndex: undefined
+    }
+    const { newIndex, oldIndex, index } = sort
+    if (newIndex > index) {
+      if (newIndex > oldIndex) {
+        if (newIndex >= firstIndex && newIndex < lastIndex) {
+          this.transformElements(
+            itemElementsAtNewIndex,
+            0,
+            DEFAULT_SORTABLE_DURATION
+          )
+        } else if (newIndex === lastIndex) {
+          this.transformElements(
+            itemElementsAtNewIndex,
+            -60,
+            DEFAULT_SORTABLE_DURATION
+          )
+        }
       } else {
-        document
-          .querySelectorAll(rctItemElements.get(newIndexKey).groupMove)
-          .forEach(element => element.classList.add('disable-transform'))
+        if (oldIndex === oldFirstIndex) {
+          this.transformElements(
+            itemElementsAtOldIndex,
+            0,
+            DEFAULT_SORTABLE_DURATION
+          )
+        } else if (oldIndex <= oldLastIndex && oldIndex > oldFirstIndex) {
+          this.transformElements(
+            itemElementsAtOldIndex,
+            -60,
+            DEFAULT_SORTABLE_DURATION
+          )
+        }
       }
-    } else if (sort.newIndex < sort.index) {
-      if (
-        (sort.newIndex < sort.oldIndex &&
-          sort.newIndex <= rctItemElements.get(newIndexKey).firstIndex) ||
-        (sort.newIndex > sort.oldIndex &&
-          sort.newIndex < rctItemElements.get(newIndexKey).lastIndex &&
-          sort.newIndex > rctItemElements.get(newIndexKey).firstIndex)
-      ) {
-        this.transformElements(
-          rctItemElements.get(newIndexKey),
-          60,
-          DEFAULT_SORTABLE_DURATION
-        )
-      } else if (
-        sort.newIndex > sort.oldIndex &&
-        sort.newIndex >= rctItemElements.get(oldIndexKey).lastIndex
-      ) {
-        this.transformElements(
-          rctItemElements.get(oldIndexKey),
-          0,
-          DEFAULT_SORTABLE_DURATION
-        )
+    } else if (newIndex < index) {
+      if (newIndex < oldIndex) {
+        if (newIndex <= lastIndex && newIndex > firstIndex) {
+          this.transformElements(
+            itemElementsAtNewIndex,
+            0,
+            DEFAULT_SORTABLE_DURATION
+          )
+        } else if (newIndex === firstIndex) {
+          this.transformElements(
+            itemElementsAtNewIndex,
+            60,
+            DEFAULT_SORTABLE_DURATION
+          )
+        }
       } else {
-        document
-          .querySelectorAll(rctItemElements.get(newIndexKey).groupMove)
-          .forEach(element => element.classList.add('disable-transform'))
+        if (oldIndex === oldLastIndex) {
+          this.transformElements(
+            itemElementsAtOldIndex,
+            0,
+            DEFAULT_SORTABLE_DURATION
+          )
+        } else if (oldIndex >= oldFirstIndex && oldIndex < oldLastIndex) {
+          this.transformElements(
+            itemElementsAtOldIndex,
+            60,
+            DEFAULT_SORTABLE_DURATION
+          )
+        }
       }
     } else {
       this.transformElements(
-        rctItemElements.get(oldIndexKey),
+        itemElementsAtOldIndex,
         0,
         DEFAULT_SORTABLE_DURATION
       )
@@ -321,25 +383,32 @@ export default class GroupSortable extends Component {
       dragItemElements,
       lastDragPosition,
       displacementSize,
-      groupPositionLimit,
-      firstDragScrollTop
+      groupSortableConstraints,
+      firstDragScrollTop,
+      sortParentId
     } = this.state
     if (
-      groupPositionLimit?.top > lastDragPosition + event.target.scrollTop ||
-      groupPositionLimit?.bottom < lastDragPosition + event.target.scrollTop
+      (groupSortableConstraints?.top >
+        lastDragPosition + event.target.scrollTop ||
+        groupSortableConstraints?.bottom <
+          lastDragPosition + event.target.scrollTop) &&
+      sortParentId
     ) {
       let dragTransform = 0
-      if (groupPositionLimit?.top > lastDragPosition + event.target.scrollTop) {
-        dragTransform =
-          groupPositionLimit?.top -
-          displacementSize +
-          (firstDragScrollTop - event.target.scrollTop)
-      } else if (
-        groupPositionLimit?.bottom <
+      if (
+        groupSortableConstraints?.top >
         lastDragPosition + event.target.scrollTop
       ) {
         dragTransform =
-          groupPositionLimit?.bottom -
+          groupSortableConstraints?.top -
+          displacementSize +
+          (firstDragScrollTop - event.target.scrollTop)
+      } else if (
+        groupSortableConstraints?.bottom <
+        lastDragPosition + event.target.scrollTop
+      ) {
+        dragTransform =
+          groupSortableConstraints?.bottom -
           displacementSize +
           (firstDragScrollTop - event.target.scrollTop)
       }
@@ -362,60 +431,65 @@ export default class GroupSortable extends Component {
       rctItemElements,
       dragItemElements,
       sortParentId,
-      currentGroup
+      currentGroup,
+      rctLockItemElements
     } = this.state
     const { sortOrderTaskList, groups } = this.props
-    let newIndex = sort.newIndex
-
-    const groupAtNewIndex = groups?.find(
-      group => group?.index === sort.newIndex
-    )
-
-    const newIndexKey = sortParentId
-      ? '.rct_draggable_' + currentGroup.index
-      : '.group-move-' +
-        (groupAtNewIndex?.task?.parent_id
-          ? groupAtNewIndex?.task?.parent_id
-          : groupAtNewIndex?.task?.task_id)
-
-    const groupSortable = rctItemElements.get(newIndexKey)
-
-    const idFilter = currentGroup?.task?.parent_id
-      ? currentGroup?.task?.parent_id
-      : currentGroup?.task?.task_id
-    const groupFilter = groups.filter(
-      group =>
-        group?.task?.task_id === idFilter || group?.task?.parent_id === idFilter
-    )
-    const firstIndex = groupFilter[0].index
-    const lastIndex = groupFilter[groupFilter.length - 1].index
+    let exactlyNewIndex = sort.newIndex
 
     if (sortParentId) {
+      const idFilter = currentGroup?.task?.parent_id
+        ? currentGroup?.task?.parent_id
+        : currentGroup?.task?.task_id
+      const groupFilter = groups.filter(
+        group =>
+          group?.task?.task_id === idFilter ||
+          group?.task?.parent_id === idFilter
+      )
+      const firstIndex = groupFilter[0].index
+      const lastIndex = groupFilter[groupFilter.length - 1].index
       if (sort.newIndex <= firstIndex) {
-        newIndex = firstIndex + 1
+        exactlyNewIndex = firstIndex + 1
       }
       if (sort.newIndex > lastIndex) {
-        newIndex = lastIndex
+        exactlyNewIndex = lastIndex
       }
     } else {
+      const groupAtNewIndex = groups?.find(
+        group => group?.index === sort.newIndex
+      )
+
+      const newIndexKey = sortParentId
+        ? '.rct_draggable_' + currentGroup.index
+        : '.group-move-' +
+          (groupAtNewIndex?.task?.parent_id
+            ? groupAtNewIndex?.task?.parent_id
+            : groupAtNewIndex?.task?.task_id)
+
+      const groupSortable = rctItemElements.get(newIndexKey)
       if (
         sort.oldIndex > sort.newIndex &&
         groupSortable?.lastIndex >= sort.newIndex &&
         sort.newIndex > groupSortable?.firstIndex
       ) {
-        newIndex = groupSortable?.lastIndex + 1
+        exactlyNewIndex = groupSortable?.lastIndex + 1
       } else if (
         sort.oldIndex < sort.newIndex &&
         groupSortable?.lastIndex > sort.newIndex &&
         sort.newIndex >= groupSortable?.firstIndex
       ) {
-        newIndex = groupSortable?.firstIndex - 1
+        exactlyNewIndex = groupSortable?.firstIndex - 1
       }
     }
 
     document
-      .querySelectorAll('.disable-transform')
+      .querySelectorAll('.draggable_task_process')
       .forEach(element => element.classList.remove('disable-transform'))
+
+    rctLockItemElements.forEach(elements => {
+      this.clearTransformElements(elements)
+    })
+    rctLockItemElements.clear()
 
     rctItemElements.forEach(elements => {
       this.clearTransformElements(elements)
@@ -428,10 +502,10 @@ export default class GroupSortable extends Component {
       scrollContainer.removeEventListener('scroll', this.autoScrollEvent)
     }
 
-    sortOrderTaskList(arrayMove, sort.oldIndex, newIndex, currentGroup)
+    sortOrderTaskList(arrayMove, sort.oldIndex, exactlyNewIndex, currentGroup)
 
     this.setState({
-      isDraging: false, // state check move action
+      isDragging: false, // state check move action
 
       dragControlElement: null,
       dragItemElements: [],
@@ -439,19 +513,29 @@ export default class GroupSortable extends Component {
       displacementSize: 0,
       lastDragPosition: 0,
       dragIndex: -1,
-      groupPositionLimit: null,
+      groupSortableConstraints: null,
       sortParentId: null,
 
       firstDragScrollTop: 0, // Distance to top of container when dragging starts
       rctItemElements: new Map(), // the item elements on chart
       sortParentId: null,
-      currentGroup: null
+      currentGroup: null,
+      rctLockItemElements: new Map()
     })
   }
 
-  transformElements = (groupElements, transformSize, delayDuration) => {
+  /**
+   * function handle add style css when handle drag/drop event
+   * @param {object[]} groupElements - the array contains list key id
+   * @param {number} transformSize - the value of distance transform
+   * @param {number} delayDuration - the value of transition duration
+   */
+  transformElements = (groupElements, transformSize, delayDuration = 0) => {
     const elements = document.querySelectorAll(groupElements?.groupMove)
     for (let i = 0; i < elements?.length; i++) {
+      if (elements[i].classList.contains('draggable_task_item')) {
+        return
+      }
       if (elements[i].classList.contains('draggable_task_process')) {
         elements[i].style.transitionDuration = `${delayDuration}ms`
         elements[i].style.transform = 'translate(0px, ' + transformSize + 'px)'
@@ -471,17 +555,26 @@ export default class GroupSortable extends Component {
     }
   }
 
+  /**
+   * function handle remove style css when handle drag/drop event
+   * @param {object[]} groupElements - the array contains list key id
+   */
   clearTransformElements = groupElements => {
     const elements = document.querySelectorAll(groupElements?.groupMove)
     for (let i = 0; i < elements?.length; i++) {
+      if (elements[i].classList.contains('draggable_task_item')) {
+        return
+      }
       if (elements[i].classList.contains('draggable_task_process')) {
         elements[i].style.transitionDuration = `0ms`
         elements[i].style.transform = 'none'
+        elements[i].style.setProperty('z-index', '80', 'important')
         elements[i].classList.remove('draggable_task_process')
       } else {
         elements[i].classList.remove('transform-to-above')
         elements[i].classList.remove('transform-to-below')
         elements[i].classList.remove('transform-reset')
+        elements[i].classList.remove('disable-transform')
       }
     }
   }
@@ -491,7 +584,7 @@ export default class GroupSortable extends Component {
     return dropZoneTask
   }
   render() {
-    const { isDraging } = this.state
+    const { isDragging } = this.state
     const {
       groups,
       groupHeights,
@@ -510,7 +603,7 @@ export default class GroupSortable extends Component {
     return (
       <div
         className={
-          isShowDragHandleButton && !isDraging ? 'hover-show-sortable' : ''
+          isShowDragHandleButton && !isDragging ? 'hover-show-sortable' : ''
         }
       >
         <SortableList
@@ -519,8 +612,9 @@ export default class GroupSortable extends Component {
           helperClass="draggable_task_item"
           helperContainer={this.getContainerElement}
           lockToContainerEdges={true}
-          lockOffset={['2px', '10px']}
+          lockOffset={['2px', '20px']}
           shouldCancelStart={this.shouldCancelStart}
+          updateBeforeSortStart={this.updateBeforeSortStart}
           onSortStart={this.onSortStart}
           onSortMove={this.onSortMove}
           onSortOver={this.onSortOver}
@@ -529,7 +623,6 @@ export default class GroupSortable extends Component {
           groupIdKey={groupIdKey}
           groupHeights={groupHeights}
           isRightSidebar={isRightSidebar}
-          isDraging={isDraging}
           openAddGroupForm={openAddGroupForm}
           groupRenderer={groupRenderer}
           groupRightTitleKey={groupRightTitleKey}

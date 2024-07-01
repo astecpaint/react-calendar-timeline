@@ -80,8 +80,14 @@ class SortableItemClass extends Component {
           (group.index % 2 === 0 ? 'even' : 'odd') +
           (' -sort-index-' + group?.index) +
           (group?.task?.parent_id
-            ? ' group-move-' + group?.task?.parent_id
-            : ' group-move-' + group?.task?.task_id)
+            ? ' -sub sidebar-grouped-by-' +
+              group?.task?.parent_id +
+              ' group-move-' +
+              group?.task?.parent_id
+            : ' sidebar-grouped-by-' +
+              group?.task?.task_id +
+              ' group-move-' +
+              group?.task?.task_id)
         }
         style={{
           height: `${group?.height || DEFAULT_HEIGHT_ROW_PROCESS_BASIC}px`,
