@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { Component, createRef } from 'react'
 
 import Items from './items/Items'
 import Sidebar from './layout/Sidebar'
@@ -347,7 +347,8 @@ export default class ReactCalendarTimeline extends Component {
       timeStartDefault: 0,
       timeEndDefault: 0,
       endScrollRight: 0,
-      endScrollLeft: 0
+      endScrollLeft: 0,
+      currentGroupMove: null
     }
 
     const canvasWidth = getCanvasWidth(this.state.width, props.buffer)
@@ -1270,6 +1271,7 @@ export default class ReactCalendarTimeline extends Component {
         isGembaMode={this.props.isGembaMode}
         itemPositionDisplayed={itemPositionDisplayed}
         isScheduleScreen={this.props.isScheduleScreen}
+        currentGroupMove={this.state.currentGroupMove}
       />
     )
   }
@@ -1322,6 +1324,7 @@ export default class ReactCalendarTimeline extends Component {
           isShowDataAssigned={isShowDataAssigned}
           viewOption={viewOption}
           isShowTrackRecord={isShowTrackRecord}
+          setCurrentGroupMove={this.setCurrentGroupMove}
         />
       )
     )
@@ -1524,6 +1527,16 @@ export default class ReactCalendarTimeline extends Component {
       start + numberOfRowDisplayed + numberOfMaxItemTopOrBottom * 2 - 1 // end position: position top + number of default display (between) + maxItem * 2 (top + max & bottom)
 
     return { start, end }
+  }
+
+  /**
+   * function handle set state current group move in event drag/drop move
+   * @param {object} group - object contain group move
+   */
+  setCurrentGroupMove = group => {
+    this.setState({
+      currentGroupMove: group
+    })
   }
 
   render() {

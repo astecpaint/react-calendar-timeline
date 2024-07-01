@@ -64,7 +64,8 @@ export default class Items extends Component {
     isHoverToSelectedItem: PropTypes.bool.isRequired,
     isGembaMode: PropTypes.bool.isRequired,
     itemPositionDisplayed: PropTypes.object.isRequired,
-    isScheduleScreen: PropTypes.bool.isRequired
+    isScheduleScreen: PropTypes.bool.isRequired,
+    currentGroupMove: PropTypes.object
   }
 
   static defaultProps = {
@@ -94,7 +95,8 @@ export default class Items extends Component {
         this.props.itemPositionDisplayed,
         nextProps.itemPositionDisplayed
       ) &&
-      nextProps.isScheduleScreen === this.props.isScheduleScreen
+      nextProps.isScheduleScreen === this.props.isScheduleScreen &&
+      nextProps.currentGroupMove === this.props.currentGroupMove
     )
   }
 
@@ -124,7 +126,8 @@ export default class Items extends Component {
       isGembaMode,
       selectedItem,
       itemPositionDisplayed,
-      isScheduleScreen
+      isScheduleScreen,
+      currentGroupMove
     } = this.props
     const { itemIdKey, itemGroupKey } = keys
 
@@ -140,7 +143,19 @@ export default class Items extends Component {
       <div className="rct-items">
         {visibleItems
           .filter(item => sortedDimensionItems[_get(item, itemIdKey)])
-          .filter(item => !!groupOrders?.[item?.group]?.isShow)
+          .filter(item => {
+            const currentGroupMoveId =
+              currentGroupMove?.task?.parent_id ||
+              currentGroupMove?.task?.task_id
+            const itemMove =
+              currentGroupMoveId !== null && currentGroupMoveId !== undefined
+                ? item?.task?.parent_id === currentGroupMoveId ||
+                  item?.task?.task_id === currentGroupMoveId ||
+                  item?.belongTaskParentId === currentGroupMoveId ||
+                  item?.belongTaskId === currentGroupMoveId
+                : false
+            return !!groupOrders?.[item?.group]?.isShow || itemMove
+          })
           .map(item => (
             <Item
               key={_get(item, itemIdKey)}

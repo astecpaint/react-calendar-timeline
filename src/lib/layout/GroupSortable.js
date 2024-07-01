@@ -24,7 +24,7 @@ export default class GroupSortable extends Component {
       sortParentId: null, // the parent id of the current group which are being dragged,
       currentGroup: null,
       rctLockItemElements: new Map(), // the item elements will be locked motion,
-      loadMoreTimeoutId: -1
+      loadMoreIntervalId: -1
     }
   }
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -97,6 +97,8 @@ export default class GroupSortable extends Component {
       },
       firstDragScrollTop = 0
     const { scrollContainer, currentGroup } = this.state
+    const { setCurrentGroupMove } = this.props
+    setCurrentGroupMove(currentGroup)
     const distanceScrollToTop = scrollContainer?.scrollTop || 0
     const parentId = currentGroup?.task?.parent_id
     const heightButtonSidebar = 60 // Height of sidebar containing add button below
@@ -184,6 +186,11 @@ export default class GroupSortable extends Component {
       scrollContainer.addEventListener('scroll', this.autoScrollEvent)
     }
 
+    // load more element
+    this.state.loadMoreIntervalId = setInterval(() => {
+      this.props.isDragDrop.current = false
+    }, 2000)
+
     this.state.displacementSize = displacementSize
     this.state.dragItemElements = {
       firstIndex: currentGroup.index,
@@ -205,6 +212,9 @@ export default class GroupSortable extends Component {
       groupSortableConstraints,
       firstDragScrollTop
     } = this.state
+    const { isDragDrop } = this.props
+    // stop event load more elements
+    isDragDrop.current = true
     // The element will only be moved within a certain range, which can be within the group containing it or within the drag-drop area.
     if (
       groupSortableConstraints?.top >
@@ -254,7 +264,6 @@ export default class GroupSortable extends Component {
     let oldIndexKey = '.rct_draggable_' + sort.oldIndex
     const oldGroup = groups?.find(group => group?.index === sort.oldIndex)
     const newGroup = groups?.find(group => group?.index === sort.newIndex)
-
     if (sortParentId) {
       if (newGroup?.task?.parent_id !== sortParentId) {
         const lockedIndexKey = '.-sort-index-' + sort.newIndex
@@ -306,22 +315,6 @@ export default class GroupSortable extends Component {
           groupMove: newIndexKey
         })
       }
-    }
-
-    // wait to load more row
-    if (
-      sort.newIndex % DEFAULT_ROW_DISPLAYED === 0 &&
-      sort.newIndex !== 0 &&
-      sort.newIndex !== groups?.length - 1
-    ) {
-      isDragDrop.current = false
-      this.state.loadMoreTimeoutId = setTimeout(() => {
-        isDragDrop.current = true
-      }, 500)
-    } else {
-      isDragDrop.current = true
-      clearTimeout(this.state.loadMoreTimeoutId)
-      this.state.loadMoreTimeoutId = -1
     }
 
     const itemElementsAtOldIndex = rctItemElements.get(oldIndexKey)
@@ -417,6 +410,9 @@ export default class GroupSortable extends Component {
       groupSortableConstraints,
       firstDragScrollTop
     } = this.state
+    const { isDragDrop } = this.props
+    // stop load more element event
+    isDragDrop.current = true
     // The element will only be moved within a certain range, which can be within the group containing it or within the drag-drop area.
     if (
       groupSortableConstraints?.top >
@@ -462,9 +458,15 @@ export default class GroupSortable extends Component {
       dragItemElements,
       sortParentId,
       currentGroup,
-      rctLockItemElements
+      rctLockItemElements,
+      loadMoreIntervalId
     } = this.state
-    const { sortOrderTaskList, groups, isDragDrop } = this.props
+    const {
+      sortOrderTaskList,
+      groups,
+      isDragDrop,
+      setCurrentGroupMove
+    } = this.props
     let exactlyNewIndex = sort.newIndex
 
     if (sortParentId) {
@@ -539,7 +541,10 @@ export default class GroupSortable extends Component {
     isDragDrop.current = false
 
     sortOrderTaskList(arrayMove, sort.oldIndex, exactlyNewIndex, currentGroup)
-
+    setCurrentGroupMove(null)
+    if (loadMoreIntervalId !== -1) {
+      clearInterval(loadMoreIntervalId)
+    }
     this.setState({
       isDragging: false, // state check move action
 
@@ -556,7 +561,8 @@ export default class GroupSortable extends Component {
       rctItemElements: new Map(), // the item elements on chart
       sortParentId: null,
       currentGroup: null,
-      rctLockItemElements: new Map()
+      rctLockItemElements: new Map(),
+      loadMoreIntervalId: -1
     })
   }
 
@@ -647,8 +653,6 @@ export default class GroupSortable extends Component {
           lockAxis="y"
           helperClass="draggable_task_item"
           helperContainer={this.getContainerElement}
-          lockToContainerEdges={true}
-          lockOffset={['2px', '20px']}
           shouldCancelStart={this.shouldCancelStart}
           updateBeforeSortStart={this.updateBeforeSortStart}
           onSortStart={this.onSortStart}

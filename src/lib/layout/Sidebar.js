@@ -29,7 +29,8 @@ export default class Sidebar extends Component {
     isDragDrop: PropTypes.object,
     isShowDataAssigned: PropTypes.bool,
     viewOption: PropTypes.number,
-    isShowTrackRecord: PropTypes.bool
+    isShowTrackRecord: PropTypes.bool,
+    setCurrentGroupMove: PropTypes.function
   }
 
   shouldComponentUpdate(nextProps) {
@@ -82,7 +83,8 @@ export default class Sidebar extends Component {
       isDragDrop,
       isShowDataAssigned,
       viewOption,
-      isShowTrackRecord
+      isShowTrackRecord,
+      setCurrentGroupMove
     } = this.props
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys
 
@@ -171,6 +173,7 @@ export default class Sidebar extends Component {
               isDragDrop={isDragDrop}
               viewOption={viewOption}
               isShowTrackRecord={isShowTrackRecord}
+              setCurrentGroupMove={setCurrentGroupMove}
             />
           </div>
         ) : (
