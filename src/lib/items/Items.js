@@ -147,14 +147,18 @@ export default class Items extends Component {
             const currentGroupMoveId =
               currentGroupMove?.task?.parent_id ||
               currentGroupMove?.task?.task_id
-            const itemMove =
+            const isItemMove =
               currentGroupMoveId !== null && currentGroupMoveId !== undefined
                 ? item?.task?.parent_id === currentGroupMoveId ||
                   item?.task?.task_id === currentGroupMoveId ||
                   item?.belongTaskParentId === currentGroupMoveId ||
                   item?.belongTaskId === currentGroupMoveId
                 : false
-            return !!groupOrders?.[item?.group]?.isShow || itemMove
+            return (
+              !!groupOrders?.[item?.group]?.isShow ||
+              isItemMove ||
+              item?.isTemporaryProcess
+            )
           })
           .map(item => (
             <Item

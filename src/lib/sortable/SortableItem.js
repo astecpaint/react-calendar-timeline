@@ -94,7 +94,8 @@ class SortableItemClass extends Component {
           lineHeight: `${group?.height || DEFAULT_HEIGHT_ROW_PROCESS_BASIC}px`
         }}
       >
-        {currentIndex >= start && currentIndex <= end && (
+        {((currentIndex >= start && currentIndex <= end) ||
+          group?.isAddinationForm) && (
           <>
             {this.state.groupChildren}
             {!group?.task?.isEmptySubGroup && (

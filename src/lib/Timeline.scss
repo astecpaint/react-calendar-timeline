@@ -64,17 +64,20 @@ $weekend: rgba(250, 246, 225, 0.5);
     right: 0;
     .scroll-temporary-header {
       height: 100%;
-      width: 371px;
+      width: 375px;
       border-right: 1px solid #ccc;
     }
     .scroll-temporary-body {
-      width: calc(100% - 381px);
-      height: 11px;
+      width: calc(100% - 354px);
+      height: 16px;
       overflow-x: overlay;
       overflow-y: hidden;
       .content {
         width: 6000px;
       }
+    }
+    .scroll-temporary-body::-webkit-scrollbar {
+      height: 14px;
     }
     .scroll-temporary-body::-webkit-scrollbar-thumb {
       height: 8px;
