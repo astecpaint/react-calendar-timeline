@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component, createRef } from 'react'
+import React, { Component } from 'react'
 
 import Items from './items/Items'
 import Sidebar from './layout/Sidebar'
@@ -142,8 +142,8 @@ export default class ReactCalendarTimeline extends Component {
     isCreateTaskList: PropTypes.bool,
     onCreateTask: PropTypes.func,
     isShowBgColorGroup: PropTypes.bool,
-    scrollContainer: PropTypes.node,
-    buttonTooltipRenderer: PropTypes.node,
+    scrollContainer: PropTypes.object,
+    buttonTooltipRenderer: PropTypes.object,
 
     isScheduleScreen: PropTypes.bool,
     defaultRowDisplayed: PropTypes.number,
@@ -1295,7 +1295,8 @@ export default class ReactCalendarTimeline extends Component {
       isDragDrop,
       isShowDataAssigned,
       viewOption,
-      isShowTrackRecord
+      isShowTrackRecord,
+      isShowInforGemba
     } = this.props
     const sidebarPositionDisplayed = this.getItemDisplayPosition(
       DEFAULT_BUFFER_ROW_IN_SIDEBAR
@@ -1310,7 +1311,7 @@ export default class ReactCalendarTimeline extends Component {
           width={sidebarWidth}
           groupHeights={groupHeights}
           height={height}
-          isShowInforGemba={this.props.isShowInforGemba}
+          isShowInforGemba={isShowInforGemba}
           canSortableGroups={canSortableGroups}
           isShowDragHandleButton={isShowDragHandleButton}
           sortOrderTaskList={sortOrderTaskList}
@@ -1331,38 +1332,18 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   rightSidebar(height, groupHeights) {
-    const {
-      rightSidebarWidth,
-      canSortableGroups,
-      isShowDragHandleButton,
-      sortOrderTaskList,
-      openAddGroupForm,
-      scrollContainer,
-      buttonTooltipRenderer,
-      onStartSort,
-      isDragDrop
-    } = this.props
+    const { rightSidebarWidth } = this.props
     return (
-      rightSidebarWidth && (
-        <Sidebar
-          groups={this.props.groups}
-          keys={this.props.keys}
-          groupRenderer={this.props.groupRenderer}
-          isRightSidebar
-          width={rightSidebarWidth}
-          groupHeights={groupHeights}
-          height={height}
-          isShowInforGemba={this.props.isShowInforGemba}
-          canSortableGroups={canSortableGroups}
-          isShowDragHandleButton={isShowDragHandleButton}
-          sortOrderTaskList={sortOrderTaskList}
-          onStartSort={onStartSort}
-          openAddGroupForm={openAddGroupForm}
-          scrollContainer={scrollContainer}
-          buttonTooltipRenderer={buttonTooltipRenderer}
-          isDragDrop={isDragDrop}
-        />
-      )
+      rightSidebarWidth &&
+      <Sidebar
+        groups={this.props.groups}
+        keys={this.props.keys}
+        groupRenderer={this.props.groupRenderer}
+        isRightSidebar
+        width={rightSidebarWidth}
+        groupHeights={groupHeights}
+        height={height}
+      />
     )
   }
 

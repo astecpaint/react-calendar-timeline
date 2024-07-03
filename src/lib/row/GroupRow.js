@@ -20,7 +20,9 @@ const HEIGHT_TASK = 23,
   BG_COLOR_TRACK_RECORD = '#27AE60',
   BG_COLOR_SUB_TRACK_RECORD = '#92D6AF',
   HEIGHT_TRACK_RECORD = 14,
-  MARGIN_TOP_OF_TRACK_RECORD = 39
+  MARGIN_TOP_OF_TRACK_RECORD = 39,
+  DEFAULT_HOUR = 23,
+  DEFAULT_MINUTE_SECOND_MILLISECOND = 59
 
 class GroupRow extends Component {
   static propTypes = {
@@ -63,6 +65,7 @@ class GroupRow extends Component {
 
     this.intervalTouchTime = null
     this.startTimeTaskCreating = 0
+    this.startTimeTaskCreatingActual = 0
     this.refreshIntervalId = null
     this.endTimeTmp = 0
     this.isCreatingPositionAbove = true
@@ -70,49 +73,71 @@ class GroupRow extends Component {
 
   componentDidUpdate() {
     if (this.state.countTime >= COUNT_TIME) {
-      window.addEventListener('mouseup', this.handleResetData, true)
+      window.addEventListener('mouseup', this.handleCreateOnMouseUp, true)
     } else {
-      window.removeEventListener('mouseup', this.handleResetData, true)
+      window.removeEventListener('mouseup', this.handleCreateOnMouseUp, true)
     }
   }
 
   componentWillUnmount() {
-    window.removeEventListener('mouseup', this.handleResetData, true)
+    window.removeEventListener('mouseup', this.handleCreateOnMouseUp, true)
   }
+
+  getWidthByTime = (
+    startDate = new Date(),
+    endDate = null,
+    dataTimeEnd = {},
+    isConvertTime = true
+  ) => {
+    const { canvasTimeStart, canvasTimeEnd, canvasWidth } = this.props;
+  
+    let startTime = startDate,
+      endTime = endDate ?? startTime;
+  
+    const hour = dataTimeEnd?.hour ?? DEFAULT_HOUR,
+      minute = dataTimeEnd?.minute ?? DEFAULT_MINUTE_SECOND_MILLISECOND,
+      second = dataTimeEnd?.second ?? DEFAULT_MINUTE_SECOND_MILLISECOND,
+      millisecond = dataTimeEnd?.millisecond ?? DEFAULT_MINUTE_SECOND_MILLISECOND;
+  
+    if (isConvertTime) {
+      startTime = moment(moment(startTime).format('YYYY-MM-DD')).valueOf();
+      endTime = moment(moment(endTime).format('YYYY-MM-DD'))
+        .set({
+          hour,
+          minute,
+          second,
+          millisecond,
+        })
+        .valueOf();
+    }
+  
+    const startPosition = calculateXPositionForTime(
+      canvasTimeStart,
+      canvasTimeEnd,
+      canvasWidth,
+      startTime
+    );
+    const endPosition = calculateXPositionForTime(
+      canvasTimeStart,
+      canvasTimeEnd,
+      canvasWidth,
+      endTime
+    );
+  
+    return endPosition - startPosition;
+  };
 
   renderCreateTask = (
     group,
     countTime,
     left,
     width,
-    isCreatingPositionAbove,
-    canvasTimeStart,
-    canvasTimeEnd,
-    canvasWidth,
+    isCreatingPositionAbove
   ) => {
     if (countTime < COUNT_TIME) return <></>
-    const { isMerge } = group
 
-    const startTimeToday = moment(moment(new Date()).format('YYYY-MM-DD')).valueOf()
-    const endTimeToday = moment(startTimeToday).set({
-      hour: 23,
-      minute: 59,
-      second: 59,
-      millisecond: 59
-    }).valueOf()
-    const startPosition = calculateXPositionForTime(
-      canvasTimeStart,
-      canvasTimeEnd,
-      canvasWidth,
-      startTimeToday
-    )
-    const endPosition = calculateXPositionForTime(
-      canvasTimeStart,
-      canvasTimeEnd,
-      canvasWidth,
-      endTimeToday
-    )
-    const minWidth = endPosition - startPosition
+    const { isMerge } = group
+    const minWidth = this.getWidthByTime()
 
     return (
       <>
@@ -187,32 +212,13 @@ class GroupRow extends Component {
       return <></>
     }
 
-    const timeStartDate = moment(minBeginDate).valueOf()
-    const timeEndDate = moment(maxEndDate)
-      .set({
-        hour: 23,
-        minute: 59,
-        second: 59,
-        millisecond: 59
-      })
-      .valueOf()
-
     const left = calculateXPositionForTime(
       canvasTimeStart,
       canvasTimeEnd,
       canvasWidth,
-      timeStartDate
+      moment(minBeginDate).valueOf()
     )
-
-    const right = calculateXPositionForTime(
-      canvasTimeStart,
-      canvasTimeEnd,
-      canvasWidth,
-      timeEndDate
-    )
-
-    const width = right - left
-
+    const width = this.getWidthByTime(minBeginDate, maxEndDate)
     const bgColor = isTaskList || isCustomGroup ? task_color : parent_task_color
 
     return (
@@ -303,34 +309,53 @@ class GroupRow extends Component {
       return
     }
 
+    if (this.state.countTime >= COUNT_TIME || !!this.startTimeTaskCreating) {
+      this.handleClear()
+    }
+    
+    this.startTimeTaskCreatingActual = getTimeFromRowClickEvent(e);
     this.startTimeTaskCreating = moment(
       moment(getTimeFromRowClickEvent(e)).format('YYYY-MM-DD')
     ).valueOf()
 
     this.intervalTouchTime = setInterval(
-      function() {
+      function () {
         if (this.state.countTime < COUNT_TIME) {
           this.setState({ countTime: this.state.countTime + 1 })
         } else {
           document.querySelector('.rct-horizontal-lines').style.cursor =
             'pointer'
+          clearInterval(this.intervalTouchTime)
+          this.intervalTouchTime = null
         }
       }.bind(this),
-      500
+      1000
     )
+  }
+
+  handleClear = () => {
+    clearInterval(this.intervalTouchTime)
+    clearInterval(this.refreshIntervalId)
+    document.querySelector('.rct-horizontal-lines').style.cursor = 'default'
+
+    this.isCreatingPositionAbove = true
+    this.startTimeTaskCreating = 0
+    this.startTimeTaskCreatingActual = 0
+    this.endTimeTmp = 0
+    this.intervalTouchTime = null
+    this.refreshIntervalId = null
+    this.setState({ left: 0, width: 0, countTime: 0, isOutChart: false })
   }
 
   handleMouseUp = () => {
     const { isCreateTaskList, isCreateTrackRecord } = this.props
 
-    if (!this.intervalTouchTime || (!isCreateTaskList && !isCreateTrackRecord))
-      return
-
-    clearInterval(this.intervalTouchTime)
-    this.intervalTouchTime = null
+    if (!isCreateTaskList && !isCreateTrackRecord) return
+    
+    this.handleClear()
   }
 
-  handleResetData = async e => {
+  handleCreateOnMouseUp = async e => {
     const {
       isCreateTaskList,
       group,
@@ -339,6 +364,12 @@ class GroupRow extends Component {
     } = this.props
 
     if (!isCreateTaskList && !isCreateTrackRecord) return
+
+
+    if (this.state.countTime < COUNT_TIME || !this.startTimeTaskCreating) {
+      this.handleClear()
+      return
+    }
 
     const endTime = this.endTimeTmp || getTimeFromRowClickEvent(e)
 
@@ -377,16 +408,7 @@ class GroupRow extends Component {
       )
     }
 
-    clearInterval(this.intervalTouchTime)
-    clearInterval(this.refreshIntervalId)
-    document.querySelector('.rct-horizontal-lines').style.cursor = 'default'
-
-    this.isCreatingPositionAbove = true
-    this.startTimeTaskCreating = 0
-    this.endTimeTmp = 0
-    this.intervalTouchTime = null
-    this.refreshIntervalId = null
-    this.setState({ left: 0, width: 0, countTime: 0, isOutChart: false })
+    this.handleClear()
   }
 
   handleMouseMove = e => {
@@ -404,16 +426,41 @@ class GroupRow extends Component {
       isCreateTrackRecord
     } = this.props
 
+    const timeStart = this.startTimeTaskCreating,
+    timeEnd = getTimeFromRowClickEvent(e)
+  
+    if (
+      !!timeStart &&
+      !!this.startTimeTaskCreatingActual &&
+      this.state.countTime < COUNT_TIME
+    ) {
+      const expectDistance = this.getWidthByTime(new Date(), null, {
+        hour: 6,
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+      })
+    
+      const actualDistance = Math.abs(
+        this.getWidthByTime(this.startTimeTaskCreatingActual, timeEnd, {}, false)
+      )
+    
+      if (actualDistance >= expectDistance) {
+        this.handleClear()
+        return
+      }
+    }
+    
     if (
       (!isCreateTaskList && !isCreateTrackRecord) ||
       this.state.countTime < COUNT_TIME ||
-      !scrollRef
+      !scrollRef ||
+      !timeStart
     ) {
       return
     }
 
-    const timeStart = this.startTimeTaskCreating,
-      timeEnd = getTimeFromRowClickEvent(e),
+    const
       newVisibleTimeStart = visibleTimeStart + onDayToTime(0.5),
       newVisibleTimeEnd = visibleTimeEnd - onDayToTime(0.5),
       isDragToLeftInChart = timeEnd <= timeStart,
@@ -589,10 +636,7 @@ class GroupRow extends Component {
               countTime,
               left,
               width,
-              this.isCreatingPositionAbove,
-              canvasTimeStart,
-              canvasTimeEnd,
-              canvasWidth,
+              this.isCreatingPositionAbove
             )}
             {this.renderBgColor(
               isShowBgColorGroup,

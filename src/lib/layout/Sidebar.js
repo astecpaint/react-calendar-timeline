@@ -21,8 +21,8 @@ export default class Sidebar extends Component {
     isShowDragHandleButton: PropTypes.bool,
     sortOrderTaskList: PropTypes.func,
     openAddGroupForm: PropTypes.func,
-    scrollContainer: PropTypes.node,
-    buttonTooltipRenderer: PropTypes.node,
+    scrollContainer: PropTypes.object,
+    buttonTooltipRenderer: PropTypes.object,
 
     isScheduleScreen: PropTypes.bool.isRequired,
     sidebarPositionDisplayed: PropTypes.object.isRequired,
@@ -30,7 +30,7 @@ export default class Sidebar extends Component {
     isShowDataAssigned: PropTypes.bool,
     viewOption: PropTypes.number,
     isShowTrackRecord: PropTypes.bool,
-    setCurrentGroupMove: PropTypes.function
+    setCurrentGroupMove: PropTypes.func
   }
 
   shouldComponentUpdate(nextProps) {
@@ -84,7 +84,8 @@ export default class Sidebar extends Component {
       isShowDataAssigned,
       viewOption,
       isShowTrackRecord,
-      setCurrentGroupMove
+      setCurrentGroupMove,
+      isShowInforGemba
     } = this.props
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys
 
@@ -134,6 +135,7 @@ export default class Sidebar extends Component {
               isShowDataAssigned={isShowDataAssigned}
               viewOption={viewOption}
               isShowTrackRecord={isShowTrackRecord}
+              isShowInforGemba={isShowInforGemba}
             />
           )}
         </div>
