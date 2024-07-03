@@ -89,43 +89,44 @@ class GroupRow extends Component {
     dataTimeEnd = {},
     isConvertTime = true
   ) => {
-    const { canvasTimeStart, canvasTimeEnd, canvasWidth } = this.props;
-  
+    const { canvasTimeStart, canvasTimeEnd, canvasWidth } = this.props
+
     let startTime = startDate,
-      endTime = endDate ?? startTime;
-  
+      endTime = endDate ?? startTime
+
     const hour = dataTimeEnd?.hour ?? DEFAULT_HOUR,
       minute = dataTimeEnd?.minute ?? DEFAULT_MINUTE_SECOND_MILLISECOND,
       second = dataTimeEnd?.second ?? DEFAULT_MINUTE_SECOND_MILLISECOND,
-      millisecond = dataTimeEnd?.millisecond ?? DEFAULT_MINUTE_SECOND_MILLISECOND;
-  
+      millisecond =
+        dataTimeEnd?.millisecond ?? DEFAULT_MINUTE_SECOND_MILLISECOND
+
     if (isConvertTime) {
-      startTime = moment(moment(startTime).format('YYYY-MM-DD')).valueOf();
+      startTime = moment(moment(startTime).format('YYYY-MM-DD')).valueOf()
       endTime = moment(moment(endTime).format('YYYY-MM-DD'))
         .set({
           hour,
           minute,
           second,
-          millisecond,
+          millisecond
         })
-        .valueOf();
+        .valueOf()
     }
-  
+
     const startPosition = calculateXPositionForTime(
       canvasTimeStart,
       canvasTimeEnd,
       canvasWidth,
       startTime
-    );
+    )
     const endPosition = calculateXPositionForTime(
       canvasTimeStart,
       canvasTimeEnd,
       canvasWidth,
       endTime
-    );
-  
-    return endPosition - startPosition;
-  };
+    )
+
+    return endPosition - startPosition
+  }
 
   renderCreateTask = (
     group,
@@ -312,25 +313,27 @@ class GroupRow extends Component {
     if (this.state.countTime >= COUNT_TIME || !!this.startTimeTaskCreating) {
       this.handleClear()
     }
-    
-    this.startTimeTaskCreatingActual = getTimeFromRowClickEvent(e);
+
+    this.startTimeTaskCreatingActual = getTimeFromRowClickEvent(e)
     this.startTimeTaskCreating = moment(
       moment(getTimeFromRowClickEvent(e)).format('YYYY-MM-DD')
     ).valueOf()
 
-    this.intervalTouchTime = setInterval(
-      function () {
-        if (this.state.countTime < COUNT_TIME) {
-          this.setState({ countTime: this.state.countTime + 1 })
-        } else {
-          document.querySelector('.rct-horizontal-lines').style.cursor =
-            'pointer'
-          clearInterval(this.intervalTouchTime)
-          this.intervalTouchTime = null
-        }
-      }.bind(this),
-      1000
-    )
+    this.setState({ countTime: 1 })
+
+    // this.intervalTouchTime = setInterval(
+    //   function () {
+    //     if (this.state.countTime < COUNT_TIME) {
+    //       this.setState({ countTime: this.state.countTime + 1 })
+    //     } else {
+    //       document.querySelector('.rct-horizontal-lines').style.cursor =
+    //         'pointer'
+    //       clearInterval(this.intervalTouchTime)
+    //       this.intervalTouchTime = null
+    //     }
+    //   }.bind(this),
+    //   1000
+    // )
   }
 
   handleClear = () => {
@@ -351,7 +354,7 @@ class GroupRow extends Component {
     const { isCreateTaskList, isCreateTrackRecord } = this.props
 
     if (!isCreateTaskList && !isCreateTrackRecord) return
-    
+
     this.handleClear()
   }
 
@@ -364,7 +367,6 @@ class GroupRow extends Component {
     } = this.props
 
     if (!isCreateTaskList && !isCreateTrackRecord) return
-
 
     if (this.state.countTime < COUNT_TIME || !this.startTimeTaskCreating) {
       this.handleClear()
@@ -427,8 +429,8 @@ class GroupRow extends Component {
     } = this.props
 
     const timeStart = this.startTimeTaskCreating,
-    timeEnd = getTimeFromRowClickEvent(e)
-  
+      timeEnd = getTimeFromRowClickEvent(e)
+
     if (
       !!timeStart &&
       !!this.startTimeTaskCreatingActual &&
@@ -438,19 +440,24 @@ class GroupRow extends Component {
         hour: 6,
         minute: 0,
         second: 0,
-        millisecond: 0,
+        millisecond: 0
       })
-    
+
       const actualDistance = Math.abs(
-        this.getWidthByTime(this.startTimeTaskCreatingActual, timeEnd, {}, false)
+        this.getWidthByTime(
+          this.startTimeTaskCreatingActual,
+          timeEnd,
+          {},
+          false
+        )
       )
-    
+
       if (actualDistance >= expectDistance) {
         this.handleClear()
         return
       }
     }
-    
+
     if (
       (!isCreateTaskList && !isCreateTrackRecord) ||
       this.state.countTime < COUNT_TIME ||
@@ -460,8 +467,7 @@ class GroupRow extends Component {
       return
     }
 
-    const
-      newVisibleTimeStart = visibleTimeStart + onDayToTime(0.5),
+    const newVisibleTimeStart = visibleTimeStart + onDayToTime(0.5),
       newVisibleTimeEnd = visibleTimeEnd - onDayToTime(0.5),
       isDragToLeftInChart = timeEnd <= timeStart,
       isDragToLeftOutChart = timeEnd < newVisibleTimeStart
