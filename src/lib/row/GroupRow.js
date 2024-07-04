@@ -22,7 +22,8 @@ const HEIGHT_TASK = 23,
   HEIGHT_TRACK_RECORD = 14,
   MARGIN_TOP_OF_TRACK_RECORD = 39,
   DEFAULT_HOUR = 23,
-  DEFAULT_MINUTE_SECOND_MILLISECOND = 59
+  DEFAULT_MINUTE_SECOND_MILLISECOND = 59,
+  DEFAULT_HOUR_HALF_DAY = 12
 
 class GroupRow extends Component {
   static propTypes = {
@@ -321,6 +322,7 @@ class GroupRow extends Component {
 
     this.setState({ countTime: 1 })
 
+    //TODO: TEMP COMMENT
     // this.intervalTouchTime = setInterval(
     //   function () {
     //     if (this.state.countTime < COUNT_TIME) {
@@ -377,6 +379,14 @@ class GroupRow extends Component {
 
     if (endTime >= this.startTimeTaskCreating) {
       let endDate = endTime
+      const hours = moment(endDate).format('HH');
+
+      if (hours < DEFAULT_HOUR_HALF_DAY) {
+        endDate = moment(endDate)
+        .add(-1, 'days')
+        .valueOf()
+      }
+
       const maxEndDate = moment(this.startTimeTaskCreating)
         .add(MAX_NUMBER_OF_DRAG_DAYS, 'days')
         .valueOf()
@@ -397,6 +407,13 @@ class GroupRow extends Component {
       const minStartDate = moment(endDate)
         .add(-MAX_NUMBER_OF_DRAG_DAYS, 'days')
         .valueOf()
+      const hours = moment(startDate).format('HH');
+
+      if (hours >= DEFAULT_HOUR_HALF_DAY) {
+        startDate = moment(startDate)
+        .add(1, 'days')
+        .valueOf()
+      }
 
       if (startDate < minStartDate) {
         startDate = minStartDate
