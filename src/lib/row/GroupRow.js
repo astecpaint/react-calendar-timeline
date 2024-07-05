@@ -23,7 +23,8 @@ const HEIGHT_TASK = 23,
   MARGIN_TOP_OF_TRACK_RECORD = 39,
   DEFAULT_HOUR = 23,
   DEFAULT_MINUTE_SECOND_MILLISECOND = 59,
-  DEFAULT_HOUR_HALF_DAY = 12
+  DEFAULT_HOUR_HALF_DAY = 12,
+  DEFAULT_NUMBER_OF_SECONDS = 300
 
 class GroupRow extends Component {
   static propTypes = {
@@ -320,22 +321,19 @@ class GroupRow extends Component {
       moment(getTimeFromRowClickEvent(e)).format('YYYY-MM-DD')
     ).valueOf()
 
-    this.setState({ countTime: 1 })
-
-    //TODO: TEMP COMMENT
-    // this.intervalTouchTime = setInterval(
-    //   function () {
-    //     if (this.state.countTime < COUNT_TIME) {
-    //       this.setState({ countTime: this.state.countTime + 1 })
-    //     } else {
-    //       document.querySelector('.rct-horizontal-lines').style.cursor =
-    //         'pointer'
-    //       clearInterval(this.intervalTouchTime)
-    //       this.intervalTouchTime = null
-    //     }
-    //   }.bind(this),
-    //   1000
-    // )
+    this.intervalTouchTime = setInterval(
+      function () {
+        if (this.state.countTime < COUNT_TIME) {
+          this.setState({ countTime: this.state.countTime + 1 })
+        } else {
+          document.querySelector('.rct-horizontal-lines').style.cursor =
+            'pointer'
+          clearInterval(this.intervalTouchTime)
+          this.intervalTouchTime = null
+        }
+      }.bind(this),
+      DEFAULT_NUMBER_OF_SECONDS
+    )
   }
 
   handleClear = () => {
@@ -395,6 +393,10 @@ class GroupRow extends Component {
         endDate = maxEndDate
       }
 
+      if (moment(endDate).isBefore(this.startTimeTaskCreating)) {
+        endDate = this.startTimeTaskCreating
+      }
+
       await this.props.onCreateTask(
         group,
         this.startTimeTaskCreating,
@@ -403,7 +405,7 @@ class GroupRow extends Component {
       )
     } else {
       let startDate = endTime
-      const endDate = moment(this.startTimeTaskCreating).add(-1, 'days')
+      let endDate = moment(this.startTimeTaskCreating).add(-1, 'days')
       const minStartDate = moment(endDate)
         .add(-MAX_NUMBER_OF_DRAG_DAYS, 'days')
         .valueOf()
@@ -417,6 +419,10 @@ class GroupRow extends Component {
 
       if (startDate < minStartDate) {
         startDate = minStartDate
+      }
+
+      if (moment(endDate).isBefore(startDate)) {
+        endDate = startDate
       }
 
       await this.props.onCreateTask(
