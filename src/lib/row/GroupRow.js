@@ -23,8 +23,7 @@ const HEIGHT_TASK = 23,
   MARGIN_TOP_OF_TRACK_RECORD = 39,
   DEFAULT_HOUR = 23,
   DEFAULT_MINUTE_SECOND_MILLISECOND = 59,
-  DEFAULT_HOUR_HALF_DAY = 12,
-  DEFAULT_NUMBER_OF_SECONDS = 300
+  DEFAULT_HOUR_HALF_DAY = 12
 
 class GroupRow extends Component {
   static propTypes = {
@@ -202,7 +201,11 @@ class GroupRow extends Component {
       isCustomGroup
     } = group
     const { isEmptySubGroup, task_color, parent_task_color } = task ?? {}
-    const newIsHide = !isTaskList ? isHide : isHide || !expanded
+    let newIsHide = !isTaskList ? isHide : isHide || !expanded
+
+    if (!isScheduleScreen) {
+      newIsHide = isCustomGroup ? !expanded : isHide
+    }
 
     if (
       !isShowBgColorGroup ||
@@ -280,6 +283,8 @@ class GroupRow extends Component {
   }
 
   handleMouseDown = e => {
+    if (!!e?.button) return
+
     const {
       group,
       isCreateTaskList,
@@ -321,19 +326,22 @@ class GroupRow extends Component {
       moment(getTimeFromRowClickEvent(e)).format('YYYY-MM-DD')
     ).valueOf()
 
-    this.intervalTouchTime = setInterval(
-      function () {
-        if (this.state.countTime < COUNT_TIME) {
-          this.setState({ countTime: this.state.countTime + 1 })
-        } else {
-          document.querySelector('.rct-horizontal-lines').style.cursor =
-            'pointer'
-          clearInterval(this.intervalTouchTime)
-          this.intervalTouchTime = null
-        }
-      }.bind(this),
-      DEFAULT_NUMBER_OF_SECONDS
-    )
+    this.setState({ countTime: 1 })
+
+    //TODO: TEMP COMMENT
+    // this.intervalTouchTime = setInterval(
+    //   function () {
+    //     if (this.state.countTime < COUNT_TIME) {
+    //       this.setState({ countTime: this.state.countTime + 1 })
+    //     } else {
+    //       document.querySelector('.rct-horizontal-lines').style.cursor =
+    //         'pointer'
+    //       clearInterval(this.intervalTouchTime)
+    //       this.intervalTouchTime = null
+    //     }
+    //   }.bind(this),
+    //   300
+    // )
   }
 
   handleClear = () => {

@@ -142,8 +142,8 @@ export default class ReactCalendarTimeline extends Component {
     isCreateTaskList: PropTypes.bool,
     onCreateTask: PropTypes.func,
     isShowBgColorGroup: PropTypes.bool,
-    scrollContainer: PropTypes.object,
-    buttonTooltipRenderer: PropTypes.object,
+    scrollContainer: PropTypes.any,
+    buttonTooltipRenderer: PropTypes.any,
 
     isScheduleScreen: PropTypes.bool,
     defaultRowDisplayed: PropTypes.number,

@@ -21,8 +21,8 @@ export default class Sidebar extends Component {
     isShowDragHandleButton: PropTypes.bool,
     sortOrderTaskList: PropTypes.func,
     openAddGroupForm: PropTypes.func,
-    scrollContainer: PropTypes.object,
-    buttonTooltipRenderer: PropTypes.object,
+    scrollContainer: PropTypes.any,
+    buttonTooltipRenderer: PropTypes.any,
 
     isScheduleScreen: PropTypes.bool.isRequired,
     sidebarPositionDisplayed: PropTypes.object.isRequired,
