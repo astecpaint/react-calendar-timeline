@@ -96,8 +96,13 @@ export default class GroupSortable extends Component {
         bottom: 0
       },
       firstDragScrollTop = 0
-    const { scrollContainer, currentGroup } = this.state
-    const { setCurrentGroupMove } = this.props
+    const {
+      scrollContainer,
+      currentGroup,
+      rctItemElements,
+      rctLockItemElements
+    } = this.state
+    const { setCurrentGroupMove, groups } = this.props
     setCurrentGroupMove(currentGroup)
     const distanceScrollToTop = scrollContainer?.scrollTop || 0
     const parentId = currentGroup?.task?.parent_id
@@ -109,6 +114,14 @@ export default class GroupSortable extends Component {
       event.y - (draggableGroup?.getBoundingClientRect()?.top || 0) // The offset from the mouse pointer to the sidebar will be drag dropped.
 
     if (parentId) {
+      // handle disable transform elements out of group move
+      this.handleDisableTransform(
+        sort.index,
+        groups,
+        rctLockItemElements,
+        rctItemElements,
+        parentId
+      )
       const subGroups = document.querySelectorAll(
         '.sidebar-grouped-by-' + parentId
       )
@@ -258,7 +271,7 @@ export default class GroupSortable extends Component {
    * @param {*} event
    */
   onSortOver = sort => {
-    const { groups, isDragDrop } = this.props
+    const { groups } = this.props
     const { rctItemElements, sortParentId, rctLockItemElements } = this.state
     let newIndexKey = '.rct_draggable_' + sort.newIndex
     let oldIndexKey = '.rct_draggable_' + sort.oldIndex
@@ -267,13 +280,14 @@ export default class GroupSortable extends Component {
     if (sortParentId) {
       if (newGroup?.task?.parent_id !== sortParentId) {
         const lockedIndexKey = '.-sort-index-' + sort.newIndex
-        document
-          .querySelector(lockedIndexKey)
-          .classList.add('disable-transform')
-        if (!rctLockItemElements.has(lockedIndexKey)) {
-          this.state.rctLockItemElements.set(lockedIndexKey, {
-            groupMove: lockedIndexKey
-          })
+        const lockedElement = document.querySelector(lockedIndexKey)
+        if (lockedElement) {
+          lockedElement.classList.add('disable-transform')
+          if (!rctLockItemElements.has(lockedIndexKey)) {
+            this.state.rctLockItemElements.set(lockedIndexKey, {
+              groupMove: lockedIndexKey
+            })
+          }
         }
         return
       }
@@ -621,6 +635,59 @@ export default class GroupSortable extends Component {
     }
   }
 
+  /**
+   * function handle disable transform the elements out of group move
+   * @param {number} sortIndex - the position start sorting
+   * @param {object[]} groups - the list object contain group data
+   * @param {Map} rctLockItemElements - the map contain the lock item elements
+   * @param {Map} rctItemElements - the map contain the item elements
+   * @param {number} parentId - the id of group contain sub group
+   */
+  handleDisableTransform = (
+    sortIndex,
+    groups,
+    rctLockItemElements,
+    rctItemElements,
+    parentId
+  ) => {
+    const MIN_GROUPS_LENGTH = 2
+    const COMPENSATION_INDEX = 12
+    for (
+      let index = Math.max(sortIndex - COMPENSATION_INDEX, 0);
+      index <
+      Math.min(
+        sortIndex + COMPENSATION_INDEX,
+        groups?.length - 1 || MIN_GROUPS_LENGTH
+      );
+      index++
+    ) {
+      let newIndexKey = '.rct_draggable_' + index
+      const newGroup = groups?.find(group => group?.index === index)
+
+      if (newGroup && newGroup?.task?.parent_id !== parentId) {
+        const lockedIndexKey = '.-sort-index-' + index
+
+        const lockedElement = document.querySelector(lockedIndexKey)
+        if (lockedElement) {
+          lockedElement.classList.add('disable-transform')
+          if (!rctLockItemElements.has(lockedIndexKey)) {
+            this.state.rctLockItemElements.set(lockedIndexKey, {
+              groupMove: lockedIndexKey
+            })
+          }
+        }
+      } else if (newGroup && !rctItemElements.has(newIndexKey)) {
+        const firstIndex = index
+        const lastIndex = index
+        this.state.rctItemElements.set(newIndexKey, {
+          firstIndex,
+          lastIndex,
+          groupMove: newIndexKey
+        })
+      }
+    }
+  }
+
   getContainerElement = () => {
     const dropZoneTask = document.getElementById('dropzone-task')
     return dropZoneTask
@@ -653,6 +720,8 @@ export default class GroupSortable extends Component {
           lockAxis="y"
           helperClass="draggable_task_item"
           helperContainer={this.getContainerElement}
+          lockToContainerEdges={true}
+          lockOffset={['10px', '10px']}
           shouldCancelStart={this.shouldCancelStart}
           updateBeforeSortStart={this.updateBeforeSortStart}
           onSortStart={this.onSortStart}
