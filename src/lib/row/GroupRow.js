@@ -327,6 +327,7 @@ class GroupRow extends Component {
     ).valueOf()
 
     this.setState({ countTime: 1 })
+    document.querySelector('.rct-horizontal-lines').style.cursor = 'move'
 
     //TODO: TEMP COMMENT
     // this.intervalTouchTime = setInterval(
