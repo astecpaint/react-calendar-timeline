@@ -31,7 +31,8 @@ export const DEFAULT_HEIGHT_ROW = 64,
   DEFAULT_ROW_DISPLAYED = 12,
   DEFAULT_BUFFER_ROW = 1,
   DEFAULT_SCROLL_TOP = 0,
-  DEFAULT_BUFFER_ROW_IN_SIDEBAR = 2
+  DEFAULT_BUFFER_ROW_IN_SIDEBAR = 2,
+  DEFAULT_BUFFER_CANVAS = 3
 
 export default class ReactCalendarTimeline extends Component {
   static propTypes = {
@@ -154,7 +155,8 @@ export default class ReactCalendarTimeline extends Component {
     isCreateTrackRecord: PropTypes.bool,
     isShowDataAssigned: PropTypes.bool,
     viewOption: PropTypes.number,
-    isShowTrackRecord: PropTypes.bool
+    isShowTrackRecord: PropTypes.bool,
+    isReCalculateCanvasTime: PropTypes.bool
   }
 
   static defaultProps = {
@@ -256,7 +258,8 @@ export default class ReactCalendarTimeline extends Component {
     isCreateTrackRecord: false,
     isShowDataAssigned: false,
     viewOption: 1,
-    isShowTrackRecord: true
+    isShowTrackRecord: true,
+    isReCalculateCanvasTime: false
   }
 
   static childContextTypes = {
@@ -477,10 +480,23 @@ export default class ReactCalendarTimeline extends Component {
       this.props.onBoundsChange &&
       this.state.canvasTimeStart !== prevState.canvasTimeStart
     ) {
-      this.props.onBoundsChange(
-        this.state.canvasTimeStart,
-        this.state.canvasTimeStart + newZoom * 3
-      )
+      if (
+        this.props.isReCalculateCanvasTime &&
+        this.props.defaultTimeStart &&
+        this.props.defaultTimeEnd
+      ) {
+        const [canvasTimeStart, canvasTimeEnd] = getCanvasBoundariesFromVisibleTime(
+          this.props.defaultTimeStart.valueOf(),
+          this.props.defaultTimeEnd.valueOf(),
+          DEFAULT_BUFFER_CANVAS
+        );
+        this.props.onBoundsChange(canvasTimeStart, canvasTimeEnd);
+      } else {
+        this.props.onBoundsChange(
+          this.state.canvasTimeStart,
+          this.state.canvasTimeStart + newZoom * DEFAULT_BUFFER_CANVAS
+        );
+      }
     }
 
     // Check the scroll is correct
@@ -1127,6 +1143,7 @@ export default class ReactCalendarTimeline extends Component {
         timeSteps={timeSteps}
         height={height}
         verticalLineClassNamesForTime={this.props.verticalLineClassNamesForTime}
+        viewOption={this.props.viewOption}
       />
     )
   }

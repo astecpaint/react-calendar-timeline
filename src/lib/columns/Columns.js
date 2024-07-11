@@ -4,6 +4,12 @@ import React, { Component } from 'react'
 import { iterateTimes } from '../utility/calendar'
 import { TimelineStateConsumer } from '../timeline/TimelineStateContext'
 
+const VALUE_DISPLAYED = {
+  SIX_MONTH: 6,
+  WEEK: 'week',
+  DAY: 'day'
+}
+
 const passThroughPropTypes = {
   canvasTimeStart: PropTypes.number.isRequired,
   canvasTimeEnd: PropTypes.number.isRequired,
@@ -12,7 +18,8 @@ const passThroughPropTypes = {
   minUnit: PropTypes.string.isRequired,
   timeSteps: PropTypes.object.isRequired,
   height: PropTypes.number.isRequired,
-  verticalLineClassNamesForTime: PropTypes.func
+  verticalLineClassNamesForTime: PropTypes.func,
+  viewOption: PropTypes.number,
 }
 
 class Columns extends Component {
@@ -31,7 +38,8 @@ class Columns extends Component {
       nextProps.timeSteps === this.props.timeSteps &&
       nextProps.height === this.props.height &&
       nextProps.verticalLineClassNamesForTime ===
-        this.props.verticalLineClassNamesForTime
+      this.props.verticalLineClassNamesForTime &&
+      nextProps.viewOption === this.props.viewOption
     )
   }
 
@@ -44,16 +52,20 @@ class Columns extends Component {
       timeSteps,
       height,
       verticalLineClassNamesForTime,
-      getLeftOffsetFromDate
+      getLeftOffsetFromDate,
+      viewOption
     } = this.props
     const ratio = canvasWidth / (canvasTimeEnd - canvasTimeStart)
-
+    const newMinUnit =
+      Number(viewOption) === VALUE_DISPLAYED.SIX_MONTH
+        ? VALUE_DISPLAYED.WEEK
+        : VALUE_DISPLAYED.DAY
     let lines = []
 
     iterateTimes(
       canvasTimeStart,
       canvasTimeEnd,
-      'day',
+      newMinUnit,
       timeSteps,
       (time, nextTime) => {
         const minUnitValue = time.get(minUnit === 'day' ? 'date' : minUnit)

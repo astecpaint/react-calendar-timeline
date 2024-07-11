@@ -175,11 +175,7 @@ export default class Items extends Component {
                   ? _get(item, 'canChangeGroup')
                   : this.props.canChangeGroup
               }
-              canMove={
-                _get(item, 'canMove') !== undefined
-                  ? _get(item, 'canMove')
-                  : this.props.canMove
-              }
+              canMove={this.props.canMove && _get(item, 'canMove')}
               canResizeLeft={canResizeLeft(
                 item,
                 this.props.canResize,
