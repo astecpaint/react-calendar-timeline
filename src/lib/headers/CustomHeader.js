@@ -55,9 +55,10 @@ export class CustomHeader extends React.Component {
       nextProps.canvasWidth !== this.props.canvasWidth ||
       nextProps.unit !== this.props.unit ||
       nextProps.timeSteps !== this.props.timeSteps ||
-      nextProps.showPeriod !== this.props.showPeriod ||
-      nextProps.children !== this.props.children ||
-      nextProps.headerData !== this.props.headerData
+      nextProps.showPeriod !== this.props.showPeriod 
+      // ||
+      // nextProps.children !== this.props.children ||
+      // nextProps.headerData !== this.props.headerData
     ) {
       return true
     }

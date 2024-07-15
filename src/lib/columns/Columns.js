@@ -37,8 +37,8 @@ class Columns extends Component {
       nextProps.minUnit === this.props.minUnit &&
       nextProps.timeSteps === this.props.timeSteps &&
       nextProps.height === this.props.height &&
-      nextProps.verticalLineClassNamesForTime ===
-      this.props.verticalLineClassNamesForTime &&
+      // nextProps.verticalLineClassNamesForTime ===
+      // this.props.verticalLineClassNamesForTime &&
       nextProps.viewOption === this.props.viewOption
     )
   }

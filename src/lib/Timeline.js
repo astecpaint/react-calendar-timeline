@@ -28,10 +28,11 @@ import DateHeader from './headers/DateHeader'
 export const DEFAULT_HEIGHT_ROW = 64,
   DEFAULT_HEIGHT_ROW_PROCESS_BASIC = 60,
   DEFAULT_HEIGHT_HEADER = 112,
+  DEFAULT_HEIGHT_HEADER_PROCESS_BASIC = 80,
   DEFAULT_ROW_DISPLAYED = 12,
   DEFAULT_BUFFER_ROW = 1,
   DEFAULT_SCROLL_TOP = 0,
-  DEFAULT_BUFFER_ROW_IN_SIDEBAR = 2,
+  DEFAULT_BUFFER_ROW_IN_SIDEBAR = 1.5,
   DEFAULT_BUFFER_CANVAS = 3
 
 export default class ReactCalendarTimeline extends Component {
@@ -149,6 +150,7 @@ export default class ReactCalendarTimeline extends Component {
     isScheduleScreen: PropTypes.bool,
     defaultRowDisplayed: PropTypes.number,
     defaultBufferRow: PropTypes.number,
+    defaultBufferRowSidebar: PropTypes.number,
     scrollTop: PropTypes.number,
     isDragDrop: PropTypes.object,
 
@@ -252,6 +254,7 @@ export default class ReactCalendarTimeline extends Component {
     isScheduleScreen: false,
     defaultRowDisplayed: DEFAULT_ROW_DISPLAYED,
     defaultBufferRow: DEFAULT_BUFFER_ROW,
+    defaultBufferRowSidebar: DEFAULT_BUFFER_ROW_IN_SIDEBAR,
     scrollTop: DEFAULT_SCROLL_TOP,
     isDragDrop: { current: null },
 
@@ -1313,10 +1316,11 @@ export default class ReactCalendarTimeline extends Component {
       isShowDataAssigned,
       viewOption,
       isShowTrackRecord,
-      isShowInforGemba
+      isShowInforGemba,
+      defaultBufferRowSidebar
     } = this.props
     const sidebarPositionDisplayed = this.getItemDisplayPosition(
-      DEFAULT_BUFFER_ROW_IN_SIDEBAR
+      defaultBufferRowSidebar
     )
 
     return (
@@ -1503,27 +1507,40 @@ export default class ReactCalendarTimeline extends Component {
     bufferRow = this.props.defaultBufferRow
   ) => {
     const numberOfMaxItemTopOrBottom = Math.round(
-      numberOfRowDisplayed * bufferRow * bufferRowInSidebar
-    )
+      numberOfRowDisplayed * bufferRow
+    );
+    const defaultHeightHeader = this.props.isScheduleScreen
+      ? DEFAULT_HEIGHT_HEADER
+      : DEFAULT_HEIGHT_HEADER_PROCESS_BASIC
+    const defaultHeightRow = this.props.isScheduleScreen
+      ? DEFAULT_HEIGHT_ROW
+      : DEFAULT_HEIGHT_ROW_PROCESS_BASIC
+      
     const numberOfItemTopHided =
-      (scrollTop - DEFAULT_HEIGHT_HEADER) / DEFAULT_HEIGHT_ROW
-
-    if (
-      !scrollTop ||
-      numberOfItemTopHided < numberOfMaxItemTopOrBottom / bufferRowInSidebar
-    ) {
+      (scrollTop - defaultHeightHeader) / defaultHeightRow;
+    const newBufferInSidebar = bufferRowInSidebar - 1
+  
+    if (!scrollTop || numberOfItemTopHided < numberOfMaxItemTopOrBottom) {
       return {
         start: 0,
-        end: numberOfRowDisplayed + numberOfMaxItemTopOrBottom - 1
+        end:
+          numberOfRowDisplayed +
+          numberOfMaxItemTopOrBottom +
+          numberOfMaxItemTopOrBottom * newBufferInSidebar -
+          1,
       }
     }
-
-    let start = Math.floor(numberOfItemTopHided) - numberOfMaxItemTopOrBottom // start position: calculate number of item top will display at buffer block
-    if (start < 0) start = 0 // check case value start of sidebar
-
-    const end =
-      start + numberOfRowDisplayed + numberOfMaxItemTopOrBottom * 2 - 1 // end position: position top + number of default display (between) + maxItem * 2 (top + max & bottom)
-
+  
+    const page = Math.floor(numberOfItemTopHided / numberOfMaxItemTopOrBottom)
+  
+    let start = (page - 1) * numberOfMaxItemTopOrBottom,
+      end = start + numberOfRowDisplayed + numberOfMaxItemTopOrBottom * 2 - 1
+  
+    start -= numberOfMaxItemTopOrBottom * newBufferInSidebar
+    end += numberOfMaxItemTopOrBottom * newBufferInSidebar
+  
+    if (start < 0) start = 0
+  
     return { start, end }
   }
 
