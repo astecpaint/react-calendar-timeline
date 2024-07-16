@@ -521,7 +521,7 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   resize = (props = this.props) => {
-    const { width: containerWidth } = this.container.getBoundingClientRect()
+    const containerWidth = this.container?.getBoundingClientRect()?.width ?? 0
 
     let width = containerWidth - props.sidebarWidth - props.rightSidebarWidth
     const canvasWidth = getCanvasWidth(width, props.buffer)
@@ -560,8 +560,15 @@ export default class ReactCalendarTimeline extends Component {
     })
     //initial scroll left is the buffer - 1 (1 is visible area) divided by 2 (2 is the buffer split on the right and left of the timeline)
     const scrollLeft = width * ((props.buffer - 1) / 2)
-    this.scrollComponent.scrollLeft = scrollLeft
-    this.scrollHeaderRef.scrollLeft = scrollLeft
+    
+    if (this.scrollComponent) {
+      this.scrollComponent.scrollLeft = scrollLeft
+    }
+
+    if (this.scrollHeaderRef) {
+      this.scrollHeaderRef.scrollLeft = scrollLeft
+
+    }
   }
 
   onScroll = scrollX => {
@@ -1489,7 +1496,7 @@ export default class ReactCalendarTimeline extends Component {
     } else {
       this.onScroll(this.scrollComponent.scrollLeft + Number(distanceScroll))
     }
-    this.scrollLeftTemporary = this.scrollComponentTemporary.scrollLeft
+    this.scrollLeftTemporary = this.scrollComponentTemporary?.scrollLeft
   }
 
   handleScrollEnd = e => {

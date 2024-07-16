@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import {
   calculateTimeForXPosition,
@@ -25,7 +25,7 @@ const HEIGHT_TASK = 23,
   DEFAULT_MINUTE_SECOND_MILLISECOND = 59,
   DEFAULT_HOUR_HALF_DAY = 12
 
-class GroupRow extends Component {
+class GroupRow extends PureComponent {
   static propTypes = {
     onClick: PropTypes.func.isRequired,
     onDoubleClick: PropTypes.func.isRequired,

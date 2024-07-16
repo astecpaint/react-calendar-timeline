@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { SortableElement, SortableHandle } from 'react-sortable-hoc'
 import { _get, deepObjectCompare } from '../utility/generic'
 import { DEFAULT_HEIGHT_ROW_PROCESS_BASIC } from '../Timeline'
@@ -29,7 +29,7 @@ const DragHandle = SortableHandle(({ groupIndex }) => (
   </button>
 ))
 
-class SortableItemClass extends Component {
+class SortableItemClass extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -74,7 +74,6 @@ class SortableItemClass extends Component {
 
     return (
       <div
-        key={_get(group, groupIdKey)}
         className={
           'rct-sidebar-row rct-sidebar-row-' +
           (group.index % 2 === 0 ? 'even' : 'odd') +

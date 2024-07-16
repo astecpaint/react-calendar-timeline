@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import { SortableContainer } from 'react-sortable-hoc'
 import { SortableItem } from './SortableItem'
-import { arraysEqual } from '../utility/generic'
+import { arraysEqual, deepObjectCompare } from '../utility/generic'
 
 class SortableListClass extends Component {
   constructor(props) {
@@ -16,8 +16,10 @@ class SortableListClass extends Component {
       nextProps.groupRightTitleKey === this.props.groupRightTitleKey &&
       nextProps.groupTitleKey === this.props.groupTitleKey &&
       nextProps.isRightSidebar === this.props.isRightSidebar &&
-      nextProps.sidebarPositionDisplayed ===
-        this.props.sidebarPositionDisplayed &&
+      deepObjectCompare(
+        nextProps.sidebarPositionDisplayed,
+        this.props.sidebarPositionDisplayed
+      ) &&
       nextProps.viewOption === this.props.viewOption &&
       nextProps.isShowTrackRecord === this.props.isShowTrackRecord
     )

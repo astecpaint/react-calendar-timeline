@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { SortableList } from '../sortable/SortableContainer'
-import { arraysEqual } from '../utility/generic'
+import { arraysEqual, deepObjectCompare } from '../utility/generic'
 import { arrayMove } from 'react-sortable-hoc'
-import { DEFAULT_ROW_DISPLAYED } from '../Timeline'
 
 const DEFAULT_SORTABLE_DURATION = 300
 export default class GroupSortable extends Component {
@@ -49,8 +48,10 @@ export default class GroupSortable extends Component {
       nextProps.isRightSidebar === this.props.isRightSidebar &&
       nextState.isDragging === this.state.isDragging &&
       nextProps.isShowDragHandleButton === this.props.isShowDragHandleButton &&
-      nextProps.sidebarPositionDisplayed ===
-        this.props.sidebarPositionDisplayed &&
+      deepObjectCompare(
+        nextProps.sidebarPositionDisplayed,
+        this.props.sidebarPositionDisplayed
+      ) &&
       nextProps.viewOption === this.props.viewOption &&
       nextProps.isShowTrackRecord === this.props.isShowTrackRecord
     )
