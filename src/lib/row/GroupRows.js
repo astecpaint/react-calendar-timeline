@@ -40,16 +40,18 @@ export default class GroupRows extends Component {
 
   shouldComponentUpdate(nextProps) {
     return !(
-      nextProps.canvasWidth === this.props.canvasWidth &&
-      nextProps.lineCount === this.props.lineCount &&
-      nextProps.groupHeights === this.props.groupHeights &&
-      nextProps.groups === this.props.groups &&
-      deepObjectCompare(
-        this.props.itemPositionDisplayed,
-        nextProps.itemPositionDisplayed
-      ) &&
-      nextProps.isShowTrackRecord === this.props.isShowTrackRecord
-    )
+      nextProps.resizingItemCalled ||
+      nextProps.dragMoveItemCalled ||
+      (nextProps.canvasWidth === this.props.canvasWidth &&
+        nextProps.lineCount === this.props.lineCount &&
+        nextProps.groupHeights === this.props.groupHeights &&
+        nextProps.groups === this.props.groups &&
+        deepObjectCompare(
+          this.props.itemPositionDisplayed,
+          nextProps.itemPositionDisplayed
+        ) &&
+        nextProps.isShowTrackRecord === this.props.isShowTrackRecord)
+    );
   }
 
   render() {

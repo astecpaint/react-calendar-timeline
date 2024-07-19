@@ -12,10 +12,7 @@ import {
   overridableStyles,
   selectedStyle,
   selectedAndCanMove,
-  selectedAndCanResizeLeft,
   selectedAndCanResizeLeftAndDragLeft,
-  selectedAndCanResizeRight,
-  selectedAndCanResizeRightAndDragRight,
   leftResizeStyle,
   rightResizeStyle
 } from './styles'
@@ -696,19 +693,8 @@ export default class Item extends Component {
       overridableStyles,
       this.props.selected ? selectedStyle : {},
       this.props.selected & this.canMove(this.props) ? selectedAndCanMove : {},
-      this.props.selected & this.canResizeLeft(this.props)
-        ? selectedAndCanResizeLeft
-        : {},
       this.props.selected & this.canResizeLeft(this.props) & this.state.dragging
         ? selectedAndCanResizeLeftAndDragLeft
-        : {},
-      this.props.selected & this.canResizeRight(this.props)
-        ? selectedAndCanResizeRight
-        : {},
-      this.props.selected &
-        this.canResizeRight(this.props) &
-        this.state.dragging
-        ? selectedAndCanResizeRightAndDragRight
         : {},
       props.style,
       baseStyles

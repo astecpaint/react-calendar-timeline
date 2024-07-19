@@ -1514,18 +1514,25 @@ export default class ReactCalendarTimeline extends Component {
     bufferRow = this.props.defaultBufferRow
   ) => {
     const numberOfMaxItemTopOrBottom = Math.round(
-      numberOfRowDisplayed * bufferRow
-    );
-    const defaultHeightHeader = this.props.isScheduleScreen
-      ? DEFAULT_HEIGHT_HEADER
-      : DEFAULT_HEIGHT_HEADER_PROCESS_BASIC
-    const defaultHeightRow = this.props.isScheduleScreen
-      ? DEFAULT_HEIGHT_ROW
-      : DEFAULT_HEIGHT_ROW_PROCESS_BASIC
-      
-    const numberOfItemTopHided =
-      (scrollTop - defaultHeightHeader) / defaultHeightRow;
-    const newBufferInSidebar = bufferRowInSidebar - 1
+        numberOfRowDisplayed * bufferRow
+      ),
+      newBufferInSidebar = bufferRowInSidebar - 1;
+
+    let numberOfItemTopHided =
+      (scrollTop - DEFAULT_HEIGHT_HEADER_PROCESS_BASIC) /
+      DEFAULT_HEIGHT_ROW_PROCESS_BASIC;
+  
+    if (this.props.isScheduleScreen) {
+      const indexFirstItemDisplayed = this.props.groups
+        ?.filter((group) => group?.isMerge || (!group?.isMerge && !group?.isHide))
+        ?.findIndex(
+          (group) => group?.offsetHeight >= scrollTop - DEFAULT_HEIGHT_HEADER
+        );
+    
+      if (indexFirstItemDisplayed !== -1) {
+        numberOfItemTopHided = indexFirstItemDisplayed - 1;
+      }
+    }
   
     if (!scrollTop || numberOfItemTopHided < numberOfMaxItemTopOrBottom) {
       return {
@@ -1535,21 +1542,21 @@ export default class ReactCalendarTimeline extends Component {
           numberOfMaxItemTopOrBottom +
           numberOfMaxItemTopOrBottom * newBufferInSidebar -
           1,
-      }
+      };
     }
   
-    const page = Math.floor(numberOfItemTopHided / numberOfMaxItemTopOrBottom)
+    const page = Math.floor(numberOfItemTopHided / numberOfMaxItemTopOrBottom);
   
     let start = (page - 1) * numberOfMaxItemTopOrBottom,
-      end = start + numberOfRowDisplayed + numberOfMaxItemTopOrBottom * 2 - 1
+      end = start + numberOfRowDisplayed + numberOfMaxItemTopOrBottom * 2 - 1;
   
-    start -= numberOfMaxItemTopOrBottom * newBufferInSidebar
-    end += numberOfMaxItemTopOrBottom * newBufferInSidebar
+    start -= numberOfMaxItemTopOrBottom * newBufferInSidebar;
+    end += numberOfMaxItemTopOrBottom * newBufferInSidebar;
   
-    if (start < 0) start = 0
+    if (start < 0) start = 0;
   
-    return { start, end }
-  }
+    return { start, end };
+  };
 
   /**
    * function handle set state current group move in event drag/drop move

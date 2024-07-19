@@ -70,6 +70,7 @@ class GroupRow extends PureComponent {
     this.refreshIntervalId = null
     this.endTimeTmp = 0
     this.isCreatingPositionAbove = true
+    this.isMouseMove = false
   }
 
   componentDidUpdate() {
@@ -327,9 +328,11 @@ class GroupRow extends PureComponent {
     ).valueOf()
 
     this.setState({ countTime: 1 })
-    document.querySelector('.rct-horizontal-lines').style.cursor = 'move'
 
-    //TODO: TEMP COMMENT
+     //TODO: TEMP COMMENT: Set cursor
+    // document.querySelector('.rct-horizontal-lines').style.cursor = 'move'
+
+    //TODO: TEMP COMMENT: Set waiting time
     // this.intervalTouchTime = setInterval(
     //   function () {
     //     if (this.state.countTime < COUNT_TIME) {
@@ -356,6 +359,7 @@ class GroupRow extends PureComponent {
     this.endTimeTmp = 0
     this.intervalTouchTime = null
     this.refreshIntervalId = null
+    this.isMouseMove = false
     this.setState({ left: 0, width: 0, countTime: 0, isOutChart: false })
   }
 
@@ -377,7 +381,7 @@ class GroupRow extends PureComponent {
 
     if (!isCreateTaskList && !isCreateTrackRecord) return
 
-    if (this.state.countTime < COUNT_TIME || !this.startTimeTaskCreating) {
+    if (this.state.countTime < COUNT_TIME || !this.startTimeTaskCreating || !this.isMouseMove) {
       this.handleClear()
       return
     }
@@ -445,6 +449,20 @@ class GroupRow extends PureComponent {
     this.handleClear()
   }
 
+  isValidMouseMove = (timeEnd, timeDistance) => {
+    const expectDistance = this.getWidthByTime(new Date(), null, timeDistance)
+    const actualDistance = Math.abs(
+      this.getWidthByTime(
+        this.startTimeTaskCreatingActual,
+        timeEnd,
+        {},
+        false
+      )
+    )
+
+    return actualDistance >= expectDistance
+  }
+
   handleMouseMove = e => {
     const {
       canvasTimeStart,
@@ -464,39 +482,26 @@ class GroupRow extends PureComponent {
       timeEnd = getTimeFromRowClickEvent(e)
 
     if (
-      !!timeStart &&
-      !!this.startTimeTaskCreatingActual &&
-      this.state.countTime < COUNT_TIME
-    ) {
-      const expectDistance = this.getWidthByTime(new Date(), null, {
-        hour: 6,
-        minute: 0,
-        second: 0,
-        millisecond: 0
-      })
-
-      const actualDistance = Math.abs(
-        this.getWidthByTime(
-          this.startTimeTaskCreatingActual,
-          timeEnd,
-          {},
-          false
-        )
-      )
-
-      if (actualDistance >= expectDistance) {
-        this.handleClear()
-        return
-      }
-    }
-
-    if (
       (!isCreateTaskList && !isCreateTrackRecord) ||
       this.state.countTime < COUNT_TIME ||
       !scrollRef ||
       !timeStart
     ) {
       return
+    }
+   
+    if (!this.isMouseMove) {
+      const isValid = this.isValidMouseMove(timeEnd, {
+        hour: 3,
+        minute: 0,
+        second: 0,
+        millisecond: 0
+      })
+  
+      if (!isValid) return
+      
+      this.isMouseMove = true
+      document.querySelector('.rct-horizontal-lines').style.cursor = 'move'
     }
 
     const newVisibleTimeStart = visibleTimeStart + onDayToTime(0.5),
