@@ -197,17 +197,20 @@ class GroupRow extends PureComponent {
       task,
       minBeginDate,
       maxEndDate,
-      isTaskList,
       expanded,
-      isCustomGroup
-    } = group
-    const { isEmptySubGroup, task_color, parent_task_color } = task ?? {}
-    let newIsHide = !isTaskList ? isHide : isHide || !expanded
+      isCustomGroup,
+      isMerge,
+      gemba_color,
+      isTaskList,
+      isSubTask
+    } = group;
+    const { isEmptySubGroup, task_color, parent_task_color } = task ?? {};
+    let newIsHide = isMerge || (!isCustomGroup && !isTaskList && !isSubTask) ? !expanded : isHide;
 
     if (!isScheduleScreen) {
       newIsHide = isCustomGroup ? !expanded : isHide
     }
-
+  
     if (
       !isShowBgColorGroup ||
       newIsHide ||
@@ -216,18 +219,23 @@ class GroupRow extends PureComponent {
       !minBeginDate ||
       !maxEndDate
     ) {
-      return <></>
+      return <></>;
     }
-
+  
     const left = calculateXPositionForTime(
       canvasTimeStart,
       canvasTimeEnd,
       canvasWidth,
       moment(minBeginDate).valueOf()
-    )
-    const width = this.getWidthByTime(minBeginDate, maxEndDate)
-    const bgColor = isTaskList || isCustomGroup ? task_color : parent_task_color
-
+    );
+    const width = this.getWidthByTime(minBeginDate, maxEndDate);
+    const bgColor = isScheduleScreen
+      ? gemba_color
+      : isCustomGroup
+        ? task_color
+        : parent_task_color;
+    const opacity = isScheduleScreen ? 1 : bgColor ? OPACITY_ROW_TASK : 1;
+  
     return (
       <div
         className={
@@ -242,14 +250,14 @@ class GroupRow extends PureComponent {
           width,
           top: 0,
           left,
-          height: `${isScheduleScreen ? HEIGHT_ROW_GEMBA : HEIGHT_ROW_TASK}px`,
+          height: '100%',
           backgroundColor: bgColor ?? BG_COLOR_GROUP_TASK,
-          opacity: bgColor ? OPACITY_ROW_TASK : 1,
-          zIndex: 1
+          opacity,
+          zIndex: 1,
         }}
       />
-    )
-  }
+    );
+  };
 
   calendarScrollWithTime = scrollLeft => {
     const {
