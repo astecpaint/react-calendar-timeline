@@ -184,7 +184,7 @@ export default class GroupSortable extends Component {
     )
 
     dragItemElements.forEach(element => {
-      element.style.setProperty('z-index', '81', 'important')
+      element.style.setProperty('z-index', '82', 'important')
       element.classList.add('draggable_task_process')
     })
 
