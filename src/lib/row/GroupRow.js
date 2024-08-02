@@ -20,10 +20,16 @@ const HEIGHT_TASK = 23,
   BG_COLOR_TRACK_RECORD = '#27AE60',
   BG_COLOR_SUB_TRACK_RECORD = '#92D6AF',
   HEIGHT_TRACK_RECORD = 14,
-  MARGIN_TOP_OF_TRACK_RECORD = 39,
+  MARGIN_TOP_OF_TRACK_RECORD = 37,
   DEFAULT_HOUR = 23,
   DEFAULT_MINUTE_SECOND_MILLISECOND = 59,
-  DEFAULT_HOUR_HALF_DAY = 12
+  DEFAULT_HOUR_HALF_DAY = 12,
+  DEFAULT_MOUSE_MOVE_DISTANCE = 3,
+  DEFAULT_SCROLL_TIME = 4,
+  TYPE_CREATE_TRACK_RECORD = {
+    DEFAULT: 1,
+    DETAIL: 2
+  }
 
 class GroupRow extends PureComponent {
   static propTypes = {
@@ -135,12 +141,35 @@ class GroupRow extends PureComponent {
     countTime,
     left,
     width,
-    isCreatingPositionAbove
+    isCreatingPositionAbove,
+    isCreateTrackRecord,
+    endTimeTmp,
+    startTimeTaskCreatingActual,
   ) => {
     if (countTime < COUNT_TIME) return <></>
 
     const { isMerge } = group
     const minWidth = this.getWidthByTime()
+    const isTrackRecordTypeDetail =
+      isCreateTrackRecord &&
+      !isCreatingPositionAbove &&
+      group?.regis_track_record_type === TYPE_CREATE_TRACK_RECORD.DETAIL;
+    let newWidth = width,
+      newLeft = left;
+
+      if (isTrackRecordTypeDetail) {
+        const hour = moment(startTimeTaskCreatingActual).format('HH')
+
+        if (
+          endTimeTmp <= startTimeTaskCreatingActual &&
+          hour < DEFAULT_MOUSE_MOVE_DISTANCE
+        ) {
+          newLeft += DEFAULT_SCROLL_TIME
+        }
+
+        newWidth = minWidth
+      }
+
 
     return (
       <>
@@ -148,10 +177,10 @@ class GroupRow extends PureComponent {
           <div
             style={{
               position: 'absolute',
-              left: `${left}px`,
+              left: `${newLeft}px`,
               top: `${MARGIN_TOP_OF_TASK}px`,
               height: `${HEIGHT_TASK}px`,
-              width: `${width}px`,
+              width: `${newWidth}px`,
               minWidth: `${minWidth}px`,
               backgroundColor: isMerge ? BG_COLOR_TASK : BG_COLOR_SUB_TASK,
               borderRadius: '6px',
@@ -167,10 +196,10 @@ class GroupRow extends PureComponent {
           <div
             style={{
               position: 'absolute',
-              left: `${left}px`,
+              left: `${newLeft}px`,
               top: `${MARGIN_TOP_OF_TRACK_RECORD}px`,
               height: `${HEIGHT_TRACK_RECORD}px`,
-              width: `${width}px`,
+              width: `${newWidth}px`,
               minWidth: `${minWidth}px`,
               backgroundColor: isMerge
                 ? BG_COLOR_TRACK_RECORD
@@ -304,7 +333,9 @@ class GroupRow extends PureComponent {
 
     const isHasDateTimeTask =
       !!checkValueDate(task?.begin_date) && !!checkValueDate(task?.end_date)
-    const isHasTrackRecord = !!task?.track_record_list?.length
+    const isHasTrackRecord = 
+      group?.regis_track_record_type === TYPE_CREATE_TRACK_RECORD.DEFAULT && 
+      !!task?.track_record_list?.length
 
     const offsetY = e?.nativeEvent?.offsetY || e?.offsetY || 0
     this.isCreatingPositionAbove = offsetY <= HEIGHT_ROW_TASK / 2
@@ -483,7 +514,8 @@ class GroupRow extends PureComponent {
       getTimeFromRowClickEvent,
       onDayToTime,
       canvasWidth,
-      isCreateTrackRecord
+      isCreateTrackRecord,
+      group
     } = this.props
 
     const timeStart = this.startTimeTaskCreating,
@@ -497,10 +529,19 @@ class GroupRow extends PureComponent {
     ) {
       return
     }
+
+    if (
+      isCreateTrackRecord &&
+      !this.isCreatingPositionAbove &&
+      group?.regis_track_record_type === TYPE_CREATE_TRACK_RECORD.DETAIL &&
+      this.isMouseMove
+    ) {
+      return;
+    }
    
     if (!this.isMouseMove) {
       const isValid = this.isValidMouseMove(timeEnd, {
-        hour: 3,
+        hour: DEFAULT_MOUSE_MOVE_DISTANCE,
         minute: 0,
         second: 0,
         millisecond: 0
@@ -655,7 +696,8 @@ class GroupRow extends PureComponent {
       isShowBgColorGroup,
       index,
       itemPositionDisplayed,
-      isScheduleScreen
+      isScheduleScreen,
+      isCreateTrackRecord
     } = this.props
 
     const { countTime, left, width } = this.state
@@ -687,7 +729,10 @@ class GroupRow extends PureComponent {
               countTime,
               left,
               width,
-              this.isCreatingPositionAbove
+              this.isCreatingPositionAbove,
+              isCreateTrackRecord,
+              this.endTimeTmp,
+              this.startTimeTaskCreatingActual
             )}
             {this.renderBgColor(
               isShowBgColorGroup,
