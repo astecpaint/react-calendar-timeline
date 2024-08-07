@@ -144,7 +144,7 @@ class GroupRow extends PureComponent {
     isCreatingPositionAbove,
     isCreateTrackRecord,
     endTimeTmp,
-    startTimeTaskCreatingActual,
+    startTimeTaskCreatingActual
   ) => {
     if (countTime < COUNT_TIME) return <></>
 
@@ -153,23 +153,22 @@ class GroupRow extends PureComponent {
     const isTrackRecordTypeDetail =
       isCreateTrackRecord &&
       !isCreatingPositionAbove &&
-      group?.regis_track_record_type === TYPE_CREATE_TRACK_RECORD.DETAIL;
+      group?.regis_track_record_type === TYPE_CREATE_TRACK_RECORD.DETAIL
     let newWidth = width,
-      newLeft = left;
+      newLeft = left
 
-      if (isTrackRecordTypeDetail) {
-        const hour = moment(startTimeTaskCreatingActual).format('HH')
+    if (isTrackRecordTypeDetail) {
+      const hour = moment(startTimeTaskCreatingActual).format('HH')
 
-        if (
-          endTimeTmp <= startTimeTaskCreatingActual &&
-          hour < DEFAULT_MOUSE_MOVE_DISTANCE
-        ) {
-          newLeft += DEFAULT_SCROLL_TIME
-        }
-
-        newWidth = minWidth
+      if (
+        endTimeTmp <= startTimeTaskCreatingActual &&
+        hour < DEFAULT_MOUSE_MOVE_DISTANCE
+      ) {
+        newLeft += DEFAULT_SCROLL_TIME
       }
 
+      newWidth = minWidth
+    }
 
     return (
       <>
@@ -182,7 +181,9 @@ class GroupRow extends PureComponent {
               height: `${HEIGHT_TASK}px`,
               width: `${newWidth}px`,
               minWidth: `${minWidth}px`,
-              backgroundColor: isMerge ? BG_COLOR_TASK : BG_COLOR_SUB_TASK,
+              backgroundColor:
+                group?.task?.task_color ??
+                (isMerge ? BG_COLOR_TASK : BG_COLOR_SUB_TASK),
               borderRadius: '6px',
               paddingLeft: '5px',
               display: 'flex',
@@ -201,9 +202,9 @@ class GroupRow extends PureComponent {
               height: `${HEIGHT_TRACK_RECORD}px`,
               width: `${newWidth}px`,
               minWidth: `${minWidth}px`,
-              backgroundColor: isMerge
-                ? BG_COLOR_TRACK_RECORD
-                : BG_COLOR_SUB_TRACK_RECORD,
+              backgroundColor:
+                group?.task?.track_record_color ??
+                (isMerge ? BG_COLOR_TRACK_RECORD : BG_COLOR_SUB_TRACK_RECORD),
               zIndex: 2
             }}
           />
@@ -232,14 +233,17 @@ class GroupRow extends PureComponent {
       gemba_color,
       isTaskList,
       isSubTask
-    } = group;
-    const { isEmptySubGroup, task_color, parent_task_color } = task ?? {};
-    let newIsHide = isMerge || (!isCustomGroup && !isTaskList && !isSubTask) ? !expanded : isHide;
+    } = group
+    const { isEmptySubGroup, task_color, parent_task_color } = task ?? {}
+    let newIsHide =
+      isMerge || (!isCustomGroup && !isTaskList && !isSubTask)
+        ? !expanded
+        : isHide
 
     if (!isScheduleScreen) {
       newIsHide = isCustomGroup ? !expanded : isHide
     }
-  
+
     if (
       !isShowBgColorGroup ||
       newIsHide ||
@@ -248,23 +252,23 @@ class GroupRow extends PureComponent {
       !minBeginDate ||
       !maxEndDate
     ) {
-      return <></>;
+      return <></>
     }
-  
+
     const left = calculateXPositionForTime(
       canvasTimeStart,
       canvasTimeEnd,
       canvasWidth,
       moment(minBeginDate).valueOf()
-    );
-    const width = this.getWidthByTime(minBeginDate, maxEndDate);
+    )
+    const width = this.getWidthByTime(minBeginDate, maxEndDate)
     const bgColor = isScheduleScreen
       ? gemba_color
       : isCustomGroup
-        ? task_color
-        : parent_task_color;
-    const opacity = isScheduleScreen ? 1 : bgColor ? OPACITY_ROW_TASK : 1;
-  
+      ? task_color
+      : parent_task_color
+    const opacity = isScheduleScreen ? 1 : bgColor ? OPACITY_ROW_TASK : 1
+
     return (
       <div
         className={
@@ -282,11 +286,11 @@ class GroupRow extends PureComponent {
           height: '100%',
           backgroundColor: bgColor ?? BG_COLOR_GROUP_TASK,
           opacity,
-          zIndex: 1,
+          zIndex: 1
         }}
       />
-    );
-  };
+    )
+  }
 
   calendarScrollWithTime = scrollLeft => {
     const {
@@ -333,8 +337,8 @@ class GroupRow extends PureComponent {
 
     const isHasDateTimeTask =
       !!checkValueDate(task?.begin_date) && !!checkValueDate(task?.end_date)
-    const isHasTrackRecord = 
-      group?.regis_track_record_type === TYPE_CREATE_TRACK_RECORD.DEFAULT && 
+    const isHasTrackRecord =
+      group?.regis_track_record_type === TYPE_CREATE_TRACK_RECORD.DEFAULT &&
       !!task?.track_record_list?.length
 
     const offsetY = e?.nativeEvent?.offsetY || e?.offsetY || 0
@@ -368,7 +372,7 @@ class GroupRow extends PureComponent {
 
     this.setState({ countTime: 1 })
 
-     //TODO: TEMP COMMENT: Set cursor
+    //TODO: TEMP COMMENT: Set cursor
     // document.querySelector('.rct-horizontal-lines').style.cursor = 'move'
 
     //TODO: TEMP COMMENT: Set waiting time
@@ -420,7 +424,11 @@ class GroupRow extends PureComponent {
 
     if (!isCreateTaskList && !isCreateTrackRecord) return
 
-    if (this.state.countTime < COUNT_TIME || !this.startTimeTaskCreating || !this.isMouseMove) {
+    if (
+      this.state.countTime < COUNT_TIME ||
+      !this.startTimeTaskCreating ||
+      !this.isMouseMove
+    ) {
       this.handleClear()
       return
     }
@@ -429,12 +437,12 @@ class GroupRow extends PureComponent {
 
     if (endTime >= this.startTimeTaskCreating) {
       let endDate = endTime
-      const hours = moment(endDate).format('HH');
+      const hours = moment(endDate).format('HH')
 
       if (hours < DEFAULT_HOUR_HALF_DAY) {
         endDate = moment(endDate)
-        .add(-1, 'days')
-        .valueOf()
+          .add(-1, 'days')
+          .valueOf()
       }
 
       const maxEndDate = moment(this.startTimeTaskCreating)
@@ -461,12 +469,12 @@ class GroupRow extends PureComponent {
       const minStartDate = moment(endDate)
         .add(-MAX_NUMBER_OF_DRAG_DAYS, 'days')
         .valueOf()
-      const hours = moment(startDate).format('HH');
+      const hours = moment(startDate).format('HH')
 
       if (hours >= DEFAULT_HOUR_HALF_DAY) {
         startDate = moment(startDate)
-        .add(1, 'days')
-        .valueOf()
+          .add(1, 'days')
+          .valueOf()
       }
 
       if (startDate < minStartDate) {
@@ -491,12 +499,7 @@ class GroupRow extends PureComponent {
   isValidMouseMove = (timeEnd, timeDistance) => {
     const expectDistance = this.getWidthByTime(new Date(), null, timeDistance)
     const actualDistance = Math.abs(
-      this.getWidthByTime(
-        this.startTimeTaskCreatingActual,
-        timeEnd,
-        {},
-        false
-      )
+      this.getWidthByTime(this.startTimeTaskCreatingActual, timeEnd, {}, false)
     )
 
     return actualDistance >= expectDistance
@@ -536,9 +539,9 @@ class GroupRow extends PureComponent {
       group?.regis_track_record_type === TYPE_CREATE_TRACK_RECORD.DETAIL &&
       this.isMouseMove
     ) {
-      return;
+      return
     }
-   
+
     if (!this.isMouseMove) {
       const isValid = this.isValidMouseMove(timeEnd, {
         hour: DEFAULT_MOUSE_MOVE_DISTANCE,
@@ -546,9 +549,9 @@ class GroupRow extends PureComponent {
         second: 0,
         millisecond: 0
       })
-  
+
       if (!isValid) return
-      
+
       this.isMouseMove = true
       document.querySelector('.rct-horizontal-lines').style.cursor = 'move'
     }
