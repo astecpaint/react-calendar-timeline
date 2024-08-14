@@ -48,6 +48,18 @@
     overflow-y: hidden; }
     .react-calendar-timeline .scroll-temporary-container .scroll-temporary-body .content {
       width: 6000px; }
+    .react-calendar-timeline .scroll-temporary-container .scroll-temporary-body__button {
+      content: '';
+      display: flex;
+      position: absolute;
+      height: 11.31370849898476px;
+      width: 11.31370849898476px;
+      transform-origin: center;
+      background-repeat: no-repeat;
+      background-size: 16px 16px;
+      background-position: center;
+      background-clip: content-box;
+      cursor: pointer; }
   .react-calendar-timeline .scroll-temporary-container .scroll-temporary-body::-webkit-scrollbar {
     height: 14px; }
   .react-calendar-timeline .scroll-temporary-container .scroll-temporary-body::-webkit-scrollbar-thumb {

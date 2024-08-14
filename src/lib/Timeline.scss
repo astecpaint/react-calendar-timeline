@@ -75,6 +75,19 @@ $weekend: rgba(250, 246, 225, 0.5);
       .content {
         width: 6000px;
       }
+      &__button {
+        content: '';
+        display: flex;
+        position: absolute;
+        height: 11.31370849898476px;
+        width: 11.31370849898476px;
+        transform-origin: center;
+        background-repeat: no-repeat;
+        background-size: 16px 16px;
+        background-position: center;
+        background-clip: content-box;
+        cursor: pointer;
+      }
     }
     .scroll-temporary-body::-webkit-scrollbar {
       height: 14px;

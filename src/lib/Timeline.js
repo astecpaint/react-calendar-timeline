@@ -1507,6 +1507,38 @@ export default class ReactCalendarTimeline extends Component {
     this.isScrolling = false
   }
 
+  /**
+   * function handle click scroll prev button
+   * @param {object} e - object click event
+   */
+  handleClickScrollPrev = e => {
+    if (this.scrollComponentTemporary) {
+      const distanceScroll =
+        this.scrollComponentTemporary.scrollLeft -
+        this.scrollComponentTemporary.scrollWidth / 2
+      this.scrollComponentTemporary.scroll({
+        left: distanceScroll,
+        behavior: 'smooth'
+      })
+    }
+  }
+
+  /**
+   * function handle click scroll next button
+   * @param {object} e - object click event
+   */
+  handleClickScrollNext = e => {
+    if (this.scrollComponentTemporary) {
+      const distanceScroll =
+        this.scrollComponentTemporary.scrollLeft +
+        this.scrollComponentTemporary.scrollWidth / 2
+      this.scrollComponentTemporary.scroll({
+        left: distanceScroll,
+        behavior: 'smooth'
+      })
+    }
+  }
+
   getItemDisplayPosition = (
     bufferRowInSidebar = DEFAULT_BUFFER_ROW,
     scrollTop = this.props.scrollTop,
@@ -1516,24 +1548,24 @@ export default class ReactCalendarTimeline extends Component {
     const numberOfMaxItemTopOrBottom = Math.round(
         numberOfRowDisplayed * bufferRow
       ),
-      newBufferInSidebar = bufferRowInSidebar - 1;
+      newBufferInSidebar = bufferRowInSidebar - 1
 
     let numberOfItemTopHided =
       (scrollTop - DEFAULT_HEIGHT_HEADER_PROCESS_BASIC) /
-      DEFAULT_HEIGHT_ROW_PROCESS_BASIC;
-  
+      DEFAULT_HEIGHT_ROW_PROCESS_BASIC
+
     if (this.props.isScheduleScreen) {
       const indexFirstItemDisplayed = this.props.groups
-        ?.filter((group) => group?.isMerge || (!group?.isMerge && !group?.isHide))
+        ?.filter(group => group?.isMerge || (!group?.isMerge && !group?.isHide))
         ?.findIndex(
-          (group) => group?.offsetHeight >= scrollTop - DEFAULT_HEIGHT_HEADER
-        );
-    
+          group => group?.offsetHeight >= scrollTop - DEFAULT_HEIGHT_HEADER
+        )
+
       if (indexFirstItemDisplayed !== -1) {
-        numberOfItemTopHided = indexFirstItemDisplayed - 1;
+        numberOfItemTopHided = indexFirstItemDisplayed - 1
       }
     }
-  
+
     if (!scrollTop || numberOfItemTopHided < numberOfMaxItemTopOrBottom) {
       return {
         start: 0,
@@ -1541,22 +1573,22 @@ export default class ReactCalendarTimeline extends Component {
           numberOfRowDisplayed +
           numberOfMaxItemTopOrBottom +
           numberOfMaxItemTopOrBottom * newBufferInSidebar -
-          1,
-      };
+          1
+      }
     }
-  
-    const page = Math.floor(numberOfItemTopHided / numberOfMaxItemTopOrBottom);
-  
+
+    const page = Math.floor(numberOfItemTopHided / numberOfMaxItemTopOrBottom)
+
     let start = (page - 1) * numberOfMaxItemTopOrBottom,
-      end = start + numberOfRowDisplayed + numberOfMaxItemTopOrBottom * 2 - 1;
-  
-    start -= numberOfMaxItemTopOrBottom * newBufferInSidebar;
-    end += numberOfMaxItemTopOrBottom * newBufferInSidebar;
-  
-    if (start < 0) start = 0;
-  
-    return { start, end };
-  };
+      end = start + numberOfRowDisplayed + numberOfMaxItemTopOrBottom * 2 - 1
+
+    start -= numberOfMaxItemTopOrBottom * newBufferInSidebar
+    end += numberOfMaxItemTopOrBottom * newBufferInSidebar
+
+    if (start < 0) start = 0
+
+    return { start, end }
+  }
 
   /**
    * function handle set state current group move in event drag/drop move
@@ -1726,7 +1758,35 @@ export default class ReactCalendarTimeline extends Component {
                       className="scroll-temporary-body"
                       ref={this.refHandler}
                     >
+                      <button
+                        className="scroll-temporary-body__button --prev"
+                        onMouseDown={event => {
+                          this.handleClickScrollPrev(event)
+                        }}
+                        onMouseUp={event => {
+                          this.handleScrollEnd(event)
+                        }}
+                        onMouseLeave={event => {
+                          if (this.isScrolling) {
+                            this.handleScrollEnd(event)
+                          }
+                        }}
+                      ></button>
                       <div className="content">&nbsp;</div>
+                      <button
+                        className="scroll-temporary-body__button --next"
+                        onMouseDown={event => {
+                          this.handleClickScrollNext(event)
+                        }}
+                        onMouseUp={event => {
+                          this.handleScrollEnd(event)
+                        }}
+                        onMouseLeave={event => {
+                          if (this.isScrolling) {
+                            this.handleScrollEnd(event)
+                          }
+                        }}
+                      ></button>
                     </div>
                   </div>
                 )}
