@@ -1299,6 +1299,7 @@ export default class ReactCalendarTimeline extends Component {
         itemPositionDisplayed={itemPositionDisplayed}
         isScheduleScreen={this.props.isScheduleScreen}
         currentGroupMove={this.state.currentGroupMove}
+        isShowInforGemba={this.props.isShowInforGemba}
       />
     )
   }

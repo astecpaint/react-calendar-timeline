@@ -65,7 +65,8 @@ export default class Items extends Component {
     isGembaMode: PropTypes.bool.isRequired,
     itemPositionDisplayed: PropTypes.object.isRequired,
     isScheduleScreen: PropTypes.bool.isRequired,
-    currentGroupMove: PropTypes.object
+    currentGroupMove: PropTypes.object,
+    isShowInforGemba: PropTypes.bool.isRequired
   }
 
   static defaultProps = {
@@ -96,7 +97,8 @@ export default class Items extends Component {
         nextProps.itemPositionDisplayed
       ) &&
       nextProps.isScheduleScreen === this.props.isScheduleScreen &&
-      nextProps.currentGroupMove === this.props.currentGroupMove
+      nextProps.currentGroupMove === this.props.currentGroupMove &&
+      nextProps.isShowInforGemba === this.props.isShowInforGemba
     )
   }
 
@@ -127,7 +129,8 @@ export default class Items extends Component {
       selectedItem,
       itemPositionDisplayed,
       isScheduleScreen,
-      currentGroupMove
+      currentGroupMove,
+      isShowInforGemba
     } = this.props
     const { itemIdKey, itemGroupKey } = keys
 
@@ -213,6 +216,7 @@ export default class Items extends Component {
               isGembaMode={isGembaMode}
               selectedItem={selectedItem}
               isScheduleScreen={isScheduleScreen}
+              isShowInforGemba={isShowInforGemba}
             />
           ))}
       </div>

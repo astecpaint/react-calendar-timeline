@@ -19,7 +19,11 @@ import {
 
 const DEFAULT_TYPE_TRACK_RECORD = 2,
   DEFAULT_MARGIN_TOP_TRACK_RECORD_IN_SCHEDULE = 20,
-  DEFAULT_MARGIN_TOP_TRACK_RECORD_IN_PROCESS_BASIC = 18
+  DEFAULT_MARGIN_TOP_TRACK_RECORD_IN_PROCESS_BASIC = 18,
+  DEFAULT_MARGIN_TOP_TASK_IN_SCHEDULE = 5,
+  DEFAULT_MARGIN_TOP_TASK_IN_PROCESS_BASIC = 7,
+  DEFAULT_HEIGHT_GEMBA = 40,
+  DEFAULT_SPACING_TOP_ROW = 12.8
 
 export default class Item extends Component {
   // removed prop type check for SPEED!
@@ -66,7 +70,8 @@ export default class Item extends Component {
     group: PropTypes.object,
     isGembaMode: PropTypes.bool,
     selectedItem: PropTypes.number,
-    isScheduleScreen: PropTypes.bool
+    isScheduleScreen: PropTypes.bool,
+    isShowInforGemba: PropTypes.bool
   }
 
   static defaultProps = {
@@ -667,22 +672,60 @@ export default class Item extends Component {
     }
   }
 
-  getItemStyle(props) {
-    const dimensions = this.props.dimensions
-    let dimensionsTop = dimensions.top
+  /**
+   * function handle calculate get new dimensions top of item
+   * @param {number} dimensionsTop - default dimensions top value of item
+   */
+  getNewDimensionsTop = (dimensionsTop) => {
+    const { item, isScheduleScreen, isShowInforGemba, group } = this.props
 
-    if (this.props.item?.type === DEFAULT_TYPE_TRACK_RECORD) {
-      const marginTop = this.props.isScheduleScreen
+    // dimensions top of track-record
+    if (item?.type === DEFAULT_TYPE_TRACK_RECORD) {
+      const marginTop = isScheduleScreen
         ? DEFAULT_MARGIN_TOP_TRACK_RECORD_IN_SCHEDULE
         : DEFAULT_MARGIN_TOP_TRACK_RECORD_IN_PROCESS_BASIC
-      dimensionsTop += marginTop
+
+      return dimensionsTop + marginTop
     }
+
+    // dimensions top of task in process-basic screen
+    if (!isScheduleScreen) {
+      return dimensionsTop - DEFAULT_MARGIN_TOP_TASK_IN_PROCESS_BASIC
+    }
+
+    // dimensions top of task/sub-task in schedule screen
+    if (item?.isTaskList || item?.isSubTask) {
+      return dimensionsTop - DEFAULT_MARGIN_TOP_TASK_IN_SCHEDULE
+    }
+
+    // default dimensions top of gemba in schedule screen
+    if (
+      item?.isCustomSchedule ||
+      !isShowInforGemba ||
+      !group?.expanded ||
+      !group?.height ||
+      group?.isGroupLoading
+    ) {
+      return dimensionsTop
+    }
+
+    // dimensions top of gemba in schedule screen with calculate depending on row height
+    return (
+      dimensionsTop +
+      (group.height - DEFAULT_HEIGHT_GEMBA) / 2 -
+      DEFAULT_SPACING_TOP_ROW
+    )
+  }
+
+  getItemStyle(props) {
+    const dimensions = this.props.dimensions
+    const newDimensionsTop = this.getNewDimensionsTop(dimensions.top)
 
     const baseStyles = {
       position: 'absolute',
       boxSizing: 'border-box',
       left: `${dimensions.left}px`,
-      top: `${dimensionsTop}px`,
+      top: `${newDimensionsTop}px`,
       width: `${dimensions.width}px`,
       height: `${dimensions.height}px`,
       lineHeight: `${dimensions.height}px`
