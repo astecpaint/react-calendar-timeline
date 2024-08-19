@@ -488,17 +488,20 @@ export default class ReactCalendarTimeline extends Component {
         this.props.defaultTimeStart &&
         this.props.defaultTimeEnd
       ) {
-        const [canvasTimeStart, canvasTimeEnd] = getCanvasBoundariesFromVisibleTime(
+        const [
+          canvasTimeStart,
+          canvasTimeEnd
+        ] = getCanvasBoundariesFromVisibleTime(
           this.props.defaultTimeStart.valueOf(),
           this.props.defaultTimeEnd.valueOf(),
           DEFAULT_BUFFER_CANVAS
-        );
-        this.props.onBoundsChange(canvasTimeStart, canvasTimeEnd);
+        )
+        this.props.onBoundsChange(canvasTimeStart, canvasTimeEnd)
       } else {
         this.props.onBoundsChange(
           this.state.canvasTimeStart,
           this.state.canvasTimeStart + newZoom * DEFAULT_BUFFER_CANVAS
-        );
+        )
       }
     }
 
@@ -560,14 +563,13 @@ export default class ReactCalendarTimeline extends Component {
     })
     //initial scroll left is the buffer - 1 (1 is visible area) divided by 2 (2 is the buffer split on the right and left of the timeline)
     const scrollLeft = width * ((props.buffer - 1) / 2)
-    
+
     if (this.scrollComponent) {
       this.scrollComponent.scrollLeft = scrollLeft
     }
 
     if (this.scrollHeaderRef) {
       this.scrollHeaderRef.scrollLeft = scrollLeft
-
     }
   }
 
@@ -1363,16 +1365,17 @@ export default class ReactCalendarTimeline extends Component {
   rightSidebar(height, groupHeights) {
     const { rightSidebarWidth } = this.props
     return (
-      rightSidebarWidth &&
-      <Sidebar
-        groups={this.props.groups}
-        keys={this.props.keys}
-        groupRenderer={this.props.groupRenderer}
-        isRightSidebar
-        width={rightSidebarWidth}
-        groupHeights={groupHeights}
-        height={height}
-      />
+      rightSidebarWidth && (
+        <Sidebar
+          groups={this.props.groups}
+          keys={this.props.keys}
+          groupRenderer={this.props.groupRenderer}
+          isRightSidebar
+          width={rightSidebarWidth}
+          groupHeights={groupHeights}
+          height={height}
+        />
+      )
     )
   }
 
@@ -1518,8 +1521,7 @@ export default class ReactCalendarTimeline extends Component {
         this.scrollComponentTemporary.scrollLeft -
         this.scrollComponentTemporary.scrollWidth / 2
       this.scrollComponentTemporary.scroll({
-        left: distanceScroll,
-        behavior: 'smooth'
+        left: distanceScroll
       })
     }
   }
@@ -1534,8 +1536,7 @@ export default class ReactCalendarTimeline extends Component {
         this.scrollComponentTemporary.scrollLeft +
         this.scrollComponentTemporary.scrollWidth / 2
       this.scrollComponentTemporary.scroll({
-        left: distanceScroll,
-        behavior: 'smooth'
+        left: distanceScroll
       })
     }
   }
@@ -1764,9 +1765,6 @@ export default class ReactCalendarTimeline extends Component {
                         onMouseDown={event => {
                           this.handleClickScrollPrev(event)
                         }}
-                        onMouseUp={event => {
-                          this.handleScrollEnd(event)
-                        }}
                         onMouseLeave={event => {
                           if (this.isScrolling) {
                             this.handleScrollEnd(event)
@@ -1778,9 +1776,6 @@ export default class ReactCalendarTimeline extends Component {
                         className="scroll-temporary-body__button --next"
                         onMouseDown={event => {
                           this.handleClickScrollNext(event)
-                        }}
-                        onMouseUp={event => {
-                          this.handleScrollEnd(event)
                         }}
                         onMouseLeave={event => {
                           if (this.isScrolling) {
