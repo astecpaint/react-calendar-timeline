@@ -339,7 +339,11 @@ class GroupRow extends PureComponent {
       !!checkValueDate(task?.begin_date) && !!checkValueDate(task?.end_date)
     const isHasTrackRecord =
       group?.regis_track_record_type === TYPE_CREATE_TRACK_RECORD.DEFAULT &&
-      !!task?.track_record_list?.length
+      task?.track_record_list?.some(
+        (trackRecord) =>
+          !!checkValueDate(trackRecord?.begin_date) &&
+          !!checkValueDate(trackRecord?.end_date)
+      )
 
     const offsetY = e?.nativeEvent?.offsetY || e?.offsetY || 0
     this.isCreatingPositionAbove = offsetY <= HEIGHT_ROW_TASK / 2
