@@ -1765,22 +1765,12 @@ export default class ReactCalendarTimeline extends Component {
                         onMouseDown={event => {
                           this.handleClickScrollPrev(event)
                         }}
-                        onMouseLeave={event => {
-                          if (this.isScrolling) {
-                            this.handleScrollEnd(event)
-                          }
-                        }}
                       ></button>
                       <div className="content">&nbsp;</div>
                       <button
                         className="scroll-temporary-body__button --next"
                         onMouseDown={event => {
                           this.handleClickScrollNext(event)
-                        }}
-                        onMouseLeave={event => {
-                          if (this.isScrolling) {
-                            this.handleScrollEnd(event)
-                          }
                         }}
                       ></button>
                     </div>
