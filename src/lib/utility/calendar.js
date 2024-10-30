@@ -699,7 +699,7 @@ export function checkValueDate(value) {
   const momentVal = moment(value)
 
   if (
-    _.isNaN(momentVal) ||
+    isNaN(momentVal) ||
     momentVal === 'Invalid date' ||
     momentVal === '' ||
     momentVal === '0000-00-00' ||
