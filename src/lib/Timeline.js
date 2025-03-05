@@ -33,7 +33,8 @@ export const DEFAULT_HEIGHT_ROW = 64,
   DEFAULT_BUFFER_ROW = 1,
   DEFAULT_SCROLL_TOP = 0,
   DEFAULT_BUFFER_ROW_IN_SIDEBAR = 1.5,
-  DEFAULT_BUFFER_CANVAS = 3
+  DEFAULT_BUFFER_CANVAS = 3,
+  DEFAULT_WIDTH_SIDEBAR = 248
 
 export default class ReactCalendarTimeline extends Component {
   static propTypes = {
@@ -158,7 +159,8 @@ export default class ReactCalendarTimeline extends Component {
     isShowDataAssigned: PropTypes.bool,
     viewOption: PropTypes.number,
     isShowTrackRecord: PropTypes.bool,
-    isReCalculateCanvasTime: PropTypes.bool
+    isReCalculateCanvasTime: PropTypes.bool,
+    isShowSidebar: PropTypes.bool
   }
 
   static defaultProps = {
@@ -262,7 +264,8 @@ export default class ReactCalendarTimeline extends Component {
     isShowDataAssigned: false,
     viewOption: 1,
     isShowTrackRecord: true,
-    isReCalculateCanvasTime: false
+    isReCalculateCanvasTime: false,
+    isShowSidebar: false
   }
 
   static childContextTypes = {
@@ -391,6 +394,8 @@ export default class ReactCalendarTimeline extends Component {
     this.scrollComponentTemporary = null
     this.scrollLeftTemporary = null
     this.isScrolling = false
+    this.isShowSidebarTemporary = null
+    this.isScrollDisabled = false
     /* eslint-enable */
   }
 
@@ -412,6 +417,9 @@ export default class ReactCalendarTimeline extends Component {
     }
 
     windowResizeDetector.removeListener(this)
+
+    this.isShowSidebarTemporary = null
+    this.isScrollDisabled = false
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -470,6 +478,20 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    if (
+      this.isShowSidebarTemporary !== null &&
+      this.props.isShowSidebar !== this.isShowSidebarTemporary
+    ) {
+      this.isScrollDisabled = true
+      const offsetWidth = this.props.isShowSidebar
+        ? -DEFAULT_WIDTH_SIDEBAR
+        : DEFAULT_WIDTH_SIDEBAR
+      this.resize(this.props, offsetWidth)
+      this.setState({ visibleTimeStart: prevState.visibleTimeStart })
+      this.isShowSidebarTemporary = this.props.isShowSidebar
+      return
+    }
+
     const newZoom = this.state.visibleTimeEnd - this.state.visibleTimeStart
     const oldZoom = prevState.visibleTimeEnd - prevState.visibleTimeStart
 
@@ -521,12 +543,20 @@ export default class ReactCalendarTimeline extends Component {
       this.scrollComponent.scrollLeft = scrollLeft
       this.scrollHeaderRef.scrollLeft = scrollLeft
     }
+
+    if (this.isShowSidebarTemporary === null) {
+      this.isShowSidebarTemporary = this.props.isShowSidebar
+    }
   }
 
-  resize = (props = this.props) => {
+  resize = (props = this.props, offsetWidth = 0) => {
     const containerWidth = this.container?.getBoundingClientRect()?.width ?? 0
 
-    let width = containerWidth - props.sidebarWidth - props.rightSidebarWidth
+    let width =
+      containerWidth -
+      props.sidebarWidth -
+      props.rightSidebarWidth +
+      offsetWidth
     const canvasWidth = getCanvasWidth(width, props.buffer)
     const {
       dimensionItems,
@@ -574,6 +604,11 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   onScroll = scrollX => {
+    if (this.isScrollDisabled) {
+      this.isScrollDisabled = false
+      return
+    }
+
     const width = this.state.width
 
     const canvasTimeStart = this.state.canvasTimeStart
