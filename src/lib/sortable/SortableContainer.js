@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import { SortableContainer } from 'react-sortable-hoc'
 import { SortableItem } from './SortableItem'
 import { arraysEqual, deepObjectCompare } from '../utility/generic'
@@ -11,7 +11,6 @@ class SortableListClass extends Component {
   shouldComponentUpdate(nextProps) {
     return !(
       arraysEqual(nextProps.groups, this.props.groups) &&
-      // arraysEqual(nextProps.groupHeights, this.props.groupHeights) &&
       nextProps.groupIdKey === this.props.groupIdKey &&
       nextProps.groupRightTitleKey === this.props.groupRightTitleKey &&
       nextProps.groupTitleKey === this.props.groupTitleKey &&
@@ -28,7 +27,6 @@ class SortableListClass extends Component {
   render() {
     const {
       groups,
-      groupHeights,
       groupIdKey,
       groupRightTitleKey,
       groupTitleKey,
@@ -38,45 +36,31 @@ class SortableListClass extends Component {
       buttonTooltipRenderer,
       sidebarPositionDisplayed
     } = this.props
+
     return (
       <div
         className="list-task-draggable"
         id="dropzone-task"
         style={{ borderTopWidth: '0px' }}
       >
-        {groups?.map((item, index) => {
-          return !!item?.isEmptyGroup ? (
-            <Fragment key={index}>
-              {groupRenderer
-                ? React.createElement(groupRenderer, {
-                    group: item,
-                    isRightSidebar
-                  })
-                : _get(
-                    item,
-                    isRightSidebar ? groupRightTitleKey : groupTitleKey
-                  )}
-            </Fragment>
-          ) : (
-            <SortableItem
-              keyIndex={item.index}
-              key={`item-${item.index}`}
-              index={item.index}
-              group={item}
-              disabled={false}
-              groupIdKey={groupIdKey}
-              groupHeights={groupHeights}
-              openAddGroupForm={openAddGroupForm}
-              groupRenderer={groupRenderer}
-              isRightSidebar={isRightSidebar}
-              groupRightTitleKey={groupRightTitleKey}
-              groupTitleKey={groupTitleKey}
-              ButtonTooltip={buttonTooltipRenderer}
-              currentIndex={index}
-              sidebarPositionDisplayed={sidebarPositionDisplayed}
-            />
-          )
-        })}
+        {groups?.map((item, index) => (
+          <SortableItem
+          keyIndex={item.index}
+          key={`item-${item.index}`}
+          index={item.index}
+          group={item}
+          disabled={false}
+          groupIdKey={groupIdKey}
+          openAddGroupForm={openAddGroupForm}
+          groupRenderer={groupRenderer}
+          isRightSidebar={isRightSidebar}
+          groupRightTitleKey={groupRightTitleKey}
+          groupTitleKey={groupTitleKey}
+          ButtonTooltip={buttonTooltipRenderer}
+          currentIndex={index}
+          sidebarPositionDisplayed={sidebarPositionDisplayed}
+        />
+        ))}
       </div>
     )
   }
