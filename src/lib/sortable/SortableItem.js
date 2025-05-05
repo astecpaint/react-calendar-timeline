@@ -65,8 +65,8 @@ class SortableItemClass extends PureComponent {
       openAddGroupForm,
       ButtonTooltip,
       currentIndex,
-      sidebarPositionDisplayed,
-    } = this.props;
+      sidebarPositionDisplayed
+    } = this.props
     const { start, end } = sidebarPositionDisplayed
 
     return (
@@ -77,76 +77,69 @@ class SortableItemClass extends PureComponent {
           (' -sort-index-' + group?.index) +
           (group?.task?.parent_id
             ? ' -sub sidebar-grouped-by-' +
-            group?.task?.parent_id +
-            ' group-move-' +
-            group?.task?.parent_id
+              group?.task?.parent_id +
+              ' group-move-' +
+              group?.task?.parent_id
             : ' sidebar-grouped-by-' +
-            group?.task?.task_id +
-            ' group-move-' +
-            group?.task?.task_id) +
+              group?.task?.task_id +
+              ' group-move-' +
+              group?.task?.task_id) +
           (group?.isTaskPQA ? ' rct-sidebar-row-full-width' : '')
         }
         style={{
           height: `${group?.height || DEFAULT_HEIGHT_ROW_PROCESS_BASIC}px`,
-          lineHeight: `${group?.height || DEFAULT_HEIGHT_ROW_PROCESS_BASIC}px`,
+          lineHeight: `${group?.height || DEFAULT_HEIGHT_ROW_PROCESS_BASIC}px`
         }}
       >
         {((currentIndex >= start && currentIndex <= end) ||
           group?.isAddinationForm) && (
-            <>
-              {this.state.groupChildren}
-              {(!group?.isEmptyGroup && !group?.task?.isEmptySubGroup) && (
+          <>
+            {this.state.groupChildren}
+            {!group?.isEmptyGroup && !group?.task?.isEmptySubGroup && (
+              <div
+                className={
+                  'rct-drag-drop' +
+                  (group?.task?.parent_id != null &&
+                  group?.task?.parent_id != undefined
+                    ? ' -sub'
+                    : '') +
+                  (group?.isTaskPQA ? ' -task-pqa' : '')
+                }
+              >
                 <div
                   className={
-                    'rct-drag-drop' +
+                    'rct-siderbar-control-btns' +
                     (group?.task?.parent_id != null &&
-                      group?.task?.parent_id != undefined
+                    group?.task?.parent_id != undefined
                       ? ' -sub'
-                      : '') + (group?.isTaskPQA ? ' -task-pqa' : '')
+                      : '')
                   }
                 >
-                  <div
-                    className={
-                      'rct-siderbar-control-btns' +
-                      (group?.task?.parent_id != null &&
-                        group?.task?.parent_id != undefined
-                        ? ' -sub'
-                        : '')
-                    }
-                  >
-                    <DragHandle groupIndex={group?.index} />
+                  <DragHandle groupIndex={group?.index} />
 
-                    {!group?.isTaskPQA && (
-                      <>
-                        {ButtonTooltip ? (
-                          <ButtonTooltip
-                            group={group}
-                            children={
-                              <button
-                                onClick={() =>
-                                  openAddGroupForm(_get(group, groupIdKey), group)
-                                }
-                              >
-                                <i className="fas fa-plus" />
-                              </button>
-                            }
-                          />
-                        ) : (
-                          <button
-                            onClick={() =>
-                              openAddGroupForm(_get(group, groupIdKey), group)
-                            }
-                          >
-                            <i className="fas fa-plus" />
-                          </button>
-                        )}
-                      </>
-                    )}
-                  </div>
+                  {!group?.isTaskPQA && (
+                    <>
+                      {ButtonTooltip ? (
+                        <ButtonTooltip
+                          group={group}
+                          children={
+                            <button onClick={() => openAddGroupForm(group)}>
+                              <i className="fas fa-plus" />
+                            </button>
+                          }
+                        />
+                      ) : (
+                        <button onClick={() => openAddGroupForm(group)}>
+                          <i className="fas fa-plus" />
+                        </button>
+                      )}
+                    </>
+                  )}
                 </div>
-              )}
-            </>
-          )}
+              </div>
+            )}
+          </>
+        )}
       </div>
     )
   }
