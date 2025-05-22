@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import { SortableElement, SortableHandle } from 'react-sortable-hoc'
 import { _get, deepObjectCompare } from '../utility/generic'
 import { DEFAULT_HEIGHT_ROW_PROCESS_BASIC } from '../Timeline'
+import { SORTABLE_LAYER_CLASS_NAME } from '../common/constants'
 
 const renderGroupContent = (
   group,
@@ -58,6 +59,26 @@ class SortableItemClass extends PureComponent {
     return derivedState
   }
 
+  getSortableClassName = group => {
+    const { ONE, TWO, THREE } = SORTABLE_LAYER_CLASS_NAME
+    const parentId = group?.task?.parent_id
+    const taskId = group?.task?.task_id
+    const customId = group?.customId
+
+    const sortableClassNames = ['sortable', ` sortable-group-${group?.index}`]
+    if (parentId && taskId) {
+      sortableClassNames.push(` ${ONE}--${taskId}`)
+    }
+    if ((group?.isCustomGroup && !group?.isTaskPQA) || (parentId && taskId)) {
+      sortableClassNames.push(` ${TWO}--${parentId || taskId}`)
+    }
+    if (customId) {
+      sortableClassNames.push(` ${THREE}--${customId}`)
+    }
+
+    return sortableClassNames.join('')
+  }
+
   render() {
     const {
       group,
@@ -68,22 +89,14 @@ class SortableItemClass extends PureComponent {
       sidebarPositionDisplayed
     } = this.props
     const { start, end } = sidebarPositionDisplayed
+    const sortableClassNameStr = this.getSortableClassName(group)
 
     return (
       <div
         className={
-          'rct-sidebar-row rct-sidebar-row-' +
+          sortableClassNameStr +
+          ' rct-sidebar-row rct-sidebar-row-' +
           (group.index % 2 === 0 ? 'even' : 'odd') +
-          (' -sort-index-' + group?.index) +
-          (group?.task?.parent_id
-            ? ' -sub sidebar-grouped-by-' +
-              group?.task?.parent_id +
-              ' group-move-' +
-              group?.task?.parent_id
-            : ' sidebar-grouped-by-' +
-              group?.task?.task_id +
-              ' group-move-' +
-              group?.task?.task_id) +
           (group?.isTaskPQA ? ' rct-sidebar-row-full-width' : '')
         }
         style={{

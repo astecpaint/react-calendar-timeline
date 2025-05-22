@@ -16,6 +16,7 @@ import {
   leftResizeStyle,
   rightResizeStyle
 } from './styles'
+import { SORTABLE_LAYER_CLASS_NAME } from '../common/constants'
 
 const DEFAULT_TYPE_TRACK_RECORD = 2,
   DEFAULT_MARGIN_TOP_TRACK_RECORD_IN_SCHEDULE = 20,
@@ -610,25 +611,45 @@ export default class Item extends Component {
   getDragLeftRef = el => (this.dragLeft = el)
   getDragRightRef = el => (this.dragRight = el)
 
+  /**
+   * Get the sortable class name
+   * @param {object} item - The item object
+   * @param {object} group - The group object
+   * @returns {string} The sortable class name
+   */
+  getSortableClassName = (item, group) => {
+    const { ONE, TWO, THREE } = SORTABLE_LAYER_CLASS_NAME
+    const parentId = item?.task?.parent_id
+    const taskId = item?.task?.task_id
+    const belongTaskId = item?.belongTaskId
+    const belongTaskParentId = item?.belongTaskParentId
+    const customId = group?.customId
+
+    const sortableClassNames = [' sortable', ` sortable-item-${item?.group}`]
+    if (parentId || belongTaskParentId) {
+      sortableClassNames.push(` ${ONE}--${taskId || belongTaskId}`)
+    }
+    sortableClassNames.push(
+      ` ${TWO}--${parentId || taskId || belongTaskParentId || belongTaskId}`
+    )
+    if (customId) {
+      sortableClassNames.push(` ${THREE}--${customId}`)
+    }
+
+    return sortableClassNames.join('')
+  }
+
   getItemProps = (props = {}) => {
     //TODO: maybe shouldnt include all of these classes
+    const sortableClassNameStr = this.getSortableClassName(
+      this.props.item,
+      this.props.group
+    )
+
     const classNames =
       'rct-item' +
       (this.props.item.className ? ` ${this.props.item.className}` : '') +
-      ' rct_draggable_' +
-      this.props?.item?.group +
-      (DEFAULT_TYPE_TRACK_RECORD !== this.props?.item?.type &&
-      (this.props?.item?.task?.parent_id || this.props?.item?.task?.task_id)
-        ? this.props?.item?.task?.parent_id
-          ? ' group-move-' + this.props?.item?.task?.parent_id
-          : ' group-move-' + this.props?.item?.task?.task_id
-        : '') +
-      (DEFAULT_TYPE_TRACK_RECORD === this.props?.item?.type &&
-      (this.props?.item?.belongTaskParentId || this.props?.item?.belongTaskId)
-        ? this.props?.item?.belongTaskParentId
-          ? ' group-move-' + this.props?.item?.belongTaskParentId
-          : ' group-move-' + this.props?.item?.belongTaskId
-        : '')
+      sortableClassNameStr
     return {
       key: this.itemId,
       ref: this.getItemRef,
@@ -676,7 +697,7 @@ export default class Item extends Component {
    * function handle calculate get new dimensions top of item
    * @param {number} dimensionsTop - default dimensions top value of item
    */
-  getNewDimensionsTop = (dimensionsTop) => {
+  getNewDimensionsTop = dimensionsTop => {
     const { item, isScheduleScreen, isShowInforGemba, group } = this.props
 
     // dimensions top of track-record

@@ -6,6 +6,7 @@ import {
   checkValueDate
 } from '../utility/calendar'
 import moment from 'moment'
+import { SORTABLE_LAYER_CLASS_NAME } from '../common/constants'
 
 const HEIGHT_TASK = 23,
   MARGIN_TOP_OF_TASK = 7,
@@ -213,6 +214,29 @@ class GroupRow extends PureComponent {
     )
   }
 
+  /**
+   * Get the sortable class name
+   * @param {object} group - The group object
+   * @returns {string} The sortable class name
+   */
+  getSortableClassName = group => {
+    const { TWO, THREE } = SORTABLE_LAYER_CLASS_NAME
+    const { isCustomGroup, isTaskPQA, task, customId } = group
+    const parentId = task?.parent_id
+    const taskId = task?.task_id
+
+    const sortableClassNames = [' sortable']
+
+    if ((isCustomGroup && !isTaskPQA) || parentId) {
+      sortableClassNames.push(` ${TWO}--${parentId || taskId}`)
+    }
+    if (customId) {
+      sortableClassNames.push(` ${THREE}--${customId}`)
+    }
+
+    return sortableClassNames.join('')
+  }
+
   renderBgColor = (
     isShowBgColorGroup,
     group,
@@ -268,16 +292,11 @@ class GroupRow extends PureComponent {
       ? task_color
       : parent_task_color
     const opacity = isScheduleScreen ? 1 : bgColor ? OPACITY_ROW_TASK : 1
+    const sortableClassNameStr = this.getSortableClassName(group)
 
     return (
       <div
-        className={
-          ' -sort-index-' +
-          group?.index +
-          (group?.task?.parent_id
-            ? ' group-move-' + group?.task?.parent_id
-            : ' group-move-' + group?.task?.task_id)
-        }
+        className={sortableClassNameStr}
         style={{
           position: 'absolute',
           width,
@@ -340,7 +359,7 @@ class GroupRow extends PureComponent {
     const isHasTrackRecord =
       group?.regis_track_record_type === TYPE_CREATE_TRACK_RECORD.DEFAULT &&
       task?.track_record_list?.some(
-        (trackRecord) =>
+        trackRecord =>
           !!checkValueDate(trackRecord?.begin_date) &&
           !!checkValueDate(trackRecord?.end_date)
       )

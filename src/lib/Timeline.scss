@@ -102,6 +102,11 @@ $weekend: rgba(250, 246, 225, 0.5);
   }
 
   .rct-item {
+    &.sortable {
+      transform: translateY(var(--translateY, 'none')) !important;
+      transition-duration: var(--transition-duration, 'none') !important;
+    }
+
     &:hover {
       z-index: 88;
     }
@@ -166,20 +171,20 @@ $weekend: rgba(250, 246, 225, 0.5);
       }
     }
 
-    .draggable_task_item {
+    .drag_container {
       width: calc(100vw - 16px) !important;
-      z-index: 82 !important;
+      z-index: 100 !important;
       border-bottom: 1px solid #b7b1b1 !important;
       box-shadow: 0 1px 2px 2px rgba(0, 0, 0, 0.25) !important;
       background: rgba(255, 255, 255, 0.5) !important;
       cursor: move;
     }
 
-    .draggable_task_item:first-child {
+    .drag_container:first-child {
       height: calc(100% + 1px);
     }
 
-    .draggable_task_item::after {
+    .drag_container::after {
       content: '';
       display: block;
       width: 36px;
@@ -190,6 +195,11 @@ $weekend: rgba(250, 246, 225, 0.5);
       top: 0;
       background: rgba(0, 0, 0, 0.3);
       color: #ffffff;
+    }
+
+    .sortable {
+      transform: translateY(var(--translateY, 'none')) !important;
+      transition-duration: var(--transition-duration, 'none') !important;
     }
 
     .rct-sidebar-row {
@@ -244,9 +254,6 @@ $weekend: rgba(250, 246, 225, 0.5);
         }
       }
     }
-    .disable-transform {
-      transform: none !important;
-    }
   }
 
   // TODO: rename or remove once we make breaking change to rename vertical lines
@@ -283,6 +290,11 @@ $weekend: rgba(250, 246, 225, 0.5);
     }
     .rct-hl-even {
       background: $row-background-even;
+    }
+
+    .sortable {
+      transform: translateY(var(--translateY, 'none')) !important;
+      transition-duration: var(--transition-duration, 'none') !important;
     }
   }
 
