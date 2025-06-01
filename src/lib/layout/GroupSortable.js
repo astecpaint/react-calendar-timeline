@@ -117,7 +117,7 @@ export default class GroupSortable extends Component {
           // find the second level groups
           const isTask =
             group?.isCustomGroup &&
-            !group?.isTaskPQA &&
+            !group?.isSection &&
             group?.customId === currentGroup?.customId
 
           if (isTask) {
@@ -146,7 +146,7 @@ export default class GroupSortable extends Component {
       default:
         groups.forEach(group => {
           // find the third level groups
-          const isPBTask = group?.isTaskPQA
+          const isPBTask = group?.isSection
           if (isPBTask) {
             if (topGroup === null) {
               topGroup = group
@@ -180,7 +180,7 @@ export default class GroupSortable extends Component {
       return DRAG_LEVEL_GROUP.ONE
     }
 
-    if (currentGroup?.isCustomGroup && !currentGroup?.isTaskPQA) {
+    if (currentGroup?.isCustomGroup && !currentGroup?.isSection) {
       return DRAG_LEVEL_GROUP.TWO
     }
 

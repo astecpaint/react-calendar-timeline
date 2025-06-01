@@ -221,13 +221,13 @@ class GroupRow extends PureComponent {
    */
   getSortableClassName = group => {
     const { TWO, THREE } = SORTABLE_LAYER_CLASS_NAME
-    const { isCustomGroup, isTaskPQA, task, customId } = group
+    const { isCustomGroup, isSection, task, customId } = group
     const parentId = task?.parent_id
     const taskId = task?.task_id
 
     const sortableClassNames = [' sortable']
 
-    if ((isCustomGroup && !isTaskPQA) || parentId) {
+    if ((isCustomGroup && !isSection) || parentId) {
       sortableClassNames.push(` ${TWO}--${parentId || taskId}`)
     }
     if (customId) {

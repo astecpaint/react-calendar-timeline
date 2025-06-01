@@ -116,11 +116,13 @@ export default class Sidebar extends Component {
       return (
         <div
           key={_get(group, groupIdKey)}
-          className={`rct-sidebar-row rct-sidebar-row-${index % 2 === 0 ? 'even' : 'odd'
-            } ${((!!group?.isMerge && !!group?.isCustomGroup) || group?.isTaskPQA)
+          className={`rct-sidebar-row rct-sidebar-row-${
+            index % 2 === 0 ? 'even' : 'odd'
+          } ${
+            (!!group?.isMerge && !!group?.isCustomGroup) || group?.isSection
               ? 'rct-sidebar-row-full-width'
               : ''
-            }`}
+          }`}
           style={elementStyle}
         >
           {index >= start && index <= end && (
@@ -142,9 +144,7 @@ export default class Sidebar extends Component {
 
     const newGroups =
       groups.filter(
-        group =>
-          (!group?.isHide && !group?.isMerge) ||
-          group?.isMerge 
+        group => (!group?.isHide && !group?.isMerge) || group?.isMerge
       ) ?? []
 
     return (

@@ -69,7 +69,7 @@ class SortableItemClass extends PureComponent {
     if (parentId && taskId) {
       sortableClassNames.push(` ${ONE}--${taskId}`)
     }
-    if ((group?.isCustomGroup && !group?.isTaskPQA) || (parentId && taskId)) {
+    if ((group?.isCustomGroup && !group?.isSection) || (parentId && taskId)) {
       sortableClassNames.push(` ${TWO}--${parentId || taskId}`)
     }
     if (customId) {
@@ -97,7 +97,7 @@ class SortableItemClass extends PureComponent {
           sortableClassNameStr +
           ' rct-sidebar-row rct-sidebar-row-' +
           (group.index % 2 === 0 ? 'even' : 'odd') +
-          (group?.isTaskPQA ? ' rct-sidebar-row-full-width' : '')
+          (group?.isSection ? ' rct-sidebar-row-full-width' : '')
         }
         style={{
           height: `${group?.height || DEFAULT_HEIGHT_ROW_PROCESS_BASIC}px`,
@@ -116,7 +116,7 @@ class SortableItemClass extends PureComponent {
                   group?.task?.parent_id != undefined
                     ? ' -sub'
                     : '') +
-                  (group?.isTaskPQA ? ' -task-pqa' : '')
+                  (group?.isSection ? ' -task-pqa' : '')
                 }
               >
                 <div
@@ -130,7 +130,7 @@ class SortableItemClass extends PureComponent {
                 >
                   <DragHandle groupIndex={group?.index} />
 
-                  {!group?.isTaskPQA && (
+                  {!group?.isSection && (
                     <>
                       {ButtonTooltip ? (
                         <ButtonTooltip
