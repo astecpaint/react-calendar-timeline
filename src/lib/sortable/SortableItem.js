@@ -61,15 +61,15 @@ class SortableItemClass extends PureComponent {
 
   getSortableClassName = group => {
     const { ONE, TWO, THREE } = SORTABLE_LAYER_CLASS_NAME
-    const parentId = group?.task?.parent_id
-    const taskId = group?.task?.task_id
-    const customId = group?.customId
+    const { isSection, task, customId } = group
+    const parentId = task?.parent_id
+    const taskId = task?.task_id
 
     const sortableClassNames = ['sortable', ` sortable-group-${group?.index}`]
     if (parentId && taskId) {
       sortableClassNames.push(` ${ONE}--${taskId}`)
     }
-    if ((group?.isCustomGroup && !group?.isSection) || (parentId && taskId)) {
+    if (!isSection && (parentId || taskId)) {
       sortableClassNames.push(` ${TWO}--${parentId || taskId}`)
     }
     if (customId) {

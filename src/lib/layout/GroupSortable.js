@@ -124,7 +124,6 @@ export default class GroupSortable extends Component {
             if (topGroup === null) {
               topGroup = group
             }
-            bottomGroup = group
             // get sortable linked groups
             const linkedGroups = groups.filter(
               groupFilter =>
@@ -139,6 +138,7 @@ export default class GroupSortable extends Component {
             // set the linked groups to the sortable groups
             sortableGroups.set(linkedIndex?.topLinked?.index, linkedIndex)
             sortableGroups.set(linkedIndex?.bottomLinked?.index, linkedIndex)
+            bottomGroup = linkedGroups[linkedGroups.length - 1] || group
           }
         })
         break
@@ -151,7 +151,6 @@ export default class GroupSortable extends Component {
             if (topGroup === null) {
               topGroup = group
             }
-            bottomGroup = group
             // get sortable linked groups
             const linkedGroups = groups.filter(
               groupFilter => groupFilter?.customId === group?.customId
@@ -163,6 +162,7 @@ export default class GroupSortable extends Component {
             // set the linked groups to the sortable groups
             sortableGroups.set(linkedIndex?.topLinked?.index, linkedIndex)
             sortableGroups.set(linkedIndex?.bottomLinked?.index, linkedIndex)
+            bottomGroup = linkedGroups[linkedGroups.length - 1] || group
           }
         })
         break
@@ -350,13 +350,17 @@ export default class GroupSortable extends Component {
    * @param {object} sort - the sort object
    * @param {object} event - the event object
    */
-  updateBeforeSortStart = (sort, event) => {
-    const { currentGroup } = this.state
-    const { groups, setCurrentGroupMove } = this.props
-    // add current group state
-    setCurrentGroupMove(currentGroup)
+  updateBeforeSortStart = (sort, event) => {}
 
-    // check drag level
+  /**
+   * the function handle event start sort
+   * @param {object} sort - the sort object
+   * @param {object} event - the event object
+   */
+  onSortStart = (sort, event) => {
+    const { currentGroup } = this.state
+    const { scrollContainer, onLogGroupSortable, groups } = this.props
+
     const dragLevel = this.getDragLevel(currentGroup)
 
     // get sortable groups by group list, current group and drag level
@@ -365,23 +369,6 @@ export default class GroupSortable extends Component {
       currentGroup,
       dragLevel
     )
-
-    this.setState({
-      topGroup,
-      bottomGroup,
-      sortableGroups,
-      dragLevel
-    })
-  }
-
-  /**
-   * the function handle event start sort
-   * @param {object} sort - the sort object
-   * @param {object} event - the event object
-   */
-  onSortStart = (sort, event) => {
-    const { topGroup, bottomGroup, currentGroup } = this.state
-    const { scrollContainer } = this.props
 
     const scrollTop = scrollContainer?.scrollTop || 0
 
@@ -393,6 +380,9 @@ export default class GroupSortable extends Component {
     } = this.getSortableElements(currentGroup, topGroup, bottomGroup)
 
     const dragGroupRect = dragGroupElm?.getBoundingClientRect()
+    // get transform size
+    const transformSize = dragGroupRect?.height
+
     const offsetMouseToSidebarTop = this.getOffsetMouseToSidebarTop(
       event,
       dragGroupRect
@@ -408,11 +398,8 @@ export default class GroupSortable extends Component {
         bottomElmRect?.top +
         offsetMouseToSidebarTop +
         scrollTop -
-        (bottomGroup?.isEmptyGroup ? bottomElmRect.height : 0)
+        (bottomGroup?.isEmptyGroup ? transformSize : 0)
     }
-
-    // get transform size
-    const transformSize = dragGroupRect?.height
 
     const dragContainer = document.querySelector('.drag_container')
     this.setStyleDragElement(dragItemElms, dragContainer)
@@ -426,6 +413,7 @@ export default class GroupSortable extends Component {
     }, 2000)
 
     const startDragToTopPosition = event.y + scrollTop
+    this.state.lastDragPosition = event.y
     this.state.startScrollTop = scrollTop
     this.state.startDragToTopPosition = startDragToTopPosition
     this.state.dragContainer = dragContainer
@@ -435,6 +423,10 @@ export default class GroupSortable extends Component {
     this.state.dragGroupElm = dragGroupElm
     this.state.transformSize = transformSize
     this.state.offsetMouseToSidebarTop = offsetMouseToSidebarTop
+    this.state.sortableGroups = sortableGroups
+    this.state.topGroup = topGroup
+    this.state.bottomGroup = bottomGroup
+    this.state.dragLevel = dragLevel
   }
 
   /**
