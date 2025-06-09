@@ -26,7 +26,6 @@ export default class Sidebar extends Component {
 
     isScheduleScreen: PropTypes.bool.isRequired,
     sidebarPositionDisplayed: PropTypes.object.isRequired,
-    isDragDrop: PropTypes.object,
     isShowDataAssigned: PropTypes.bool,
     viewOption: PropTypes.number,
     isShowTrackRecord: PropTypes.bool,
@@ -80,7 +79,6 @@ export default class Sidebar extends Component {
       groups,
       isScheduleScreen,
       sidebarPositionDisplayed,
-      isDragDrop,
       isShowDataAssigned,
       viewOption,
       isShowTrackRecord,
@@ -119,7 +117,7 @@ export default class Sidebar extends Component {
           className={`rct-sidebar-row rct-sidebar-row-${
             index % 2 === 0 ? 'even' : 'odd'
           } ${
-            (!!group?.isMerge && !!group?.isCustomGroup) || group?.isSection
+            (!!group?.isMerge && !!group?.isCustomGroup) || group?.isTaskPQA
               ? 'rct-sidebar-row-full-width'
               : ''
           }`}
@@ -169,7 +167,6 @@ export default class Sidebar extends Component {
               scrollContainer={scrollContainer}
               buttonTooltipRenderer={buttonTooltipRenderer}
               sidebarPositionDisplayed={sidebarPositionDisplayed}
-              isDragDrop={isDragDrop}
               viewOption={viewOption}
               isShowTrackRecord={isShowTrackRecord}
               setCurrentGroupMove={setCurrentGroupMove}

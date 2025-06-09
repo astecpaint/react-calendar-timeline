@@ -72,6 +72,9 @@
   transform: translateY(var(--translateY, "none")) !important;
   transition-duration: var(--transition-duration, "none") !important; }
 
+.react-calendar-timeline .rct-item.foreground {
+  z-index: 100 !important; }
+
 .react-calendar-timeline .rct-item:hover {
   z-index: 88; }
 
@@ -127,17 +130,20 @@
   .react-calendar-timeline .rct-sidebar .drag_container::after {
     content: '';
     display: block;
-    width: 36px;
+    width: 32px;
     height: 100%;
     position: absolute;
     z-index: 82;
     left: 0;
     top: 0;
     background: rgba(0, 0, 0, 0.3);
-    color: #ffffff; }
+    color: #ffffff;
+    border: none; }
   .react-calendar-timeline .rct-sidebar .sortable {
     transform: translateY(var(--translateY, "none")) !important;
     transition-duration: var(--transition-duration, "none") !important; }
+  .react-calendar-timeline .rct-sidebar .foreground {
+    z-index: 100 !important; }
   .react-calendar-timeline .rct-sidebar .rct-sidebar-row {
     position: relative;
     padding: 0 4px;
@@ -208,6 +214,8 @@
   .react-calendar-timeline .rct-horizontal-lines .sortable {
     transform: translateY(var(--translateY, "none")) !important;
     transition-duration: var(--transition-duration, "none") !important; }
+  .react-calendar-timeline .rct-horizontal-lines .foreground {
+    z-index: 100 !important; }
 
 .react-calendar-timeline .rct-cursor-line {
   position: absolute;

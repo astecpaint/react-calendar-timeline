@@ -106,6 +106,9 @@ $weekend: rgba(250, 246, 225, 0.5);
       transform: translateY(var(--translateY, 'none')) !important;
       transition-duration: var(--transition-duration, 'none') !important;
     }
+    &.foreground {
+      z-index: 100 !important;
+    }
 
     &:hover {
       z-index: 88;
@@ -187,7 +190,7 @@ $weekend: rgba(250, 246, 225, 0.5);
     .drag_container::after {
       content: '';
       display: block;
-      width: 36px;
+      width: 32px;
       height: 100%;
       position: absolute;
       z-index: 82;
@@ -195,11 +198,16 @@ $weekend: rgba(250, 246, 225, 0.5);
       top: 0;
       background: rgba(0, 0, 0, 0.3);
       color: #ffffff;
+      border: none;
     }
 
     .sortable {
       transform: translateY(var(--translateY, 'none')) !important;
       transition-duration: var(--transition-duration, 'none') !important;
+    }
+
+    .foreground {
+      z-index: 100 !important;
     }
 
     .rct-sidebar-row {
@@ -295,6 +303,9 @@ $weekend: rgba(250, 246, 225, 0.5);
     .sortable {
       transform: translateY(var(--translateY, 'none')) !important;
       transition-duration: var(--transition-duration, 'none') !important;
+    }
+    .foreground {
+      z-index: 100 !important;
     }
   }
 

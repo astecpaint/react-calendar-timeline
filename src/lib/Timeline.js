@@ -153,7 +153,6 @@ export default class ReactCalendarTimeline extends Component {
     defaultBufferRow: PropTypes.number,
     defaultBufferRowSidebar: PropTypes.number,
     scrollTop: PropTypes.number,
-    isDragDrop: PropTypes.object,
 
     isCreateTrackRecord: PropTypes.bool,
     isShowDataAssigned: PropTypes.bool,
@@ -258,7 +257,6 @@ export default class ReactCalendarTimeline extends Component {
     defaultBufferRow: DEFAULT_BUFFER_ROW,
     defaultBufferRowSidebar: DEFAULT_BUFFER_ROW_IN_SIDEBAR,
     scrollTop: DEFAULT_SCROLL_TOP,
-    isDragDrop: { current: null },
 
     isCreateTrackRecord: false,
     isShowDataAssigned: false,
@@ -1357,7 +1355,6 @@ export default class ReactCalendarTimeline extends Component {
       buttonTooltipRenderer,
       isScheduleScreen,
       onStartSort,
-      isDragDrop,
       isShowDataAssigned,
       viewOption,
       isShowTrackRecord,
@@ -1387,7 +1384,6 @@ export default class ReactCalendarTimeline extends Component {
           scrollContainer={scrollContainer}
           isScheduleScreen={isScheduleScreen}
           sidebarPositionDisplayed={sidebarPositionDisplayed}
-          isDragDrop={isDragDrop}
           isShowDataAssigned={isShowDataAssigned}
           viewOption={viewOption}
           isShowTrackRecord={isShowTrackRecord}
@@ -1586,22 +1582,24 @@ export default class ReactCalendarTimeline extends Component {
         numberOfRowDisplayed * bufferRow
       ),
       newBufferInSidebar = bufferRowInSidebar - 1
- 
+
     let numberOfItemTopHided =
       (scrollTop - DEFAULT_HEIGHT_HEADER_PROCESS_BASIC) /
       DEFAULT_HEIGHT_ROW_PROCESS_BASIC
- 
-    const headerHeight = this.props.isScheduleScreen ? DEFAULT_HEIGHT_HEADER : DEFAULT_HEIGHT_HEADER_PROCESS_BASIC
+
+    const headerHeight = this.props.isScheduleScreen
+      ? DEFAULT_HEIGHT_HEADER
+      : DEFAULT_HEIGHT_HEADER_PROCESS_BASIC
     const indexFirstItemDisplayed = this.props.groups
       ?.filter(group => group?.isMerge || (!group?.isMerge && !group?.isHide))
-      ?.findIndex(
-        group => group?.offsetHeight >= scrollTop - headerHeight
-      )
- 
+      ?.findIndex(group => group?.offsetHeight >= scrollTop - headerHeight)
+
     if (indexFirstItemDisplayed !== -1) {
-      numberOfItemTopHided = this.props.isScheduleScreen ? indexFirstItemDisplayed - 1 : indexFirstItemDisplayed
+      numberOfItemTopHided = this.props.isScheduleScreen
+        ? indexFirstItemDisplayed - 1
+        : indexFirstItemDisplayed
     }
- 
+
     if (!scrollTop || numberOfItemTopHided < numberOfMaxItemTopOrBottom) {
       return {
         start: 0,
@@ -1612,17 +1610,17 @@ export default class ReactCalendarTimeline extends Component {
           1
       }
     }
- 
+
     const page = Math.floor(numberOfItemTopHided / numberOfMaxItemTopOrBottom)
- 
+
     let start = (page - 1) * numberOfMaxItemTopOrBottom,
       end = start + numberOfRowDisplayed + numberOfMaxItemTopOrBottom * 2 - 1
- 
+
     start -= numberOfMaxItemTopOrBottom * newBufferInSidebar
     end += numberOfMaxItemTopOrBottom * newBufferInSidebar
- 
+
     if (start < 0) start = 0
- 
+
     return { start, end }
   }
 

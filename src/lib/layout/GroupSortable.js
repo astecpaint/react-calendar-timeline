@@ -16,7 +16,6 @@ const initState = {
 
   lastDragPosition: 0, // the last drag position before triggering scroll event
   currentGroup: null, // the current group
-  loadMoreIntervalId: -1, // time interval id for load element
 
   startScrollTop: 0, // the start scroll top
   topGroup: null, // the sortable top group
@@ -252,13 +251,13 @@ export default class GroupSortable extends Component {
     const draggableButton = document.createElement('i')
     draggableButton.className = 'fas fa-arrows-alt drag_button'
     draggableButton.style.cssText =
-      'font-size: 16x; width: 16px; color: white; position: absolute; top: 50%; left: 15px; transform: translate(-50%, -50%); z-index: 100; pointer-events: none;'
-    dragContainer.style.setProperty('z-index', '100', 'important')
+      'font-size: 16px; width: 16px; color: white; position: absolute; top: 50%; left: 12px; transform: translate(-50%, -50%); z-index: 100; pointer-events: none;'
+    dragContainer.classList.add('foreground')
     dragContainer.appendChild(draggableButton)
 
     if (dragItemElms.length <= 0) return
     dragItemElms.forEach(item => {
-      item.style.setProperty('z-index', '100', 'important')
+      item.classList.add('foreground')
     })
   }
 
@@ -287,7 +286,7 @@ export default class GroupSortable extends Component {
         'important'
       )
       if (isReset) {
-        element.style.setProperty('z-index', '80', 'important')
+        element.classList.remove('foreground')
       }
     })
   }
@@ -408,10 +407,6 @@ export default class GroupSortable extends Component {
       scrollContainer.addEventListener('scroll', this.autoScrollEvent)
     }
 
-    this.state.loadMoreIntervalId = setInterval(() => {
-      this.props.isDragDrop.current = false
-    }, 2000)
-
     const startDragToTopPosition = event.y + scrollTop
     this.state.lastDragPosition = event.y
     this.state.startScrollTop = scrollTop
@@ -435,9 +430,7 @@ export default class GroupSortable extends Component {
    * @param {object} event - the event object
    */
   onSortMove = event => {
-    const { isDragDrop, scrollContainer } = this.props
-    // stop event load more elements
-    isDragDrop.current = true
+    const { scrollContainer } = this.props
     // The element will only be moved within a certain range, which can be within the group containing it or within the drag-drop area.
 
     const {
@@ -482,9 +475,6 @@ export default class GroupSortable extends Component {
    * @param {object} event - the event object
    */
   autoScrollEvent = event => {
-    const { isDragDrop } = this.props
-    // stop event load more elements
-    isDragDrop.current = true
     // The element will only be moved within a certain range, which can be within the group containing it or within the drag-drop area.
     const {
       sortableZone,
@@ -603,13 +593,7 @@ export default class GroupSortable extends Component {
    * @param {*} sort
    */
   onSortEnd = sort => {
-    const {
-      topGroup,
-      bottomGroup,
-      loadMoreIntervalId,
-      lastSwappedIndex,
-      dragLevel
-    } = this.state
+    const { topGroup, bottomGroup, lastSwappedIndex, dragLevel } = this.state
     const { sortOrderTaskList, scrollContainer } = this.props
     const { newIndex, oldIndex } = sort
 
@@ -628,10 +612,6 @@ export default class GroupSortable extends Component {
     } else if (!isOverTop && !isOverBottom) {
       // if not over top and bottom, set the new index to the last swapped index
       exactlyNewIndex = lastSwappedIndex ?? oldIndex
-    }
-
-    if (loadMoreIntervalId !== -1) {
-      clearInterval(loadMoreIntervalId)
     }
 
     if (scrollContainer) {
