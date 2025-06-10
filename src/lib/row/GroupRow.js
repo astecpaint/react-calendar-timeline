@@ -352,7 +352,7 @@ class GroupRow extends PureComponent {
       getTimeFromRowClickEvent,
       isCreateTrackRecord
     } = this.props
-    const { task, isEmptyGroup, isAddinationForm } = group
+    const { task, isEmptyGroup, isAddinationForm, isSection } = group
 
     const isHasDateTimeTask =
       !!checkValueDate(task?.begin_date) && !!checkValueDate(task?.end_date)
@@ -379,7 +379,8 @@ class GroupRow extends PureComponent {
       isCreatingInvalidTrackRecord ||
       isEmptyGroup ||
       isAddinationForm ||
-      task?.isEmptySubGroup
+      task?.isEmptySubGroup ||
+      isSection
     ) {
       return
     }

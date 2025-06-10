@@ -105,7 +105,9 @@ class SortableItemClass extends PureComponent {
         }}
       >
         {((currentIndex >= start && currentIndex <= end) ||
-          group?.isAddinationForm) && (
+          group?.isAddinationForm ||
+          (group?.isSection &&
+            (group?.isCreateSectionGroup || group?.isUpdateSectionGroup))) && (
           <>
             {this.state.groupChildren}
             {!group?.isEmptyGroup && !group?.task?.isEmptySubGroup && (
