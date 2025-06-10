@@ -145,8 +145,8 @@ export default class GroupSortable extends Component {
       default:
         groups.forEach(group => {
           // find the third level groups
-          const isPBTask = group?.isSection
-          if (isPBTask) {
+          const isSection = group?.isSection
+          if (isSection) {
             if (topGroup === null) {
               topGroup = group
             }

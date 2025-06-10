@@ -116,7 +116,7 @@ class SortableItemClass extends PureComponent {
                   group?.task?.parent_id != undefined
                     ? ' -sub'
                     : '') +
-                  (group?.isSection ? ' -task-pqa' : '')
+                  (group?.isSection ? ' -section' : '')
                 }
               >
                 <div

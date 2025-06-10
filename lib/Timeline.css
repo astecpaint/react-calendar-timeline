@@ -109,14 +109,14 @@
       visibility: visible; }
     .react-calendar-timeline .rct-sidebar .hover-show-sortable .rct-drag-drop.-sub {
       margin-left: 16px; }
-    .react-calendar-timeline .rct-sidebar .hover-show-sortable .rct-drag-drop.-task-pqa {
+    .react-calendar-timeline .rct-sidebar .hover-show-sortable .rct-drag-drop.-section {
       left: 16px;
       width: 12px; }
-      .react-calendar-timeline .rct-sidebar .hover-show-sortable .rct-drag-drop.-task-pqa .rct-siderbar-control-btns {
+      .react-calendar-timeline .rct-sidebar .hover-show-sortable .rct-drag-drop.-section .rct-siderbar-control-btns {
         visibility: visible;
         background: transparent;
         border: none; }
-        .react-calendar-timeline .rct-sidebar .hover-show-sortable .rct-drag-drop.-task-pqa .rct-siderbar-control-btns .drag-handle-btn {
+        .react-calendar-timeline .rct-sidebar .hover-show-sortable .rct-drag-drop.-section .rct-siderbar-control-btns .drag-handle-btn {
           color: #999; }
   .react-calendar-timeline .rct-sidebar .drag_container {
     width: calc(100vw - 16px) !important;

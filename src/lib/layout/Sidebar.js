@@ -117,7 +117,7 @@ export default class Sidebar extends Component {
           className={`rct-sidebar-row rct-sidebar-row-${
             index % 2 === 0 ? 'even' : 'odd'
           } ${
-            (!!group?.isMerge && !!group?.isCustomGroup) || group?.isTaskPQA
+            (!!group?.isMerge && !!group?.isCustomGroup) || group?.isSection
               ? 'rct-sidebar-row-full-width'
               : ''
           }`}
