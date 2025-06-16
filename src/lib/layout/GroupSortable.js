@@ -349,7 +349,11 @@ export default class GroupSortable extends Component {
    * @param {object} sort - the sort object
    * @param {object} event - the event object
    */
-  updateBeforeSortStart = (sort, event) => {}
+  updateBeforeSortStart = (sort, event) => {
+    const { currentGroup } = this.state
+    const { setCurrentGroupMove } = this.props
+    setCurrentGroupMove(currentGroup)
+  }
 
   /**
    * the function handle event start sort
@@ -594,7 +598,11 @@ export default class GroupSortable extends Component {
    */
   onSortEnd = sort => {
     const { topGroup, bottomGroup, lastSwappedIndex, dragLevel } = this.state
-    const { sortOrderTaskList, scrollContainer } = this.props
+    const {
+      sortOrderTaskList,
+      scrollContainer,
+      setCurrentGroupMove
+    } = this.props
     const { newIndex, oldIndex } = sort
 
     const isOverTop = newIndex < topGroup?.index
@@ -617,8 +625,8 @@ export default class GroupSortable extends Component {
     if (scrollContainer) {
       scrollContainer.removeEventListener('scroll', this.autoScrollEvent)
     }
-
     this.resetState()
+    setCurrentGroupMove(null)
     sortOrderTaskList(sort.oldIndex, exactlyNewIndex, dragLevel)
   }
 
