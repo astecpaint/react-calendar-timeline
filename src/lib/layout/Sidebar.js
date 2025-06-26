@@ -154,6 +154,7 @@ export default class Sidebar extends Component {
           <div style={groupsStyle}>
             <GroupSortable
               groups={newGroups}
+              actualGroups={groups}
               groupHeights={groupHeights}
               isRightSidebar={isRightSidebar}
               groupTitleKey={groupTitleKey}

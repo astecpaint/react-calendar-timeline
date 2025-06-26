@@ -601,7 +601,8 @@ export default class GroupSortable extends Component {
     const {
       sortOrderTaskList,
       scrollContainer,
-      setCurrentGroupMove
+      setCurrentGroupMove,
+      actualGroups
     } = this.props
     const { newIndex, oldIndex } = sort
 
@@ -625,6 +626,49 @@ export default class GroupSortable extends Component {
     if (scrollContainer) {
       scrollContainer.removeEventListener('scroll', this.autoScrollEvent)
     }
+
+    if (
+      dragLevel !== DRAG_LEVEL_GROUP.ONE &&
+      !isOverTop &&
+      !isOverBottom &&
+      newIndex > oldIndex &&
+      exactlyNewIndex !== oldIndex
+    ) {
+      const groupDragged = actualGroups.find(
+        group => group.index === exactlyNewIndex
+      )
+      if (groupDragged) {
+        const {
+          expanded,
+          isSection,
+          isCustomGroup,
+          customId,
+          task
+        } = groupDragged
+        if (!expanded) {
+          let numberOfChildGroup = 0
+          if (dragLevel === DRAG_LEVEL_GROUP.TWO) {
+            if (isCustomGroup) {
+              numberOfChildGroup = actualGroups.filter(
+                group =>
+                  group.customId === customId &&
+                  group.task?.parent_id === task?.task_id
+              ).length
+            }
+          } else {
+            if (isSection) {
+              numberOfChildGroup = actualGroups.filter(
+                group =>
+                  group.customId === customId &&
+                  group.task?.task_id !== task?.task_id
+              ).length
+            }
+          }
+          exactlyNewIndex += numberOfChildGroup
+        }
+      }
+    }
+
     this.resetState()
     setCurrentGroupMove(null)
     sortOrderTaskList(sort.oldIndex, exactlyNewIndex, dragLevel)
