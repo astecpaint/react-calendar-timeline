@@ -630,7 +630,6 @@ export default class GroupSortable extends Component {
     if (
       dragLevel !== DRAG_LEVEL_GROUP.ONE &&
       !isOverTop &&
-      !isOverBottom &&
       newIndex > oldIndex &&
       exactlyNewIndex !== oldIndex
     ) {
@@ -655,14 +654,12 @@ export default class GroupSortable extends Component {
                   group.task?.parent_id === task?.task_id
               ).length
             }
-          } else {
-            if (isSection) {
-              numberOfChildGroup = actualGroups.filter(
-                group =>
-                  group.customId === customId &&
-                  group.task?.task_id !== task?.task_id
-              ).length
-            }
+          } else if (isSection && !isOverBottom) {
+            numberOfChildGroup = actualGroups.filter(
+              group =>
+                group.customId === customId &&
+                group.task?.task_id !== task?.task_id
+            ).length
           }
           exactlyNewIndex += numberOfChildGroup
         }
